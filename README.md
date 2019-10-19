@@ -1,6 +1,7 @@
 # Jerrycurl - Razor SQL for .NET
 [![Build status](https://ci.appveyor.com/api/projects/status/onendmfb6ywd33je?svg=true)](https://ci.appveyor.com/project/rwredding/jerrycurl)
 [![License LGPLv3](https://img.shields.io/badge/license-LGPLv3-green.svg)](http://www.gnu.org/licenses/lgpl-3.0.html)
+
 **Jerrycurl** is a lightweight and highly customizable **object-relational mapper** with emphasis on writing elegant and performant **SQL** with **Razor** and **C#**.
 
 ```sql
