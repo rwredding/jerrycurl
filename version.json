@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-pre.{height}",
+  "version": "1.0.0",
   "assemblyVersion": {
     "precision": "major"
   },
