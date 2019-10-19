@@ -1,0 +1,27 @@
+image: Visual Studio 2019
+
+skip_branch_with_pr: true
+
+environment:
+  APPVEYOR: true
+  PGUSER: postgres
+  PGPASSWORD: Password12!
+  PGDATABASE: jerry_testdb
+  JERRY_SQLSERVER_CONN: SERVER=(local)\SQL2017;DATABASE=jerry_testdb;USER ID=sa;PASSWORD=Password12!
+  JERRY_POSTGRES_CONN: SERVER=localhost;PORT=5432;DATABASE=jerry_testdb;USER ID=postgres;PASSWORD=Password12!
+#  JERRY_MYSQL_CONN: SERVER=localhost;DATABASE=jerry_testdb;UID=root;PWD=Password12!;
+
+services:
+  - mssql2017
+  - postgresql
+#  - mysql
+
+build_script:
+  - ps: $env:PATH += ";C:\Program Files\MySQL\MySQL Server 5.7\bin\;C:\Program Files\PostgreSQL\9.6\bin\;"
+  - sqlcmd -S "(local)" -U "sa" -P "Password12!" -Q "CREATE DATABASE jerry_testdb;"
+  - createdb
+#  - mysql -e "create database jerry_testdb;" --user=root --password=Password12!
+  - ps: .\build.ps1
+  
+artifacts:
+  - path: .\artifacts\packages\*.nupkg

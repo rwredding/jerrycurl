@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>netcoreapp2.1</TargetFramework>
+		<IsPackable>true</IsPackable>
+    <PackageId>dotnet-jerry</PackageId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\..\Shared\Jerrycurl.Common\**\*.cs" LinkBase=".nusrc\build" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<ProjectReference Include="..\Jerrycurl.Tools.Common\Jerrycurl.Tools.Common.csproj" />
+	</ItemGroup>
+
+  <Target Name="CopySourceFiles" BeforeTargets="PrepareForBuild">
+    <Copy SourceFiles="@(Compile)" DestinationFolder="$(OutputPath).nusrc\src\%(RecursiveDir)" />
+  </Target>
+</Project>

@@ -1,0 +1,73 @@
+<Project>
+	<PropertyGroup>
+		<NuspecFile>$(MSBuildThisFileDirectory)nuspec\$(PackageId).nuspec</NuspecFile>
+	</PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsPackable)' == 'true'">
+    <DefaultItemExcludes>$(DefaultItemExcludes);.nusrc\**</DefaultItemExcludes>
+    <BuildDependsOn>$(BuildDependsOn);CleanNuGetSource;CopyNuGetSource</BuildDependsOn>
+    <CleanDependsOn>$(CleanDependsOn);CleanNuGetSource</CleanDependsOn>
+  </PropertyGroup>
+  
+	<ItemGroup Condition="'$(IsPackable)' == 'true'">
+		<None Include=".nusrc\**" />
+		<NuGetSource Include=".nusrc\**" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(UseCodeAnalysis)' == 'true'">
+		<PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.2" PrivateAssets="all" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Nerdbank.GitVersioning" Version="3.0.25" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0-preview.2" PrivateAssets="all" />
+	</ItemGroup>
+	
+	<Target Name="CopyNuGetSource" Condition="'@(NuGetSource)' != ''">
+		<Copy SourceFiles="@(NuGetSource)" DestinationFolder="$(OutputPath).nusrc\%(RecursiveDir)" />
+	</Target>
+
+	<Target Name="CleanNuGetSource" Condition="'$(IsPackable)' == 'true'">
+		<RemoveDir Directories="$(OutputPath).nusrc" ContinueOnError="true" />
+	</Target>
+	
+	<Target Name="PopulateNuspec" BeforeTargets="GenerateNuspec">
+		<PropertyGroup>
+			<NuspecProperties>
+        PackageId=$(PackageId);
+        PackageVersion=$(PackageVersion);
+        PackageOwners=$(PackageOwners);
+        PackageAuthors=$(PackageAuthors);
+        PackageProjectUrl=$(PackageProjectUrl);
+        PackageIconUrl=$(PackageIconUrl);
+        PackageLicense=$(PackageLicense);
+        PackageCopyright=$(Copyright);
+        PackageTags=$(PackageTags);
+        TargetFramework=$(TargetFramework);
+        NetStandardMoniker=$(NetStandardMoniker);
+        NetFrameworkMoniker=$(NetFrameworkMoniker);
+        AssemblyName=$(AssemblyName);
+        BinPath=$(MSBuildProjectDirectory)\$(OutputPath);
+        FilesPath=$(MSBuildProjectDirectory)\$(OutputPath).nusrc\;
+        SqlServerPackageId=$(SqlServerPackageId);
+        SqlServerPackageVersion=$(SqlServerPackageVersion);
+        SqlitePackageId=$(SqlitePackageId);
+        SqlitePackageVersion=$(SqlitePackageVersion);
+        SqlitePackageVersion_NetStandard21=$(SqlitePackageVersion_NetStandard21);
+        OraclePackageId=$(OraclePackageId);
+        OraclePackageVersion=$(OraclePackageVersion);
+        MySqlPackageId=$(MySqlPackageId);
+        MySqlPackageVersion=$(MySqlPackageVersion);
+        PostgresPackageId=$(PostgresPackageId);
+        PostgresPackageVersion=$(PostgresPackageVersion);
+        EntityFrameworkCorePackageVersion=$(EntityFrameworkCorePackageVersion);
+        EntityFrameworkCorePackageVersion_NetStandard21=$(EntityFrameworkCorePackageVersion_NetStandard21);
+        JsonNetPackageVersion=$(JsonNetPackageVersion);
+        JsonPackageVersion=$(JsonPackageVersion);
+        CSharpPackageVersion=$(CSharpPackageVersion);
+        RepositoryUrl=$(RepositoryUrl);
+        GitCommitId=$(GitCommitId);
+      </NuspecProperties>
+		</PropertyGroup>
+	</Target>
+</Project>

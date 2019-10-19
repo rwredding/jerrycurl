@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>ded3df47-4e41-4fb6-93af-bdc13098cc93</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Jerrycurl</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CodeAnalysis\CSharpFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeAnalysis\CSharpWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeAnalysis\CSharp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeAnalysis\Namespace.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeAnalysis\RazorFacts.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeAnalysis\TypeName.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Collections\DictionaryExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Collections\EnumerableExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolOption.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolParser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Diagnostics\Equality.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Diagnostics\HashCode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\PathHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Linq\Expressions\CompositeKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Linq\Expressions\ExpressionBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Linq\Expressions\ExpressionBuilderContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Linq\Expressions\ExpressionOptimizer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Linq\Expressions\ExpressionOptimizerState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Reflection\AssemblyExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Reflection\NuGetExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Reflection\TypeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolRunner.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Text\StringExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Text\" />
+  </ItemGroup>
+</Project>

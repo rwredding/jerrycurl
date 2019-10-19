@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+    <TargetFrameworks>$(NetStandardMultiTargetMoniker)</TargetFrameworks>
+		<RootNamespace>Jerrycurl.Mvc</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Jerrycurl.Data.Abstractions\Jerrycurl.Data.Abstractions.csproj" />
+		<ProjectReference Include="..\Jerrycurl.Relations.Abstractions\Jerrycurl.Relations.Abstractions.csproj" />
+	</ItemGroup>
+
+	<Import Project="..\..\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems" Label="Shared" />
+</Project>

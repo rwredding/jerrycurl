@@ -1,0 +1,40 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Jerrycurl.Data;
+using Jerrycurl.Data.Commands;
+using Jerrycurl.Mvc.Metadata;
+using Jerrycurl.Relations;
+using Jerrycurl.Relations.Metadata;
+
+namespace Jerrycurl.Mvc.Projections
+{
+    /// <summary>
+    /// Represents an immutable projection buffer comprised of the concatenation of a collection of attributes.
+    /// </summary>
+    public interface IProjection : ISqlWritable
+    {
+        IProcContext Context { get; }
+        IProjectionIdentity Identity { get; }
+
+        IProjectionMetadata Metadata { get; }
+        IProjectionOptions Options { get; }
+        IField Source { get; }
+        IEnumerable<IProjectionAttribute> Attributes { get; }
+
+        IProjection Append(IEnumerable<IParameter> parameters);
+        IProjection Append(IEnumerable<ICommandBinding> bindings);
+        IProjection Append(string text);
+        IProjection Append(params IParameter[] parameter);
+        IProjection Append(params ICommandBinding[] bindings);
+
+        IProjection Map(Func<IProjectionAttribute, IProjectionAttribute> map);
+
+        IProjection With(IProjectionMetadata metadata = null,
+                         IEnumerable<IProjectionAttribute> attributes = null,
+                         IField field = null,
+                         IProjectionOptions options = null);
+    }
+}

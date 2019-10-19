@@ -1,0 +1,12 @@
+version: '3.1'
+
+services:
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    ports:
+        - 5432:5432
+    environment:
+      POSTGRES_USER: jerry
+      POSTGRES_PASSWORD: Password12!
+      POSTGRES_DB: jerry_testdb

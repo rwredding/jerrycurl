@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <JerrycurlSkeletonPath Condition=" '$(JerrycurlSkeletonPath)' == '' ">$(MSBuildThisFileDirectory)skeleton.jerry</JerrycurlSkeletonPath>
+    <JerrycurlIntermediatePath Condition=" '$(JerrycurlIntermediatePath)' == '' ">$(IntermediateOutputPath)Jerrycurl</JerrycurlIntermediatePath>
+    <JerrycurlRootNamespace Condition=" '$(JerrycurlRootNamespace)' == '' ">$(RootNamespace)</JerrycurlRootNamespace>
+    <JerrycurlVerbose Condition=" '$(JerrycurlVerbose)' == '' ">false</JerrycurlVerbose>
+    <JerrycurlProjectName Condition=" '$(JerrycurlRootNamespace)' == '' ">$(MSBuildProjectName)</JerrycurlProjectName>
+    <JerrycurlUseLinks Condition=" '$(JerrycurlUseLinks)' == '' ">true</JerrycurlUseLinks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AvailableItemName Include="JerryFile" />
+    <ProjectCapability Include="JerryProject" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <JerryFile Remove="$(BaseOutputPath)/**/*.cssql;$(BaseIntermediateOutputPath)/**/*.cssql" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <CleanDependsOn>$(CleanDependsOn);JerryClean</CleanDependsOn>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)ProjectItemsSchema.xml" />
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)rules\JerryFile.xml">
+      <Context>File;BrowseObject</Context>
+    </PropertyPageSchema>
+  </ItemGroup>
+
+  <Target Name="JerryCompile" BeforeTargets="BeforeCompile">
+    <ItemGroup Condition=" '$(JerrycurlUseLinks)' == 'true' ">
+      <JerryFile Include="@(None)" Condition=" '%(None.Link)' != '' and @(None->Metadata('Link')->EndsWith('.cssql'))" />
+    </ItemGroup>
+
+    <RemoveDuplicates Inputs="@(JerryFile)">
+      <Output TaskParameter="Filtered" ItemName="_JerryFile"/>
+    </RemoveDuplicates>
+    
+    <Jcst Sources="@(_JerryFile)"
+			  SkeletonPath="$(JerrycurlSkeletonPath)"
+			  IntermediatePath="$(JerrycurlIntermediatePath)"
+			  RootNamespace="$(JerrycurlRootNamespace)"
+			  Verbose="$(JerrycurlVerbose)"
+			  ProjectName="$(JerrycurlProjectName)">
+      <Output TaskParameter="Compile" ItemName="Compile" />
+    </Jcst>
+  </Target>
+
+  <Target Name="JerryClean">
+    <RemoveDir Directories="$(JerrycurlIntermediatePath)"  />
+  </Target>
+</Project>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectSchemaDefinitions xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <ContentType Name="JerryFile" DisplayName="Jerrycurl Razor Page" ItemType="JerryFile" />
+  <ContentType Name="KeplerFile" DisplayName="Jerrycurl Configuration File" ItemType="None">
+    <NameValuePair Name="DependentExtensions" Value=".orm.cs;.orm.js" />
+  </ContentType>
+
+  <ItemType Name="JerryFile" DisplayName="Jerrycurl Razor Page"/>
+
+  <FileExtension Name=".cssql" ContentType="JerryFile"/>
+  <FileExtension Name=".orm" ContentType="KeplerFile"/>
+</ProjectSchemaDefinitions>

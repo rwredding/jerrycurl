@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+    <TargetFrameworks>$(NetStandardMultiTargetMoniker)</TargetFrameworks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Jerrycurl.Data.Abstractions\Jerrycurl.Data.Abstractions.csproj" />
+		<ProjectReference Include="..\Jerrycurl.Relations.Abstractions\Jerrycurl.Relations.Abstractions.csproj" />
+		<ProjectReference Include="..\Jerrycurl.Relations\Jerrycurl.Relations.csproj" />
+	</ItemGroup>
+
+	<!--<ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
+		<Reference Include="System.Transactions" />
+	</ItemGroup>-->
+</Project>

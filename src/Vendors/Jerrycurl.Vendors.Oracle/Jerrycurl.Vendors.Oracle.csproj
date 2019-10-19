@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+    <TargetFrameworks>$(NetStandardMultiTargetMoniker)</TargetFrameworks>
+		<IsPackable>true</IsPackable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="$(OraclePackageId)" Version="$(OracleTargetVersion)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Mvc\Jerrycurl.Mvc.Abstractions\Jerrycurl.Mvc.Abstractions.csproj" />
+		<ProjectReference Include="..\..\Mvc\Jerrycurl.Mvc\Jerrycurl.Mvc.csproj" />
+	</ItemGroup>
+</Project>

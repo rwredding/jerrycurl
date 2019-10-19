@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(NetStandardMultiTargetMoniker)</TargetFrameworks>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetTargetVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mvc\Jerrycurl.Data\Jerrycurl.Data.csproj" />
+    <ProjectReference Include="..\..\Mvc\Jerrycurl.Mvc.Abstractions\Jerrycurl.Mvc.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Mvc\Jerrycurl.Mvc\Jerrycurl.Mvc.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\..\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems" Label="Shared" />
+</Project>

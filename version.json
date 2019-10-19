@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0-pre.{height}",
+  "assemblyVersion": {
+    "precision": "major"
+  },
+  "nuGetPackageVersion": {
+    "semVer": 2.0
+  },
+  "publicReleaseRefSpec": [
+    "^refs/tags/v\\d+\\.\\d+\\.\\d+"
+  ],
+  "cloudBuild": {
+    "buildNumber": {
+      "enabled": true
+    }
+  }
+}

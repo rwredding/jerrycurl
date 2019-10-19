@@ -1,0 +1,45 @@
+<Project>
+  <PropertyGroup Label="NuGet Package IDs">
+    <OraclePackageId>Oracle.ManagedDataAccess.Core</OraclePackageId>
+    <SqlServerPackageId>System.Data.SqlClient</SqlServerPackageId>
+    <MySqlPackageId>MySql.Data</MySqlPackageId>
+    <PostgresPackageId>Npgsql</PostgresPackageId>
+    <SqlitePackageId>Microsoft.Data.Sqlite</SqlitePackageId>
+  </PropertyGroup>
+  
+	<PropertyGroup Label="NuGet Package Versions">
+    <OraclePackageVersion>2.19.31</OraclePackageVersion>
+    <SqlServerPackageVersion>4.7.0</SqlServerPackageVersion>
+    <MySqlPackageVersion>8.0.17</MySqlPackageVersion>
+    <PostgresPackageVersion>4.0.10</PostgresPackageVersion>
+		<SqlitePackageVersion>2.2.6</SqlitePackageVersion>
+		<EntityFrameworkCorePackageVersion>2.2.6</EntityFrameworkCorePackageVersion>
+		<JsonNetPackageVersion>12.0.2</JsonNetPackageVersion>
+    <JsonPackageVersion>4.6.0</JsonPackageVersion>
+		<MsBuildPackageVersion>16.0.461</MsBuildPackageVersion>
+    <CSharpPackageVersion>4.5.0</CSharpPackageVersion>
+	</PropertyGroup>
+
+  <PropertyGroup Label="NuGet Package Versions (.NET Standard 2.1)">
+    <SqlitePackageVersion_NetStandard21>3.0.0</SqlitePackageVersion_NetStandard21>
+    <EntityFrameworkCorePackageVersion_NetStandard21>3.0.0</EntityFrameworkCorePackageVersion_NetStandard21>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Tagrget Versions">
+    <OracleTargetVersion>$(OraclePackageVersion)</OracleTargetVersion>
+    <SqlServerTargetVersion>$(SqlServerPackageVersion)</SqlServerTargetVersion>
+    <MySqlTargetVersion>$(MySqlPackageVersion)</MySqlTargetVersion>
+    <PostgresTargetVersion>$(PostgresPackageVersion)</PostgresTargetVersion>
+    <SqliteTargetVersion>$(SqlitePackageVersion)</SqliteTargetVersion>
+    <EntityFrameworkCoreTargetVersion>$(EntityFrameworkCorePackageVersion)</EntityFrameworkCoreTargetVersion>
+    <JsonNetTargetVersion>$(JsonNetPackageVersion)</JsonNetTargetVersion>
+    <JsonTargetVersion>$(JsonPackageVersion)</JsonTargetVersion>
+    <MsBuildTargetVersion>$(MsBuildPackageVersion)</MsBuildTargetVersion>
+    <CSharpTargetVersion>$(CSharpPackageVersion)</CSharpTargetVersion>
+  </PropertyGroup>
+  
+  <PropertyGroup Label="Target Versions (.NET Standard 2.1)" Condition="'$(TargetFramework)' == 'netstandard2.1' or '$(TargetFramework)' == 'netcoreapp3.0'">
+    <SqliteTargetVersion>$(SqlitePackageVersion_NetStandard21)</SqliteTargetVersion>
+    <EntityFrameworkCoreTargetVersion>$(EntityFrameworkCorePackageVersion_NetStandard21)</EntityFrameworkCoreTargetVersion>
+  </PropertyGroup>
+</Project>

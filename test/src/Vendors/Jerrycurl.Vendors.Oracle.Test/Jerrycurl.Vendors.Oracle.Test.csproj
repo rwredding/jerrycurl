@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Extensions\Jerrycurl.Extensions.Newtonsoft.Json\Jerrycurl.Extensions.Newtonsoft.Json.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Vendors\Jerrycurl.Vendors.Oracle\Jerrycurl.Vendors.Oracle.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Vendors\Jerrycurl.Vendors.Sqlite\Jerrycurl.Vendors.Sqlite.csproj" />
+    <ProjectReference Include="..\..\Shared\Jerrycurl.Test.Common\Jerrycurl.Test.Common.csproj" />
+  </ItemGroup>
+
+</Project>

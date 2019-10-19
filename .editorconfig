@@ -1,0 +1,35 @@
+root = true
+
+[*.cs]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+csharp_new_line_before_open_brace = all
+charset = utf-8-bom
+
+# Organize usings 
+dotnet_sort_system_directives_first = true 
+
+# this. preferences 
+dotnet_style_qualification_for_field = true:warning
+dotnet_style_qualification_for_property = true:warning
+dotnet_style_qualification_for_method = true:warning
+dotnet_style_qualification_for_event = true:warning
+
+# New line preferences 
+csharp_new_line_before_open_brace = all 
+csharp_new_line_before_else = true 
+csharp_new_line_before_catch = true 
+csharp_new_line_before_finally = true 
+csharp_new_line_before_members_in_object_initializers = true 
+csharp_new_line_before_members_in_anonymous_types = true 
+csharp_new_line_between_query_expression_clauses = true 
+
+[*.nuspec]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.{psm1,ps1}]
+indent_style = space
+indent_size = 4

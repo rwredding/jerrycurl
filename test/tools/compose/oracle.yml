@@ -1,0 +1,11 @@
+version: '3.1'
+
+services:
+  oracle:
+    image: store/oracle/database-enterprise:12.2.0.1-slim
+    restart: unless-stopped
+    ports:
+        - 1521:1521
+    environment:
+      ORACLE_PWD: Password12!
+

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+        <id>$PackageId$</id>
+        <title>$PackageId$</title>
+        <version>$PackageVersion$</version>
+        <authors>$PackageAuthors$</authors>
+        <owners>$PackageOwners$</owners>
+        <copyright>$PackageCopyright$</copyright>
+        <license type="expression">$PackageLicense$</license>
+        <iconUrl>$PackageIconUrl$</iconUrl>
+        <projectUrl>$PackageProjectUrl$</projectUrl>
+        <tags>$PackageTags$</tags>
+        <repository type="git" branch="master" url="$RepositoryUrl$" commit="$GitCommitId$" />
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Jerrycurl CLI for scaffolding an object model from a database. Install as .NET Core Global Tool.</description>
+        <packageTypes>
+            <packageType name="DotnetTool" />
+        </packageTypes>
+    </metadata>
+    <files>
+        <file src="$FilesPath$DotnetToolSettings.xml" target="tools\$TargetFramework$\any" />
+        <file src="$FilesPath$build.csproj" target="tools\$TargetFramework$\any\build" />
+        <file src="$FilesPath$src\**\*" target="tools\$TargetFramework$\any\build" />
+        <file src="$BinPath$Jerrycurl.Tools.*" target="tools\$TargetFramework$\any" />
+    </files>
+</package>

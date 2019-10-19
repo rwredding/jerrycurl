@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>$(MultiTargetMoniker)</TargetFrameworks>
+		<RootNamespace>Jerrycurl.Tools</RootNamespace>
+		<IsPackable>true</IsPackable>
+	</PropertyGroup>
+</Project>
