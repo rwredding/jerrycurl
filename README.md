@@ -30,15 +30,15 @@ ORDER BY
 ```
 
 ## Features
-* Beautiful and injection-safe Razor syntax with SQL and strongly typed C#
-* Blazingly fast queries with `one-to-one`, `one-to-none`, `one-to-many`, `many-to-many` and `self-join` support
-* Simple batch generation with Razor `@foreach`
+* Beautiful Razor syntax with SQL and C#
+* Highly performant queries with `one-to-one`, `one-to-none`, `one-to-many`, `many-to-many` and `self-join` support
+* Simple command batch generation with Razor `@foreach`
 * Reusable subqueries and subcommands with Razor *partials* and *templates*
-* Easily maintainable, ASP.NET-like projects with [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)
-* High decoupling with [command-query separation](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation)
+* Maintainable, ASP.NET-like projects with [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)
+* Native [command-query separation](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation), CQRS/ES ready
 * JSON support with `Newtonsoft.Json` or `System.Text.Json`
-* Integration with Entity Framework Core models
-* Modern language features with .NET Standard 2.0 and 2.1
+* Integration with existing Entity Framework Core projects
+* Modern language features with .NET Standard 2.1 and C# 8
 * ...and more
 
 To learn more about Jerrycurl and how to get started, read [our official docs](https://jerrycurl.net/docs) or check our [sample repo](https://github.com/rwredding/jerrycurl-sample).
