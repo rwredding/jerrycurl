@@ -35,7 +35,7 @@ ORDER BY
 * Simple command batch generation with Razor `@foreach`
 * Reusable subqueries and subcommands with Razor *partials* and *templates*
 * Maintainable, ASP.NET-like projects with [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)
-* Native [command-query separation](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation) for [ACID](https://en.wikipedia.org/wiki/ACID) or [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) transactions
+* Native [command-query separation](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation) suitable for [ACID](https://en.wikipedia.org/wiki/ACID) or [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) operations
 * JSON support with `Newtonsoft.Json` or `System.Text.Json`
 * Integration with existing Entity Framework Core projects
 * Modern language features with .NET Standard 2.1 and C# 8
