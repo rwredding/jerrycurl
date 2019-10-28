@@ -30,6 +30,7 @@ ORDER BY
 ```
 
 ## Features
+* CLI tool to quickly scaffold an object model from your database schema
 * Feature-rich collection of Razor extensions for generating SQL from your object model
 * Highly performant queries with `one-to-one`, `one-to-none`, `one-to-many`, `many-to-many` and `self-join` support
 * Robust commands with simple `@foreach` batch generation
