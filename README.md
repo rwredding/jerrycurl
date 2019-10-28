@@ -34,7 +34,7 @@ ORDER BY
 * Highly performant queries with `one-to-one`, `one-to-none`, `one-to-many`, `many-to-many` and `self-join` support
 * Robust commands with simple `@foreach` batch generation
 * Reusable subqueries and subcommands with *partials* and *templates*
-* Maintainable, ASP.NET-like projects with [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)
+* Organized, ASP.NET-like project setup with [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)
 * Native [command-query separation](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation) suitable for [ACID](https://en.wikipedia.org/wiki/ACID) or [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) operations
 * JSON support with `Newtonsoft.Json` or `System.Text.Json`
 * Integration with existing Entity Framework Core projects
