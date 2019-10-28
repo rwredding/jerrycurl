@@ -44,7 +44,7 @@ ORDER BY
 To learn more about Jerrycurl and how to get started, read [our official docs](https://jerrycurl.net/docs) or check our [sample repo](https://github.com/rwredding/jerrycurl-sample).
 
 ## Building from source
-Jerrycurl can be built on any OS supported by .NET Core and included in this repository is a build script that performs all build related tasks.
+Jerrycurl can be built on any OS supported by .NET Core and included in this repository is a script that performs all build related tasks.
 
 ### Prerequisites
 * .NET Core SDK 3.0
