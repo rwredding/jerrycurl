@@ -42,7 +42,7 @@ ORDER BY
 * Modern language features with .NET Standard 2.1 and C# 8
 * ...and more
 
-To learn more about Jerrycurl and how to get started, read [our official docs](https://jerrycurl.net/docs) or check our [sample repo](https://github.com/rwredding/jerrycurl-sample).
+To learn more about Jerrycurl and how to get started, read [our official docs](https://jerrycurl.net/docs) or check our [samples repo](https://github.com/rwredding/jerrycurl-samples).
 
 ## Building from source
 Jerrycurl can be built on any OS supported by .NET Core and included in this repository is a script that performs all build related tasks.
