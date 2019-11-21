@@ -14,7 +14,7 @@
         <repository type="git" branch="master" url="$RepositoryUrl$" commit="$GitCommitId$" />
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <developmentDependency>true</developmentDependency>
-        <description>PowerShell integration for Jerrycurl CLI in Visual Studio.</description>
+        <description>Package Manager Console integration for Jerrycurl CLI.</description>
     </metadata>
     <files>
         <file src="$FilesPath$*\**" target="." />

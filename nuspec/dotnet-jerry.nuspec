@@ -13,7 +13,7 @@
         <tags>$PackageTags$</tags>
         <repository type="git" branch="master" url="$RepositoryUrl$" commit="$GitCommitId$" />
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Jerrycurl CLI for scaffolding an object model from a database. Install as .NET Core Global Tool.</description>
+        <description>Jerrycurl CLI. Install as .NET Core Global Tool.</description>
         <packageTypes>
             <packageType name="DotnetTool" />
         </packageTypes>

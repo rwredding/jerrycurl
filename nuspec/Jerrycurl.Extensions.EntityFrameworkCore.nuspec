@@ -13,7 +13,7 @@
         <tags>$PackageTags$</tags>
         <repository type="git" branch="master" url="$RepositoryUrl$" commit="$GitCommitId$" />
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Entity Framework Core-sourced model support for Jerrycurl.</description>
+        <description>Entity Framework Core integration for Jerrycurl.</description>
         <dependencies>
             <group targetFramework="netstandard2.0">
                 <dependency id="Microsoft.EntityFrameworkCore.Relational" version="$EntityFrameworkCorePackageVersion$" />

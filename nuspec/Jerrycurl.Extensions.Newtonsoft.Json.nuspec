@@ -13,7 +13,7 @@
         <tags>$PackageTags$</tags>
         <repository type="git" branch="master" url="$RepositoryUrl$" commit="$GitCommitId$" />
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>JSON type mappings for Jerrycurl using Newtonsoft.Json.</description>
+        <description>JSON support for Jerrycurl using Newtonsoft.Json.</description>
         <dependencies>
             <group targetFramework="netstandard2.0">
                 <dependency id="Newtonsoft.Json" version="$JsonNetPackageVersion$" />

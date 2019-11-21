@@ -13,7 +13,7 @@
         <tags>$PackageTags$</tags>
         <repository type="git" branch="master" url="$RepositoryUrl$" commit="$GitCommitId$" />
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Razor SQL-based O/R mapper for .NET.</description>
+        <description>Razor-powered ORM for SQL lovers</description>
         <dependencies>
             <group>
                 <dependency id="Jerrycurl.Build.Razor" version="$PackageVersion$" />
