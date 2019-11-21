@@ -33,7 +33,7 @@ ORDER BY
 ## Features
 * CLI tool to quickly scaffold an object model from your database schema
 * Extensive collection of Razor extensions for generating all boilerplate SQL
-* Multiset queries with `one-to-one`, `one-to-none`, `one-to-many`, `many-to-many` and `self-join` support
+* Multiset queries with `one-to-one`, `one-to-many`, `many-to-one`, `many-to-many` and `self-join` support
 * Batchable commands through simple `@foreach` expressions
 * Reusable subqueries and subcommands with *partials* and *templates*
 * Organized, ASP.NET-like project conventions with [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)
