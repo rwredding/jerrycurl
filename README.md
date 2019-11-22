@@ -1,7 +1,9 @@
+# Jerrycurl - Razor-powered ORM for SQL lovers
+
 [![Build status](https://ci.appveyor.com/api/projects/status/onendmfb6ywd33je?svg=true)](https://ci.appveyor.com/project/rwredding/jerrycurl)
 [![License LGPLv3](https://img.shields.io/badge/license-LGPLv3-green.svg)](http://www.gnu.org/licenses/lgpl-3.0.html)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/jerrycurl-mvc/community)
-# Jerrycurl
+
 **Jerrycurl** is an MVC-based **ORM** that focuses on elegant and type-safe **SQL** written with **Razor syntax**.
 
 ```sql
@@ -28,11 +30,13 @@ ORDER BY
 ```
 
 ## Features
-* CLI tool to quickly scaffold an object model from your database schema
-* Extensive collection of Razor extensions for generating all boilerplate SQL
+* Official support for SQL Server, PostgreSQL, MySQL, Oracle and SQLite
+* CLI tool to easily generate classes from your database schema
+* Extensive collection of Razor extensions for all boilerplate SQL
 * Multiset queries with `one-to-one`, `one-to-many`, `many-to-one`, `many-to-many` and `self-join` support
 * Batchable commands through simple `@foreach` expressions
-* Reusable subqueries and subcommands with *partials* and *templates*
+* Reusable subqueries and subcommands with *partials*
+* [Highly performant](https://github.com/rhodosaur/RawDataAccessBencher/blob/master/Results/20191115_jerrycurl.txt) for all operations - in both sync and async
 * Organized, ASP.NET-like project conventions with [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)
 * Native [command-query separation](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation) suitable for [ACID](https://en.wikipedia.org/wiki/ACID) or [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) operations
 * JSON support with `Newtonsoft.Json` or `System.Text.Json`
