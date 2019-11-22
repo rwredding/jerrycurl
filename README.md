@@ -5,29 +5,26 @@
 **Jerrycurl** is a lightweight and highly customizable **object-relational mapper** with emphasis on writing elegant and performant **SQL** with **Razor** and **C#**.
 
 ```sql
-@result MyShop.Data.Views.Orders.OrderUnsentInvoiceView
-@model MyShop.Data.Models.CustomerParams
-
+@result CustomerStatsView
+@model CustomerFilter
 @project Order o
-@project Customer c
 
 SELECT
-    @o.Col(m => m.InvoiceNumber)        AS @R.Prop(m => m.InvoiceNumber),
-    @o.Col(m => m.Completed)            AS @R.Prop(m => m.InvoiceDate),
-    @c.Col(m => m.Email)                AS @R.Prop(m => m.CustomerEmail),
-    @c.Col(m => m.Address)              AS @R.Prop(m => m.CustomerAddress)
+    @R.Star(),
+    @R.Star(m => m.Address),
+    (
+        SELECT  COUNT(*)
+        FROM    @o.Tbl()
+        WHERE   @o.Col(m => m.CustomerId) = @R.Col(m => m.Id)
+    )   AS @R.Prop(m => m.NumberOfOrders)
 FROM
-    @o.Tbl()
-INNER JOIN
-    @c.Tbl() ON @c.Col(m => m.Id) = @o.Col(m => m.CustomerId)
+    @R.Tbl()
+LEFT JOIN
+    @R.Tbl(m => m.Address) ON @R.Col(m => m.Address.Id) = @R.Col(m => m.AddressId)
 WHERE
-    @o.Col(m => m.CustomerId) = @M.Par(m => m.CustomerId)
-    AND
-    @o.Col(m => m.Sent) IS NULL
-    AND
-    @o.Col(m => m.Completed) IS NOT NULL
+    @R.Col(m => m.CreatedDate) >= @M.Par(m => m.CreatedAfter)
 ORDER BY
-    @o.Col(m => m.Completed) ASC
+    @R.Col(m => m.CreatedDate) DESC
 ```
 
 ## Features
