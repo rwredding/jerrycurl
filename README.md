@@ -28,8 +28,8 @@ ORDER BY
 ```
 
 ## Features
-* Official support for SQL Server, PostgreSQL, MySQL, Oracle and SQLite
-* CLI tool to easily generate classes from your database schema
+* [Official support](https://nuget.org/packages/?q=Jerrycurl.Vendors) for SQL Server, PostgreSQL, MySQL, Oracle and SQLite
+* [CLI tool](https://nuget.org/packages/dotnet-jerry) to easily generate classes from your database schema
 * Extensive collection of Razor extensions for all boilerplate SQL
 * Multiset queries with `one-to-one`, `one-to-many`, `many-to-one`, `many-to-many` and `self-join` support
 * Batchable commands through simple `@foreach` expressions
