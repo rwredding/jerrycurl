@@ -40,6 +40,7 @@ ORDER BY
 * JSON support with `Newtonsoft.Json` or `System.Text.Json`
 * Integration with existing Entity Framework Core projects
 * Modern language features with .NET Standard 2.1 and C# 8
+* Free for commercial use
 * ...and more
 
 To learn more about Jerrycurl and how to get started, read [our official docs](https://jerrycurl.net/documentation) or check our [samples repo](https://github.com/rwredding/jerrycurl-samples).
