@@ -76,6 +76,12 @@ Please allow ~30 seconds for the databases to be ready after which you can re-ru
 
 > If you already have an empty database running that can be used for testing, you can manually specify its connection string in the environment variable `JERRY_SQLSERVER_CONN`, `JERRY_MYSQL_CONN`, `JERRY_POSTGRES_CONN` or `JERRY_ORACLE_CONN`.
 
+When done, you can tear down your database instances again.
+
+```powershell
+PS> .\test\tools\boot-dbs.ps1 down sqlserver,mysql,postgres,oracle
+```
+
 ## License
 Copyright © 2019 AC Dancode
 
