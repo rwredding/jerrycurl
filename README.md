@@ -33,7 +33,7 @@ ORDER BY
 * Multiset queries with `one-to-one`, `one-to-many`, `many-to-one`, `many-to-many` and `self-join` support
 * Batchable commands through simple `@foreach` expressions
 * Reusable subqueries and subcommands with *partials*
-* [Highly performance](https://github.com/rhodosaur/RawDataAccessBencher/blob/master/Results/20191115_jerrycurl.txt) for all operations - in both sync and async
+* [High performance](https://github.com/rhodosaur/RawDataAccessBencher/blob/master/Results/20191115_jerrycurl.txt) for all operations - in both sync and async
 * Organized, ASP.NET-like project conventions with [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)
 * Native [command-query separation](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation) suitable for [ACID](https://en.wikipedia.org/wiki/ACID) or [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) operations
 * JSON support with `Newtonsoft.Json` or `System.Text.Json`
