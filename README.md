@@ -34,7 +34,7 @@ ORDER BY
 * Multiset queries with `one-to-one`, `one-to-many`, `many-to-one`, `many-to-many` and `self-join` support
 * Batchable commands through simple `@foreach` expressions
 * Reusable subqueries and subcommands with *partials*
-* [High performance](https://github.com/rhodosaur/RawDataAccessBencher/blob/master/Results/20191115_jerrycurl.txt) for all operations - in both sync and async
+* [High performance](https://github.com/rhodosaur/RawDataAccessBencher/blob/master/Results/20191115_jerrycurl.txt) for all sync/async operations
 * Organized, ASP.NET-like project conventions with [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)
 * Native [command-query separation](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation) suitable for [ACID](https://en.wikipedia.org/wiki/ACID) or [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) operations
 * JSON support with `Newtonsoft.Json` or `System.Text.Json`
@@ -67,18 +67,18 @@ This runs the `Restore`, `Clean`, `Build`, `[Test]` and `[Pack]` targets on `jer
 > Packaged `.nupkgs` are placed in `/artifacts/packages`.
 
 ### Test
-The script above *cannot include all tests* out of the box, as those testing specific databases often require a live running server. To help you include these in your run, you can use our [`docker compose` script](test/tools/boot-dbs.ps1) with PowerShell to boot up instances of the required databases.
+The script above *cannot include all tests* out of the box, as those testing specific databases often require a live running server. To help you with this, you can use our [`docker compose` script](test/tools/boot-dbs.ps1) with PowerShell to boot up instances of the required databases.
 
 ```powershell
 PS> .\test\tools\boot-dbs.ps1 up sqlserver,mysql,postgres,oracle
 ```
-Please allow ~30 seconds for the databases to be ready after which you can re-run your tests.
-
-> Oracle Database requires that you are logged into Docker and have accepted their [terms of service](https://hub.docker.com/_/oracle-database-enterprise-edition).
+Please allow ~60 seconds for the databases to be ready after which you can re-run your tests.
 
 > If you already have an empty database running that can be used for testing, you can manually specify its connection string in the environment variable `JERRY_SQLSERVER_CONN`, `JERRY_MYSQL_CONN`, `JERRY_POSTGRES_CONN` or `JERRY_ORACLE_CONN`.
 
-When done, you can tear down your database instances again.
+> Oracle Database requires that you are logged into Docker and have accepted their [terms of service](https://hub.docker.com/_/oracle-database-enterprise-edition).
+
+When done, you should tear down your instances again.
 
 ```powershell
 PS> .\test\tools\boot-dbs.ps1 down sqlserver,mysql,postgres,oracle
