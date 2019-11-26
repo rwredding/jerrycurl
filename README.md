@@ -67,7 +67,7 @@ This runs the `Restore`, `Clean`, `Build`, `[Test]` and `[Pack]` targets on `jer
 > Packaged `.nupkgs` are placed in `/artifacts/packages`.
 
 ### Test
-The script above *cannot include all tests* out of the box, as those testing specific databases often require a live running server. To help you with this, you can use our [`docker compose` script](test/tools/boot-dbs.ps1) with PowerShell to boot up instances of the required databases.
+The script above *cannot include all tests* out of the box, as those testing specific databases often require a live running server. To help you with this, you can use our [`docker compose` script](test/tools/boot-dbs.ps1) with PowerShell to boot up instances of our supported databases.
 
 ```powershell
 PS> .\test\tools\boot-dbs.ps1 up sqlserver,mysql,postgres,oracle
