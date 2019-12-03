@@ -10,6 +10,8 @@ namespace Jerrycurl.Data.Test.Models
     {
         [Key]
         public int BigKey { get; set; }
+        [Key(IsPrimary = false)]
+        public int? NonPrimaryKey { get; set; }
         public int Value { get; set; }
         public string Value2 { get; set; }
         public int ReadOnly { get; }

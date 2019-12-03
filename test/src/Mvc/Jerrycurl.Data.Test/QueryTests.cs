@@ -541,7 +541,7 @@ namespace Jerrycurl.Data.Test
             result2[1].OneToMany[1].Value.ShouldBe(3);
         }
 
-        public async Task Test_Binding_OfResultsWithoutNullKeys()
+        public async Task Test_Binding_OfResultsWithoutKey()
         {
             SqliteTable table = new SqliteTable("Item.Value")
             {
@@ -565,7 +565,31 @@ namespace Jerrycurl.Data.Test
             result3[1].ShouldNotBeNull();
         }
 
-        public async Task Test_Binding_OfResultsWithNullKeys()
+        public async Task Test_Binding_OfResultsWithNonPrimaryKey()
+        {
+            SqliteTable table = new SqliteTable("Item.NonPrimaryKey", "Item.Value")
+            {
+                new object[] { null, 1 },
+                new object[] { 10, 1 },
+            };
+
+            IList<BigModel> result1 = DatabaseHelper.Default.Query<BigModel>(table);
+            IList<BigModel> result2 = (await DatabaseHelper.Default.QueryAsync<BigModel>(table));
+            IList<BigModel> result3 = DatabaseHelper.Default.Enumerate<BigModel>(table).ToList();
+
+            result1.Count.ShouldBe(2);
+            result2.Count.ShouldBe(2);
+            result3.Count.ShouldBe(2);
+
+            result1[0].ShouldNotBeNull();
+            result1[1].ShouldNotBeNull();
+            result2[0].ShouldNotBeNull();
+            result2[1].ShouldNotBeNull();
+            result3[0].ShouldNotBeNull();
+            result3[1].ShouldNotBeNull();
+        }
+
+        public async Task Test_Binding_OfResultsWithPrimaryKey()
         {
             SqliteTable table = new SqliteTable("Item.BigKey", "Item.Value")
             {

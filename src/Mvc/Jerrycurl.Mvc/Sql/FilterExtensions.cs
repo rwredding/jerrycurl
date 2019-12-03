@@ -59,7 +59,7 @@ namespace Jerrycurl.Mvc.Sql
         /// </summary>
         /// <param name="projection">The current projection</param>
         /// <returns>A new projection containing the filtered attributes.</returns>
-        public static IProjection Key(this IProjection projection) => projection.With(attributes: projection.Attributes.Where(a => a.Metadata.HasFlag(ReferenceMetadataFlags.CandidateKey)));
+        public static IProjection Key(this IProjection projection) => projection.With(attributes: projection.Attributes.Where(a => a.Metadata.HasFlag(ReferenceMetadataFlags.PrimaryKey)));
 
         /// <summary>
         /// Filters the selected projection to include only primary key attributes.

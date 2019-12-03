@@ -77,7 +77,9 @@ namespace Jerrycurl.Data.Metadata
         {
             ReferenceMetadataFlags flags = ReferenceMetadataFlags.None;
 
-            if (parent.Relation.Annotations.OfType<KeyAttribute>().Any())
+            if (parent.Relation.Annotations.OfType<KeyAttribute>().Any(k => k.IsPrimary))
+                flags |= ReferenceMetadataFlags.PrimaryKey;
+            else if (parent.Relation.Annotations.OfType<KeyAttribute>().Any())
                 flags |= ReferenceMetadataFlags.CandidateKey;
 
             if (parent.Relation.Annotations.OfType<RefAttribute>().Any())
