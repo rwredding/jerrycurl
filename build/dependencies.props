@@ -25,7 +25,7 @@
     <EntityFrameworkCorePackageVersion_NetStandard21>3.0.0</EntityFrameworkCorePackageVersion_NetStandard21>
   </PropertyGroup>
 
-  <PropertyGroup Label="Tagrget Versions">
+  <PropertyGroup Label="Target Versions">
     <OracleTargetVersion>$(OraclePackageVersion)</OracleTargetVersion>
     <SqlServerTargetVersion>$(SqlServerPackageVersion)</SqlServerTargetVersion>
     <MySqlTargetVersion>$(MySqlPackageVersion)</MySqlTargetVersion>
