@@ -350,7 +350,7 @@ namespace Jerrycurl.Mvc
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Unable to create domain.", ex);
+                throw new InvalidOperationException($"Cannot create instance of domain type '{domainType.Name}'.", ex);
             }
         }
 
