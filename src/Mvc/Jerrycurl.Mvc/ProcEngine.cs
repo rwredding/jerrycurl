@@ -343,7 +343,10 @@ namespace Jerrycurl.Mvc
         {
             try
             {
-                return (IDomain)(this.serviceProvider?.GetService(domainType) ?? Activator.CreateInstance(domainType));
+                if (this.serviceProvider != null)
+                    return (IDomain)this.serviceProvider.GetService(domainType) ?? throw new InvalidOperationException($"IServiceProvider returned a null instance for '{domainType.Name}'. Please add this type to your DI container.");
+
+                return (IDomain)Activator.CreateInstance(domainType);
             }
             catch (Exception ex)
             {
