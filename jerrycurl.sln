@@ -117,6 +117,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuspec", "nuspec", "{6E68DF
 		nuspec\Jerrycurl.Vendors.Oracle.nuspec = nuspec\Jerrycurl.Vendors.Oracle.nuspec
 		nuspec\Jerrycurl.Vendors.Postgres.nuspec = nuspec\Jerrycurl.Vendors.Postgres.nuspec
 		nuspec\Jerrycurl.Vendors.Sqlite.nuspec = nuspec\Jerrycurl.Vendors.Sqlite.nuspec
+		nuspec\Jerrycurl.Vendors.SqlServer.Legacy.nuspec = nuspec\Jerrycurl.Vendors.SqlServer.Legacy.nuspec
 		nuspec\Jerrycurl.Vendors.SqlServer.nuspec = nuspec\Jerrycurl.Vendors.SqlServer.nuspec
 	EndProjectSection
 EndProject
@@ -143,6 +144,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Extensions.EntityFrameworkCore.Test", "test\src\Extensions\Jerrycurl.Extensions.EntityFrameworkCore.Test\Jerrycurl.Extensions.EntityFrameworkCore.Test.csproj", "{9B208979-73FF-4978-BEAB-A137E1AAC504}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Test.Common", "test\src\Shared\Jerrycurl.Test.Common\Jerrycurl.Test.Common.csproj", "{63C12E40-D889-4525-9A2F-6BDDFF2E12C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jerrycurl.Vendors.SqlServer.Legacy", "src\Vendors\Jerrycurl.Vendors.SqlServer.Legacy\Jerrycurl.Vendors.SqlServer.Legacy.csproj", "{D67A7C1A-5DC1-465A-A1FF-42C1203FEFDF}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -297,6 +300,10 @@ Global
 		{63C12E40-D889-4525-9A2F-6BDDFF2E12C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63C12E40-D889-4525-9A2F-6BDDFF2E12C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63C12E40-D889-4525-9A2F-6BDDFF2E12C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D67A7C1A-5DC1-465A-A1FF-42C1203FEFDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D67A7C1A-5DC1-465A-A1FF-42C1203FEFDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D67A7C1A-5DC1-465A-A1FF-42C1203FEFDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D67A7C1A-5DC1-465A-A1FF-42C1203FEFDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -352,6 +359,7 @@ Global
 		{EE5078B9-5036-45D1-8324-37C1715F0212} = {64E7AA0B-8D96-4CA0-972F-E40BD32A7CFC}
 		{9B208979-73FF-4978-BEAB-A137E1AAC504} = {EE5078B9-5036-45D1-8324-37C1715F0212}
 		{63C12E40-D889-4525-9A2F-6BDDFF2E12C3} = {7D0177EC-E2A9-403A-AF4A-9561489F2700}
+		{D67A7C1A-5DC1-465A-A1FF-42C1203FEFDF} = {B0F0E2DA-AAC2-4707-B9DF-B77EC32E651D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5B86B955-5CFA-4BAE-A0E4-360DFA0C577B}
