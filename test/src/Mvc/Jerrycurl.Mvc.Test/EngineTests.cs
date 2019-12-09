@@ -37,7 +37,6 @@ namespace Jerrycurl.Mvc.Test
             descriptor.ShouldNotBeNull();
             descriptor.DomainType.ShouldBeNull();
 
-
             Should.Throw<ProcExecutionException>(() => this.engine.Proc(descriptor, args));
         }
 
