@@ -19,6 +19,9 @@ namespace Jerrycurl.Mvc
         private delegate ISqlPage PageConstructor(IProjection model, IProjection result);
         private readonly IServiceProvider serviceProvider;
 
+        /// <summary>
+        /// Default service provider for resolving dependencies for IDomain implementations and Razor @inject directives.
+        /// </summary>
         public static IServiceProvider Services { get; set; }
 
         public ProcEngine(IServiceProvider serviceProvider)
