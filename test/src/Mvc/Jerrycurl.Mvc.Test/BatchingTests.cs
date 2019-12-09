@@ -13,7 +13,7 @@ namespace Jerrycurl.Mvc.Test
     public class BatchingTests
     {
         private readonly ProcLocator locator = new ProcLocator();
-        private readonly ProcEngine engine = new ProcEngine();
+        private readonly ProcEngine engine = new ProcEngine(null);
 
         public void SqlBuffer_Batching_HasCorrectValue()
         {

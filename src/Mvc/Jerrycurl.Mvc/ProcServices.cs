@@ -6,8 +6,15 @@ using System.Collections.Generic;
 
 namespace Jerrycurl.Mvc
 {
-    public class ServiceResolver : IServiceResolver
+    public class ProcServices : IProcServices
     {
+        private readonly IServiceProvider serviceProvider;
+
+        public ProcServices(IServiceProvider serviceProvider)
+        {
+            this.serviceProvider = serviceProvider;
+        }
+
         public virtual IProjection<TModel> GetProjection<TModel>(IProcContext context)
         {
             if (context == null)
@@ -27,7 +34,10 @@ namespace Jerrycurl.Mvc
         public virtual TService GetService<TService>()
             where TService : class
         {
-            throw new NotSupportedException("Dependency injection is not supported by default. Please implement a custom DI container from the IServiceResolver contract.");
+            if (this.serviceProvider == null)
+                throw new NotSupportedException("Dependency injection is not supported by default. Please pass an IServiceProvider to the ProcServices constructor or implement a custom DI container from the IProcServices contract.");
+
+            return (TService)this.serviceProvider.GetService(typeof(TService));
         }
     }
 }

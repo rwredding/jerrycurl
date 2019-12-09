@@ -17,6 +17,14 @@ namespace Jerrycurl.Mvc
     public class ProcEngine : IProcEngine
     {
         private delegate ISqlPage PageConstructor(IProjection model, IProjection result);
+        private readonly IServiceProvider serviceProvider;
+
+        public static IServiceProvider Services { get; set; }
+
+        public ProcEngine(IServiceProvider serviceProvider)
+        {
+            this.serviceProvider = serviceProvider ?? Services;
+        }
 
         public ProcFactory Proc(PageDescriptor descriptor, ProcArgs args)
         {
@@ -273,7 +281,7 @@ namespace Jerrycurl.Mvc
             if (injections.Any())
             {
                 ParameterExpression contextVar = Expression.Variable(typeof(IProcContext), "context");
-                ParameterExpression servicesVar = Expression.Variable(typeof(IServiceResolver), "services");
+                ParameterExpression servicesVar = Expression.Variable(typeof(IProcServices), "services");
 
                 Expression context = Expression.Property(model, "Context");
                 Expression domain = Expression.Property(context, nameof(IProcContext.Domain));
@@ -294,8 +302,8 @@ namespace Jerrycurl.Mvc
 
         private MemberBinding GetInjectionBinding(PropertyInfo property, Expression context, Expression services)
         {
-            MethodInfo injectMethod = typeof(IServiceResolver).GetMethod(nameof(IServiceResolver.GetService));
-            MethodInfo projectMethod = typeof(IServiceResolver).GetMethod(nameof(IServiceResolver.GetProjection));
+            MethodInfo injectMethod = typeof(IProcServices).GetMethod(nameof(IProcServices.GetService));
+            MethodInfo projectMethod = typeof(IProcServices).GetMethod(nameof(IProcServices.GetProjection));
 
             if (property.PropertyType.IsOpenGeneric(typeof(IProjection<>), out Type itemType))
             {
@@ -324,23 +332,23 @@ namespace Jerrycurl.Mvc
             return options;
         }
 
-        private IDomain CreateDomain(Type domainType)
-        {
-            try
-            {
-                return (IDomain)Activator.CreateInstance(domainType);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("Unable to create domain.", ex);
-            }
-        }
-
         private ProcContext CreateContext(PageDescriptor descriptor)
         {
             IDomainOptions options = this.Options(descriptor.DomainType);
 
             return new ProcContext(descriptor, options);
+        }
+
+        protected virtual IDomain CreateDomain(Type domainType)
+        {
+            try
+            {
+                return (IDomain)(this.serviceProvider?.GetService(domainType) ?? Activator.CreateInstance(domainType));
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Unable to create domain.", ex);
+            }
         }
 
         protected virtual DomainOptions GetDefaultOptions()
@@ -359,7 +367,7 @@ namespace Jerrycurl.Mvc
                 },
                 Engine = this,
                 ConnectionFactory = () => throw new InvalidOperationException("No connection factory specified."),
-                Services = new ServiceResolver(),
+                Services = new ProcServices(this.serviceProvider),
                 Sql = new SqlOptions(),
             };
         }

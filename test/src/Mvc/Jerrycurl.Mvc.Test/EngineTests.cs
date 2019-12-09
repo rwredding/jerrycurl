@@ -14,7 +14,7 @@ namespace Jerrycurl.Mvc.Test
     public class EngineTests
     {
         private readonly ProcLocator locator = new ProcLocator();
-        private readonly ProcEngine engine = new ProcEngine();
+        private readonly ProcEngine engine = new ProcEngine(null);
 
         public void Page_CanResolveFactory_WithoutDomain()
         {
