@@ -9,7 +9,7 @@
   
 	<PropertyGroup Label="NuGet Package Versions">
     <OraclePackageVersion>2.19.31</OraclePackageVersion>
-    <SqlServerPackageVersion>4.7.0</SqlServerPackageVersion>
+    <SqlServerPackageVersion>4.6.1</SqlServerPackageVersion>
     <MySqlPackageVersion>8.0.17</MySqlPackageVersion>
     <PostgresPackageVersion>4.0.10</PostgresPackageVersion>
 		<SqlitePackageVersion>2.2.6</SqlitePackageVersion>
