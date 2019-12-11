@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(NetStandardMultiTargetMoniker)</TargetFrameworks>
+    <IsPackable>true</IsPackable>
+    <DefineConstants>$(DefineConstants);SQLSERVER_LEGACY</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Jerrycurl.Vendors.SqlServer\**\*.cs" Exclude="..\Jerrycurl.Vendors.SqlServer\obj\**;..\Jerrycurl.Vendors.SqlServer\bin\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="$(SqlServerLegacyPackageId)" Version="$(SqlServerLegacyTargetVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mvc\Jerrycurl.Mvc.Abstractions\Jerrycurl.Mvc.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Mvc\Jerrycurl.Mvc\Jerrycurl.Mvc.csproj" />
+  </ItemGroup>
+</Project>

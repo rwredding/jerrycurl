@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+        <id>$PackageId$</id>
+        <title>$PackageId$</title>
+        <version>$PackageVersion$</version>
+        <authors>$PackageAuthors$</authors>
+        <owners>$PackageOwners$</owners>
+        <copyright>$PackageCopyright$</copyright>
+        <license type="expression">$PackageLicense$</license>
+        <iconUrl>$PackageIconUrl$</iconUrl>
+        <projectUrl>$PackageProjectUrl$</projectUrl>
+        <tags>$PackageTags$</tags>
+        <repository type="git" branch="master" url="$RepositoryUrl$" commit="$GitCommitId$" />
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Microsoft SQL Server support for Jerrycurl targeting legacy package System.Data.SqlClient.</description>
+        <dependencies>
+            <group targetFramework="netstandard2.0">
+                <dependency id="Jerrycurl.Mvc" version="$PackageVersion$" />
+                <dependency id="$SqlServerLegacyPackageId$" version="$SqlServerLegacyPackageVersion$" />
+            </group>
+            <group targetFramework="netstandard2.1">
+                <dependency id="Jerrycurl.Mvc" version="$PackageVersion$" />
+                <dependency id="$SqlServerLegacyPackageId$" version="$SqlServerLegacyPackageVersion$" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="$BinPath$**\Jerrycurl.Vendors.SqlServer.*" target="lib" />
+    </files>
+</package>

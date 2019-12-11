@@ -1,7 +1,11 @@
 ﻿using Jerrycurl.Mvc;
-using System.Data.SqlClient;
 using System.Linq;
 using Jerrycurl.Vendors.SqlServer;
+#if SQLSERVER_LEGACY
+using System.Data.SqlClient;
+#else
+using Microsoft.Data.SqlClient;
+#endif
 
 namespace Jerrycurl.Mvc
 {

@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Jerrycurl.Data.Metadata;
 using Jerrycurl.Relations;
 using Jerrycurl.Relations.Metadata;
-using Microsoft.SqlServer.Server;
 using Jerrycurl.Mvc.Metadata;
 using Jerrycurl.Mvc.Projections;
+
+#if SQLSERVER_LEGACY
+using System.Data.SqlClient;
+using Microsoft.SqlServer.Server;
+#else
+using Microsoft.Data.SqlClient;
+using Microsoft.Data.SqlClient.Server;
+#endif
 
 namespace Jerrycurl.Vendors.SqlServer
 {
