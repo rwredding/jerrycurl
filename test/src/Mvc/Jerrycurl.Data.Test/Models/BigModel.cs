@@ -29,6 +29,8 @@ namespace Jerrycurl.Data.Test.Models
             public int SubKey { get; set; }
             [Ref]
             public int BigKey { get; set; }
+            [Ref]
+            public int? NonPrimaryKey { get; set; }
             public int Value { get; set; }
         }
     }

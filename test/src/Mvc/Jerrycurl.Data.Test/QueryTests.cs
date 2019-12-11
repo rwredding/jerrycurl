@@ -496,7 +496,7 @@ namespace Jerrycurl.Data.Test
             result2[0].NotUsedMany.ShouldBeEmpty();
         }
 
-        public async Task Test_Binding_UsingHashJoinsInDifferentSets()
+        public async Task Test_Binding_UsingPrimaryHashJoins()
         {
             SqliteTable table1 = new SqliteTable("Item.BigKey", "Item.OneToMany.Item.BigKey", "Item.OneToMany.Item.Value")
             {
@@ -504,6 +504,51 @@ namespace Jerrycurl.Data.Test
                 new object[] { 2, null, null }
             };
             SqliteTable table2 = new SqliteTable("Item.OneToMany.Item.BigKey", "Item.OneToMany.Item.Value")
+            {
+                new object[] { 1, 1 },
+                new object[] { 2, 3 },
+            };
+
+            IList<BigModel> result1 = DatabaseHelper.Default.Query<BigModel>(table1, table2);
+            IList<BigModel> result2 = await DatabaseHelper.Default.QueryAsync<BigModel>(table1, table2);
+
+            result1.ShouldNotBeNull();
+            result2.ShouldNotBeNull();
+
+            result1.Count.ShouldBe(2);
+            result2.Count.ShouldBe(2);
+
+            result1[0].OneToMany.ShouldNotBeNull();
+            result1[0].OneToMany.Count.ShouldBe(1);
+            result1[0].OneToMany[0].ShouldNotBeNull();
+            result1[0].OneToMany[0].Value.ShouldBe(1);
+            result2[0].OneToMany.ShouldNotBeNull();
+            result2[0].OneToMany.Count.ShouldBe(1);
+            result2[0].OneToMany[0].ShouldNotBeNull();
+            result2[0].OneToMany[0].Value.ShouldBe(1);
+
+            result1[1].OneToMany.ShouldNotBeNull();
+            result1[1].OneToMany.Count.ShouldBe(2);
+            result1[1].OneToMany[0].ShouldNotBeNull();
+            result1[1].OneToMany[0].Value.ShouldBe(2);
+            result1[1].OneToMany[1].ShouldNotBeNull();
+            result1[1].OneToMany[1].Value.ShouldBe(3);
+            result2[1].OneToMany.ShouldNotBeNull();
+            result2[1].OneToMany.Count.ShouldBe(2);
+            result2[1].OneToMany[0].ShouldNotBeNull();
+            result2[1].OneToMany[0].Value.ShouldBe(2);
+            result2[1].OneToMany[1].ShouldNotBeNull();
+            result2[1].OneToMany[1].Value.ShouldBe(3);
+        }
+
+        public async Task Test_Binding_UsingNonPrimaryHashJoins()
+        {
+            SqliteTable table1 = new SqliteTable("Item.NonPrimaryKey", "Item.OneToMany.Item.NonPrimaryKey", "Item.OneToMany.Item.Value")
+            {
+                new object[] { 1, 2, 2 },
+                new object[] { 2, null, null }
+            };
+            SqliteTable table2 = new SqliteTable("Item.OneToMany.Item.NonPrimaryKey", "Item.OneToMany.Item.Value")
             {
                 new object[] { 1, 1 },
                 new object[] { 2, 3 },
