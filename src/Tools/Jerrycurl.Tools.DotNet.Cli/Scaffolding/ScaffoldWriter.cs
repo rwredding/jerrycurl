@@ -16,57 +16,58 @@ namespace Jerrycurl.Tools.DotNet.Cli.Scaffolding
         {
             foreach (ScaffoldFile file in project.Files)
             {
-                using StreamWriter stream = GetStream(file.FileName);
-
-                CSharpWriter csharp = new CSharpWriter(stream);
-
-                await csharp.WriteImportAsync("global::System");
-                await csharp.WriteImportAsync("global::Jerrycurl.Data.Metadata.Annotations");
-                await csharp.WriteLineAsync();
-
-                foreach (var g in file.Objects.GroupBy(t => t.Namespace).OrderBy(g => g.Key))
+                using (StreamWriter stream = GetStream(file.FileName))
                 {
-                    string ns = g.Key;
+                    CSharpWriter csharp = new CSharpWriter(stream);
 
-                    if (!string.IsNullOrEmpty(ns))
-                        await csharp.WriteNamespaceStartAsync(ns);
+                    await csharp.WriteImportAsync("global::System");
+                    await csharp.WriteImportAsync("global::Jerrycurl.Data.Metadata.Annotations");
+                    await csharp.WriteLineAsync();
 
-                    string[] modifiers = new[] { "public" };
-
-                    foreach (ScaffoldObject obj in g.OrderBy(t => t.ClassName))
+                    foreach (var g in file.Objects.GroupBy(t => t.Namespace).OrderBy(g => g.Key))
                     {
-                        if (!string.IsNullOrEmpty(obj.Table.Schema))
-                            csharp.AddAttribute("Table", obj.Table.Schema, obj.Table.Name);
-                        else
-                            csharp.AddAttribute("Table", obj.Table.Name);
+                        string ns = g.Key;
 
-                        await csharp.WriteAttributesAsync();
-                        await csharp.WriteObjectStartAsync("class", obj.ClassName, modifiers);
+                        if (!string.IsNullOrEmpty(ns))
+                            await csharp.WriteNamespaceStartAsync(ns);
 
-                        foreach (ScaffoldProperty property in obj.Properties)
+                        string[] modifiers = new[] { "public" };
+
+                        foreach (ScaffoldObject obj in g.OrderBy(t => t.ClassName))
                         {
-                            if (property.PropertyName != property.Column.Name)
-                                csharp.AddAttribute("Column", property.Column.Name);
-
-                            if (property.Column.IsIdentity)
-                                csharp.AddAttribute("Id");
-
-                            foreach (KeyModel key in property.Column.Keys)
-                                csharp.AddAttribute("Key", key.Name, key.Index);
-
-                            foreach (ReferenceModel @ref in property.Column.References)
-                                csharp.AddAttribute("Ref", @ref.KeyName, @ref.KeyIndex, @ref.Name);
+                            if (!string.IsNullOrEmpty(obj.Table.Schema))
+                                csharp.AddAttribute("Table", obj.Table.Schema, obj.Table.Name);
+                            else
+                                csharp.AddAttribute("Table", obj.Table.Name);
 
                             await csharp.WriteAttributesAsync();
-                            await csharp.WritePropertyAsync(property.TypeName, property.PropertyName, modifiers);
+                            await csharp.WriteObjectStartAsync("class", obj.ClassName, modifiers);
+
+                            foreach (ScaffoldProperty property in obj.Properties)
+                            {
+                                if (property.PropertyName != property.Column.Name)
+                                    csharp.AddAttribute("Column", property.Column.Name);
+
+                                if (property.Column.IsIdentity)
+                                    csharp.AddAttribute("Id");
+
+                                foreach (KeyModel key in property.Column.Keys)
+                                    csharp.AddAttribute("Key", key.Name, key.Index);
+
+                                foreach (ReferenceModel @ref in property.Column.References)
+                                    csharp.AddAttribute("Ref", @ref.KeyName, @ref.KeyIndex, @ref.Name);
+
+                                await csharp.WriteAttributesAsync();
+                                await csharp.WritePropertyAsync(property.TypeName, property.PropertyName, modifiers);
+                            }
+
+                            await csharp.WriteObjectEndAsync();
+                            await csharp.WriteLineAsync();
                         }
 
-                        await csharp.WriteObjectEndAsync();
-                        await csharp.WriteLineAsync();
+                        if (!string.IsNullOrEmpty(ns))
+                            await csharp.WriteNamespaceEndAsync();
                     }
-
-                    if (!string.IsNullOrEmpty(ns))
-                        await csharp.WriteNamespaceEndAsync();
                 }
             }
         }
