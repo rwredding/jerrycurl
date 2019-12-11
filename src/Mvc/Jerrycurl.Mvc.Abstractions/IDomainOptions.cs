@@ -16,7 +16,7 @@ namespace Jerrycurl.Mvc
         IDialect Dialect { get; }
         ISchemaStore Schemas { get; }
         IProcEngine Engine { get; }
-        IServiceResolver Services { get; }
+        IProcServices Services { get; }
         ISqlOptions Sql { get; }
     }
 }

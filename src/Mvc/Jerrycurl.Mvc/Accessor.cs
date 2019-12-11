@@ -332,7 +332,7 @@ namespace Jerrycurl.Mvc
         private IProcResult ExecuteAndGetResult(string procName, object model, ProcArgs args)
         {
             IProcLocator locator = this.Context?.Locator ?? new ProcLocator();
-            IProcEngine engine = this.Context?.Engine ?? new ProcEngine();
+            IProcEngine engine = this.Context?.Engine ?? new ProcEngine(null);
 
             PageDescriptor descriptor = locator.FindPage(procName, this.GetType());
             ProcFactory factory = engine.Proc(descriptor, args);
