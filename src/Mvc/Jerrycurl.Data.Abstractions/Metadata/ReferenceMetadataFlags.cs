@@ -12,6 +12,7 @@ namespace Jerrycurl.Data.Metadata
         None = 0,
         CandidateKey = 1,
         ForeignKey = 2,
-        Key = ForeignKey | CandidateKey,
+        PrimaryKey = 4,
+        Key = ForeignKey | CandidateKey | PrimaryKey,
     }
 }

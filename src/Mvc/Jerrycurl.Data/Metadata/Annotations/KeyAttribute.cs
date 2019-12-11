@@ -11,6 +11,7 @@ namespace Jerrycurl.Data.Metadata.Annotations
     {
         public string Name { get; set; }
         public int Index { get; set; }
+        public bool IsPrimary { get; set; } = true;
 
         public KeyAttribute()
         {

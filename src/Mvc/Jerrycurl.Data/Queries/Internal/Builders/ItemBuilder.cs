@@ -73,7 +73,7 @@ namespace Jerrycurl.Data.Queries.Internal.Builders
                 foreach (MetadataNode node in itemNode.Tree())
                 {
                     IReferenceMetadata metadata = node.GetMetadata<IReferenceMetadata>();
-                    IEnumerable<IReferenceMetadata> properties = metadata?.Properties.Where(m => m.HasFlag(ReferenceMetadataFlags.CandidateKey)) ?? Array.Empty<IReferenceMetadata>();
+                    IEnumerable<IReferenceMetadata> properties = metadata?.Properties.Where(m => m.HasFlag(ReferenceMetadataFlags.PrimaryKey)) ?? Array.Empty<IReferenceMetadata>();
 
                     IList<MetadataNode> keyValues = properties.Select(m => itemNode.FindNode(m)).NotNull().ToList();
 
