@@ -13,17 +13,21 @@
         <tags>$PackageTags$</tags>
         <repository type="git" branch="master" url="$RepositoryUrl$" commit="$GitCommitId$" />
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>MVC engine for Jerrycurl.</description>
+        <description>ORM engine for Jerrycurl.</description>
         <dependencies>
             <group targetFramework="netstandard2.0">
-                <dependency id="Jerrycurl.Data" version="$PackageVersion$" />
+                <dependency id="Jerrycurl.Relations" version="$PackageVersion$" />
             </group>
             <group targetFramework="netstandard2.1">
-                <dependency id="Jerrycurl.Data" version="$PackageVersion$" />
+                <dependency id="Jerrycurl.Relations" version="$PackageVersion$" />
             </group>
         </dependencies>
+        <frameworkAssemblies>
+            <frameworkAssembly assemblyName="Microsoft.CSharp" targetFramework="net461" />
+            <frameworkAssembly assemblyName="System.Transactions" targetFramework="net461" />
+        </frameworkAssemblies>
     </metadata>
     <files>
-        <file src="$BinPath$**\Jerrycurl.Mvc.*" target="lib" />
+        <file src="$BinPath$**\Jerrycurl.Data.*" target="lib" />
     </files>
 </package>

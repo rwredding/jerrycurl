@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
     <TargetFrameworks>$(NetStandardMultiTargetMoniker)</TargetFrameworks>
+    <IsPackable>true</IsPackable>
 	</PropertyGroup>
 
 	<ItemGroup>
