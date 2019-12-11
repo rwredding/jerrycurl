@@ -13,9 +13,16 @@ $ErrorActionPreference = "Stop"
 $sln = Join-Path $PSScriptRoot jerrycurl.sln
 $verbosity = "minimal"
 $sw = [Diagnostics.Stopwatch]::StartNew()
+$props = @(
+    "/verbosity:$verbosity"
+)
+
+if ($PublicRelease) {
+    $props += "/property:PublicRelease=$PublicRelease"
+}
 
 Write-Host "Restoring NuGet packages..." -ForegroundColor "Magenta"
-dotnet restore /property:Configuration=$Config $sln /verbosity:$verbosity
+dotnet restore /property:Configuration=$Config $sln @props
 if ($LastExitCode -ne 0) {
     Write-Host "Restore failed, aborting." -Foreground "Red"
     exit -1
@@ -23,7 +30,7 @@ if ($LastExitCode -ne 0) {
 Write-Host "Done restoring." -ForegroundColor "Green"
 
 Write-Host "Cleaning..." -ForegroundColor "Magenta"
-dotnet clean -c $Config $sln /verbosity:$verbosity
+dotnet clean -c $Config $sln @props
 if ($LastExitCode -ne 0) {
     Write-Host "Clean failed, aborting." -Foreground "Red"
     exit -1
@@ -31,7 +38,7 @@ if ($LastExitCode -ne 0) {
 Write-Host "Done cleaning." -ForegroundColor "Green"
 
 Write-Host "Building..." -ForegroundColor "Magenta"
-dotnet build -c $Config --no-restore $sln /verbosity:$verbosity
+dotnet build -c $Config --no-restore $sln @props
 if ($LastExitCode -ne 0) {
     Write-Host "Build failed, aborting." -Foreground "Red"
     exit -1
@@ -61,7 +68,7 @@ if (-Not $NoTest) {
 
 if (-Not $NoPack) {
 	Write-Host "Packing..." -ForegroundColor "Magenta"
-	dotnet pack $sln -c $Config --no-build --no-restore /verbosity:$verbosity /property:PublicRelease=$PublicRelease
+	dotnet pack $sln -c $Config --no-build --no-restore @props
 	
     if ($LastExitCode -ne 0) {
 		Write-Host "Packing failed, aborting." -Foreground "Red"
