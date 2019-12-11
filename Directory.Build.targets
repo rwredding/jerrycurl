@@ -51,6 +51,8 @@
         FilesPath=$(MSBuildProjectDirectory)\$(OutputPath).nusrc\;
         SqlServerPackageId=$(SqlServerPackageId);
         SqlServerPackageVersion=$(SqlServerPackageVersion);
+        SqlServerLegacyPackageId=$(SqlServerLegacyPackageId);
+        SqlServerLegacyPackageVersion=$(SqlServerLegacyPackageVersion);
         SqlitePackageId=$(SqlitePackageId);
         SqlitePackageVersion=$(SqlitePackageVersion);
         SqlitePackageVersion_NetStandard21=$(SqlitePackageVersion_NetStandard21);
