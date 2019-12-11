@@ -5,6 +5,7 @@ using Jerrycurl.Mvc.Metadata;
 using Jerrycurl.Relations.Metadata;
 using Jerrycurl.Data.Metadata;
 using Jerrycurl.Mvc.Metadata.Annotations;
+using Jerrycurl.Data.Metadata.Annotations;
 
 namespace Jerrycurl.Mvc.Metadata
 {
