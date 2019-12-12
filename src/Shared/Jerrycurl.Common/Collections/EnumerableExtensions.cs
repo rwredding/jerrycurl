@@ -17,6 +17,7 @@ namespace Jerrycurl.Collections
 #endif
         public static IEnumerable<(TFirst l, TSecond r)> ZipOuter<TFirst, TSecond>(this IEnumerable<TFirst> source, IEnumerable<TSecond> second)
         {
+#pragma warning disable IDE0063
             using (IEnumerator<TFirst> e1 = source.GetEnumerator())
             {
                 using (IEnumerator<TSecond> e2 = second.GetEnumerator())
@@ -33,6 +34,7 @@ namespace Jerrycurl.Collections
                 }
             }
         }
+#pragma warning restore IDE0063
 
         public static IEnumerable<TResult> NotNull<T, TResult>(this IEnumerable<T> source, Func<T, TResult> selector)
             where TResult : class
