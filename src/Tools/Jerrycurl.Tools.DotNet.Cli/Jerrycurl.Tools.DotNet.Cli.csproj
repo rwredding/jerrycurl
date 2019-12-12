@@ -4,6 +4,7 @@
 		<TargetFramework>netcoreapp2.1</TargetFramework>
 		<IsPackable>true</IsPackable>
     <PackageId>dotnet-jerry</PackageId>
+    <LangVersion>7.1</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
