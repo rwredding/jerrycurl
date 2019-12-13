@@ -54,7 +54,7 @@ namespace Jerrycurl.Data.Queries
             return adapter.ToList();
         }
 
-        public async Task<IList<TItem>> ListAsync<TItem>(QueryData query, CancellationToken cancellationToken = default) => await this.ListAsync<TItem>(new[] { query }, cancellationToken);
+        public Task<IList<TItem>> ListAsync<TItem>(QueryData query, CancellationToken cancellationToken = default) => this.ListAsync<TItem>(new[] { query }, cancellationToken);
         public async Task<IList<TItem>> ListAsync<TItem>(IEnumerable<QueryData> queries, CancellationToken cancellationToken = default)
         {
             if (queries == null)
@@ -84,8 +84,8 @@ namespace Jerrycurl.Data.Queries
 
                     }, cancellationToken).ConfigureAwait(false);
 #elif NETSTANDARD2_1
-                await foreach (DbDataReader dataReader in connection.ExecuteAsync(helper, cancellationToken))
-                    await adapter.AddResultAsync(dataReader, cancellationToken);
+                await foreach (DbDataReader dataReader in connection.ExecuteAsync(helper, cancellationToken).ConfigureAwait(false))
+                    await adapter.AddResultAsync(dataReader, cancellationToken).ConfigureAwait(false);
 #endif
             }
 
@@ -114,7 +114,7 @@ namespace Jerrycurl.Data.Queries
                 if (string.IsNullOrWhiteSpace(queryData.QueryText))
                     continue;
 
-                await foreach (DbDataReader dataReader in connection.ExecuteAsync(helper, cancellationToken))
+                await foreach (DbDataReader dataReader in connection.ExecuteAsync(helper, cancellationToken).ConfigureAwait(false))
                     yield return new QueryReader(dataReader, this.Options.Schemas);
             }
         }
@@ -122,9 +122,9 @@ namespace Jerrycurl.Data.Queries
         public IAsyncEnumerable<TItem> EnumerateAsync<TItem>(QueryData query, CancellationToken cancellationToken = default) => this.EnumerateAsync<TItem>(new[] { query }, cancellationToken);
         public async IAsyncEnumerable<TItem> EnumerateAsync<TItem>(IEnumerable<QueryData> queries, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
-            await foreach (QueryReader queryReader in this.EnumerateAsync(queries, cancellationToken))
+            await foreach (QueryReader queryReader in this.EnumerateAsync(queries, cancellationToken).ConfigureAwait(false))
             {
-                await foreach (TItem item in queryReader.ReadAsync<TItem>(cancellationToken))
+                await foreach (TItem item in queryReader.ReadAsync<TItem>(cancellationToken).ConfigureAwait(false))
                     yield return item;
             }
         }

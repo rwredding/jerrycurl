@@ -59,7 +59,7 @@ namespace Jerrycurl.Data.Commands
                 fieldData.Bind();
         }
 
-        public async Task ExecuteAsync(CommandData command, CancellationToken cancellationToken = default) => await this.ExecuteAsync(new[] { command }, cancellationToken);
+        public Task ExecuteAsync(CommandData command, CancellationToken cancellationToken = default) => this.ExecuteAsync(new[] { command }, cancellationToken);
 
 #if NETSTANDARD2_0
         public async Task ExecuteAsync(IEnumerable<CommandData> commands, CancellationToken cancellationToken = default)
@@ -74,7 +74,7 @@ namespace Jerrycurl.Data.Commands
 
                 var fun = FuncCache.GetFieldDataBinder(attributes, tableInfo);
 
-                if (await reader.ReadAsync())
+                if (await reader.ReadAsync().ConfigureAwait(false))
                     fun(reader, fields);
             }
 
@@ -108,7 +108,7 @@ namespace Jerrycurl.Data.Commands
                     if (string.IsNullOrWhiteSpace(commandData.CommandText))
                         continue;
 
-                    await foreach (DbDataReader dataReader in connection.ExecuteAsync(helper, cancellationToken))
+                    await foreach (DbDataReader dataReader in connection.ExecuteAsync(helper, cancellationToken).ConfigureAwait(false))
                     {
                         TableIdentity tableInfo = TableIdentity.FromRecord(dataReader);
                         FieldData[] fields = helper.GetHeading(tableInfo);
@@ -116,7 +116,7 @@ namespace Jerrycurl.Data.Commands
 
                         Action<IDataReader, FieldData[]> binder = FuncCache.GetFieldDataBinder(attributes, tableInfo);
 
-                        if (await dataReader.ReadAsync())
+                        if (await dataReader.ReadAsync().ConfigureAwait(false))
                             binder(dataReader, fields);
                     }
                 }

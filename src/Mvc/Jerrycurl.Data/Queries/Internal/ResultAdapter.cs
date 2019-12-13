@@ -47,7 +47,7 @@ namespace Jerrycurl.Data.Queries.Internal
 
             this.state.Initializer(this.Lists, this.Dicts, this.Bits);
 
-            while (await dataReader.ReadAsync(cancellationToken))
+            while (await dataReader.ReadAsync(cancellationToken).ConfigureAwait(false))
                 this.state.ListItem(dataReader, this.Lists, this.Dicts);
         }
 

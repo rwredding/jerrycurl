@@ -293,8 +293,8 @@ namespace Jerrycurl.Mvc
         /// <param name="configure">A method for configuring command options.</param>
         /// <param name="commandName">The command name to locate the Razor page by. Defaults to the name of the calling method.</param>
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
-        protected async Task ExecuteAsync(object model = default, Action<SqlOptions> configure = null, [CallerMemberName]string commandName = null, CancellationToken cancellationToken = default)
-            => await this.ExecuteAsync<object>(model, configure, commandName, cancellationToken).ConfigureAwait(false);
+        protected Task ExecuteAsync(object model = default, Action<SqlOptions> configure = null, [CallerMemberName]string commandName = null, CancellationToken cancellationToken = default)
+            => this.ExecuteAsync<object>(model, configure, commandName, cancellationToken);
 
         /// <summary>
         /// Executes an asynchronous Razor SQL command with the specified model and updates the model from its resulting data set.
