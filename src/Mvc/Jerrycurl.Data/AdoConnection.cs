@@ -19,9 +19,9 @@ namespace Jerrycurl.Data
     {
         private readonly Func<IDbConnection> connectionFactory;
 
-        private bool disposeConnection = false;
         private IDbConnection connection;
         private DbConnection connectionAsync;
+        private bool wasDisposed = false;
 
         private readonly IFilterHandler[] filters;
 
@@ -192,12 +192,24 @@ namespace Jerrycurl.Data
         }
 #endif
 
+        private void CreateConnectionObject()
+        {
+            if (this.wasDisposed)
+                throw new InvalidOperationException("Connection was disposed.");
+
+            if (this.connection == null)
+            {
+                this.connection = this.connectionFactory();
+                this.connectionAsync = this.connection as DbConnection;
+            }
+        }
+
         private IDbConnection GetOpenConnection()
         {
-            if (this.connection != null)
-                return this.connection;
+            this.CreateConnectionObject();
 
-            this.connection = this.connectionFactory();
+            if (this.connection.State == ConnectionState.Open)
+                return this.connection;
 
             this.ApplyConnectionFilters(h => h.OnConnectionOpening);
 
@@ -205,11 +217,7 @@ namespace Jerrycurl.Data
                 this.connection.Close();
 
             if (this.connection.State == ConnectionState.Closed)
-            {
                 this.connection.Open();
-
-                this.disposeConnection = true;
-            }
 
             this.ApplyConnectionFilters(h => h.OnConnectionOpened);
 
@@ -218,29 +226,25 @@ namespace Jerrycurl.Data
 
         private async Task<DbConnection> GetOpenConnectionAsync(CancellationToken cancellationToken)
         {
-            if (this.connectionAsync != null)
+            this.CreateConnectionObject();
+
+            if (this.connectionAsync == null)
+                this.ThrowAsyncNotAvailableException();
+            else if (this.connectionAsync.State == ConnectionState.Open)
                 return this.connectionAsync;
-            else if (this.connection != null)
-                this.ThrowAsyncNotAvailableException();
-
-            this.connection = this.connectionFactory();
-
-            if (this.connection is DbConnection dbc)
-                this.connectionAsync = dbc;
-            else
-                this.ThrowAsyncNotAvailableException();
 
             this.ApplyConnectionFilters(h => h.OnConnectionOpening);
 
+#if NETSTANDARD2_1
             if (this.connection.State == ConnectionState.Broken)
-                this.connection.Close();
+                await this.connectionAsync.CloseAsync();
+#else
+            if (this.connection.State == ConnectionState.Broken)
+                this.connectionAsync.Close();
+#endif
 
             if (this.connection.State == ConnectionState.Closed)
-            {
                 await this.connectionAsync.OpenAsync(cancellationToken).ConfigureAwait(false);
-
-                this.disposeConnection = true;
-            }
 
             this.ApplyConnectionFilters(h => h.OnConnectionOpened);
 
@@ -261,19 +265,20 @@ namespace Jerrycurl.Data
                 action(filter);
         }
 
-        public void Close()
-        {
-
-        }
-
         public void Dispose()
         {
+            this.wasDisposed = true;
+
             if (this.connection != null)
             {
-                this.ApplyConnectionFilters(h => h.OnConnectionClosing);
-
-                if (this.disposeConnection)
+                try
+                {
+                    this.ApplyConnectionFilters(h => h.OnConnectionClosing);
+                }
+                finally
+                {
                     this.connection.Dispose();
+                }
 
                 this.ApplyConnectionFilters(h => h.OnConnectionClosed);
 
@@ -283,12 +288,19 @@ namespace Jerrycurl.Data
 #if NETSTANDARD2_1
         public async ValueTask DisposeAsync()
         {
-            if (this.connectionAsync != null)
-            {
-                this.ApplyConnectionFilters(h => h.OnConnectionClosing);
+            this.wasDisposed = true;
 
-                if (this.disposeConnection)
-                    await this.connectionAsync.DisposeAsync();
+            if (this.connection != null)
+            {
+                try
+                {
+                    this.ApplyConnectionFilters(h => h.OnConnectionClosing);
+                }
+                finally
+                {
+                    if (this.connectionAsync != null)
+                        await this.connectionAsync.DisposeAsync();
+                }
 
                 this.ApplyConnectionFilters(h => h.OnConnectionClosed);
 

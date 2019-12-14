@@ -37,18 +37,17 @@ namespace Jerrycurl.Data.Queries
 
             ResultAdapter<TItem> adapter = new ResultAdapter<TItem>(this.Options.Schemas);
 
-            using (AdoConnection connection = new AdoConnection(this.Options))
+            using AdoConnection connection = new AdoConnection(this.Options);
+
+            foreach (QueryData queryData in queries.NotNull())
             {
-                foreach (QueryData queryData in queries.NotNull())
-                {
-                    AdoHelper helper = new AdoHelper(queryData);
+                AdoHelper helper = new AdoHelper(queryData);
 
-                    if (string.IsNullOrWhiteSpace(queryData.QueryText))
-                        continue;
+                if (string.IsNullOrWhiteSpace(queryData.QueryText))
+                    continue;
 
-                    foreach (IDataReader dataReader in connection.Execute(helper))
-                        adapter.AddResult(dataReader);
-                }
+                foreach (IDataReader dataReader in connection.Execute(helper))
+                    adapter.AddResult(dataReader);
             }
 
             return adapter.ToList();

@@ -17,6 +17,8 @@ namespace Jerrycurl.Test
 {
     public class DatabaseHelper
     {
+        public const string TestDbConnectionString = "DATA SOURCE=testdb.db";
+
         public static DatabaseHelper Default { get; } = new DatabaseHelper();
 
         public SchemaStore Schemas { get; set; }
@@ -47,7 +49,7 @@ namespace Jerrycurl.Test
         {
             return new QueryOptions()
             {
-                ConnectionFactory = () => new ProfilingConnection(new SqliteConnection("DATA SOURCE=testdb.db")),
+                ConnectionFactory = () => new ProfilingConnection(new SqliteConnection(TestDbConnectionString)),
                 Schemas = schemas ?? this.Schemas,
             };
         }
@@ -56,7 +58,7 @@ namespace Jerrycurl.Test
         {
             return new CommandOptions()
             {
-                ConnectionFactory = () => new ProfilingConnection(new SqliteConnection("DATA SOURCE=testdb.db")),
+                ConnectionFactory = () => new ProfilingConnection(new SqliteConnection(TestDbConnectionString)),
                 Filters = filters ?? Array.Empty<IFilter>(),
             };
         }
