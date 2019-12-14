@@ -147,7 +147,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Extensions.Entity
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Test.Common", "test\src\Shared\Jerrycurl.Test.Common\Jerrycurl.Test.Common.csproj", "{63C12E40-D889-4525-9A2F-6BDDFF2E12C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jerrycurl.Vendors.SqlServer.Legacy", "src\Vendors\Jerrycurl.Vendors.SqlServer.Legacy\Jerrycurl.Vendors.SqlServer.Legacy.csproj", "{D67A7C1A-5DC1-465A-A1FF-42C1203FEFDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Vendors.SqlServer.Legacy", "src\Vendors\Jerrycurl.Vendors.SqlServer.Legacy\Jerrycurl.Vendors.SqlServer.Legacy.csproj", "{D67A7C1A-5DC1-465A-A1FF-42C1203FEFDF}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

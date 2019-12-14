@@ -36,7 +36,7 @@ namespace Jerrycurl.Data.Queries
         public async IAsyncEnumerable<TItem> ReadAsync<TItem>([EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
             if (this.asyncReader == null)
-                throw new QueryException("Async not available.");
+                throw new QueryException("Async not available. To use async operations, please supply a connection factory returning a DbConnection instance.");
 
             TableIdentity heading = TableIdentity.FromRecord(this.asyncReader);
             ResultState<TItem> state = ResultCache<TItem>.GetResultState(this.schemas, heading);
