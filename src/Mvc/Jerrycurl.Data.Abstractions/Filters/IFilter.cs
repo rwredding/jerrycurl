@@ -7,5 +7,6 @@ namespace Jerrycurl.Data.Filters
     public interface IFilter
     {
         IFilterHandler GetHandler();
+        IFilterAsyncHandler GetAsyncHandler();
     }
 }

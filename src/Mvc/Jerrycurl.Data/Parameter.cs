@@ -23,9 +23,6 @@ namespace Jerrycurl.Data
             this.Contract = contract;
         }
 
-        public override string ToString()
-        {
-            return this.Name + " = " + (this.Field?.Value?.ToString() ?? "NULL");
-        }
+        public override string ToString() => this.Name;
     }
 }

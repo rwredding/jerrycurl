@@ -10,82 +10,21 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Jerrycurl.Data
+namespace Jerrycurl.Data.Ado
 {
-    public class AdoConnection : IDisposable
+    public class AsyncConnection : IDisposable
 #if NETSTANDARD2_1
         , IAsyncDisposable
 #endif
     {
-        private readonly Func<IDbConnection> connectionFactory;
-
-        private IDbConnection connection;
-        private DbConnection connectionAsync;
+        private DbConnection connection;
+        private IFilterAsyncHandler[] filters;
         private bool wasDisposed = false;
 
-        private readonly IFilterHandler[] filters;
-
-        public AdoConnection(AdoOptions options)
+        public AsyncConnection(AdoOptions options)
         {
-            this.connectionFactory = options?.ConnectionFactory ?? throw new AdoException("Connection factory is not initialized.");
-            this.filters = options.Filters?.Select(f => f.GetHandler()).OfType<IFilterHandler>().ToArray() ?? Array.Empty<IFilterHandler>();
-        }
-
-        public IEnumerable<IDataReader> Execute(IAdoCommandBuilder builder)
-        {
-            IDbConnection connection = null;
-
-            try
-            {
-                connection = this.GetOpenConnection();
-            }
-            catch (Exception ex)
-            {
-                this.ApplyConnectionFilters(h => h.OnConnectionException, ex);
-
-                throw new AdoException("An error occurred opening the ADO.NET connection.", ex);
-            }
-
-            using IDbCommand dbCommand = connection.CreateCommand();
-
-            try
-            {
-                builder.Build(dbCommand);
-            }
-            catch (Exception ex)
-            {
-                this.ApplyCommandFilters(h => h.OnCommandException, dbCommand, ex);
-
-                throw new AdoException("An error occurred building the ADO.NET command object.", ex);
-            }
-
-            this.ApplyCommandFilters(h => h.OnCommandCreated, dbCommand);
-
-            IDataReader reader = null;
-
-            try
-            {
-                reader = dbCommand.ExecuteReader();
-            }
-            catch (Exception ex)
-            {
-                this.ApplyCommandFilters(h => h.OnCommandException, dbCommand, ex);
-
-                throw new AdoException("An error occurred executing the ADO.NET command.", ex);
-            }
-
-            try
-            {
-                do yield return reader;
-                while (reader.NextResult());
-            }
-            finally
-            {
-                reader?.Dispose();
-            }
-
-            this.ApplyCommandFilters(h => h.OnCommandExecuted, dbCommand);
-
+            this.connection = options?.ConnectionFactory() as DbConnection;
+            this.filters = options.Filters?.Select(f => f.GetHandler()).OfType<IFilterAsyncHandler>().ToArray() ?? Array.Empty<IFilterAsyncHandler>();
         }
 
 #if NETSTANDARD2_1
@@ -196,42 +135,15 @@ namespace Jerrycurl.Data
         {
             if (this.wasDisposed)
                 throw new InvalidOperationException("Connection was disposed.");
-
-            if (this.connection == null)
-            {
-                this.connection = this.connectionFactory();
-                this.connectionAsync = this.connection as DbConnection;
-            }
-        }
-
-        private IDbConnection GetOpenConnection()
-        {
-            this.CreateConnectionObject();
-
-            if (this.connection.State == ConnectionState.Open)
-                return this.connection;
-
-            this.ApplyConnectionFilters(h => h.OnConnectionOpening);
-
-            if (this.connection.State == ConnectionState.Broken)
-                this.connection.Close();
-
-            if (this.connection.State == ConnectionState.Closed)
-                this.connection.Open();
-
-            this.ApplyConnectionFilters(h => h.OnConnectionOpened);
-
-            return this.connection;
         }
 
         private async Task<DbConnection> GetOpenConnectionAsync(CancellationToken cancellationToken)
         {
-            this.CreateConnectionObject();
+            if (this.wasDisposed)
+                throw new InvalidOperationException("Connection was disposed.");
 
-            if (this.connectionAsync == null)
-                this.ThrowAsyncNotAvailableException();
-            else if (this.connectionAsync.State == ConnectionState.Open)
-                return this.connectionAsync;
+            if (this.connection.State == ConnectionState.Open)
+                return this.connection;
 
             this.ApplyConnectionFilters(h => h.OnConnectionOpening);
 
@@ -240,15 +152,15 @@ namespace Jerrycurl.Data
                 await this.connectionAsync.CloseAsync();
 #else
             if (this.connection.State == ConnectionState.Broken)
-                this.connectionAsync.Close();
+                this.connection.Close();
 #endif
 
             if (this.connection.State == ConnectionState.Closed)
-                await this.connectionAsync.OpenAsync(cancellationToken).ConfigureAwait(false);
+                await this.connection.OpenAsync(cancellationToken).ConfigureAwait(false);
 
             this.ApplyConnectionFilters(h => h.OnConnectionOpened);
 
-            return this.connectionAsync;
+            return this.connection;
         }
 
         private void ThrowAsyncNotAvailableException() => throw new AdoException("Async operations are only available for DbConnection instances.");
@@ -263,6 +175,12 @@ namespace Jerrycurl.Data
         {
             foreach (IFilterHandler filter in this.filters)
                 action(filter);
+        }
+
+        private async Task ApplyFiltersAsync(Func<IFilterAsyncHandler, Task> action)
+        {
+            foreach (IFilterAsyncHandler handler in this.filters)
+                await action(handler);
         }
 
         public void Dispose()
