@@ -43,12 +43,12 @@ namespace Jerrycurl.Data.Filters
                 this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
             }
 
-            public override void OnConnectionOpening(AdoConnectionContext context)
+            public override void OnConnectionOpening(FilterContext context)
             {
                 this.transaction = this.factory();
             }
 
-            public override void OnConnectionClosing(AdoConnectionContext context)
+            public override void OnConnectionClosing(FilterContext context)
             {
                 this.transaction?.Complete();
             }
@@ -59,7 +59,7 @@ namespace Jerrycurl.Data.Filters
                 this.transaction = null;
             }
 
-            public override void OnConnectionException(AdoConnectionContext context)
+            public override void OnConnectionException(FilterContext context)
             {
                 this.transaction?.Dispose();
                 this.transaction = null;

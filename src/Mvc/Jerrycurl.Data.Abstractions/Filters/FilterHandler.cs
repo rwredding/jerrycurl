@@ -11,11 +11,11 @@ namespace Jerrycurl.Data.Filters
         #region " Synchronous "
         public virtual void OnCommandCreated(AdoCommandContext context) { }
         public virtual void OnCommandExecuted(AdoCommandContext context) { }
-        public virtual void OnConnectionClosed(AdoConnectionContext context) { }
-        public virtual void OnConnectionClosing(AdoConnectionContext context) { }
-        public virtual void OnConnectionOpened(AdoConnectionContext context) { }
-        public virtual void OnConnectionOpening(AdoConnectionContext context) { }
-        public virtual void OnConnectionException(AdoConnectionContext context) { }
+        public virtual void OnConnectionClosed(FilterContext context) { }
+        public virtual void OnConnectionClosing(FilterContext context) { }
+        public virtual void OnConnectionOpened(FilterContext context) { }
+        public virtual void OnConnectionOpening(FilterContext context) { }
+        public virtual void OnConnectionException(FilterContext context) { }
         public virtual void OnCommandException(AdoCommandContext context) { }
         public virtual void Dispose() { }
 
@@ -23,11 +23,11 @@ namespace Jerrycurl.Data.Filters
 
         #region " Asynchronous "
 
-        public virtual Task OnConnectionOpeningAsync(AdoConnectionContext context) => Task.CompletedTask;
-        public virtual Task OnConnectionOpenedAsync(AdoConnectionContext context) => Task.CompletedTask;
-        public virtual Task OnConnectionClosingAsync(AdoConnectionContext context) => Task.CompletedTask;
-        public virtual Task OnConnectionClosedAsync(AdoConnectionContext context) => Task.CompletedTask;
-        public virtual Task OnConnectionExceptionAsync(AdoConnectionContext context) => Task.CompletedTask;
+        public virtual Task OnConnectionOpeningAsync(FilterContext context) => Task.CompletedTask;
+        public virtual Task OnConnectionOpenedAsync(FilterContext context) => Task.CompletedTask;
+        public virtual Task OnConnectionClosingAsync(FilterContext context) => Task.CompletedTask;
+        public virtual Task OnConnectionClosedAsync(FilterContext context) => Task.CompletedTask;
+        public virtual Task OnConnectionExceptionAsync(FilterContext context) => Task.CompletedTask;
         public virtual Task OnCommandCreatedAsync(AdoCommandContext context) => Task.CompletedTask;
         public virtual Task OnCommandExecutedAsync(AdoCommandContext context) => Task.CompletedTask;
         public virtual Task OnCommandExceptionAsync(AdoCommandContext context) => Task.CompletedTask;

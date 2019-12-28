@@ -10,13 +10,13 @@ namespace Jerrycurl.Data.Filters
         : IAsyncDisposable
 #endif
     {
-        Task OnConnectionOpeningAsync(AdoConnectionContext context);
-        Task OnConnectionOpenedAsync(AdoConnectionContext context);
-        Task OnConnectionClosingAsync(AdoConnectionContext context);
-        Task OnConnectionClosedAsync(AdoConnectionContext context);
-        Task OnConnectionExceptionAsync(AdoConnectionContext context);
-        Task OnCommandCreatedAsync(AdoCommandContext context);
-        Task OnCommandExecutedAsync(AdoCommandContext context);
-        Task OnCommandExceptionAsync(AdoCommandContext context);
+        Task OnConnectionOpeningAsync(FilterContext context);
+        Task OnConnectionOpenedAsync(FilterContext context);
+        Task OnConnectionClosingAsync(FilterContext context);
+        Task OnConnectionClosedAsync(FilterContext context);
+        Task OnConnectionExceptionAsync(FilterContext context);
+        Task OnCommandCreatedAsync(FilterContext context);
+        Task OnCommandExecutedAsync(FilterContext context);
+        Task OnCommandExceptionAsync(FilterContext context);
     }
 }

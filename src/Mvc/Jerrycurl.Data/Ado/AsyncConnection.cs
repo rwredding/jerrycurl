@@ -168,8 +168,8 @@ namespace Jerrycurl.Data.Ado
         private void ApplyCommandFilters(Func<IFilterHandler, Action<AdoCommandContext>> action, IDbCommand command, Exception exception = null)
             => this.ApplyFilters(h => action(h)(new AdoCommandContext(command, exception)));
 
-        private void ApplyConnectionFilters(Func<IFilterHandler, Action<AdoConnectionContext>> action, Exception exception = null)
-            => this.ApplyFilters(h => action(h)(new AdoConnectionContext(this.connection, exception)));
+        private void ApplyConnectionFilters(Func<IFilterHandler, Action<FilterContext>> action, Exception exception = null)
+            => this.ApplyFilters(h => action(h)(new FilterContext(this.connection, exception)));
 
         private void ApplyFilters(Action<IFilterHandler> action)
         {
@@ -203,6 +203,7 @@ namespace Jerrycurl.Data.Ado
                 this.ApplyFilters(h => h.Dispose());
             }
         }
+
 #if NETSTANDARD2_1
         public async ValueTask DisposeAsync()
         {
