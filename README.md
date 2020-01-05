@@ -70,7 +70,7 @@ Jerrycurl can be built on any OS supported by .NET Core and included in this rep
 * .NET Core Runtime 2.1+ / 3.0 (to run tests)
 * PowerShell 5.0+ (PowerShell Core on Linux/macOS) 
 * Visual Studio 2019 (16.3+) (optional)
-* Docker (optional - for vendor testing)
+* Docker (optional - for live database testing)
 
 ### Clone, Build and Test
 Clone the repository and run our build script from PowerShell.
@@ -82,11 +82,12 @@ PS> .\build.ps1 [-NoTest] [-NoPack]
 
 This runs the `Restore`, `Clean`, `Build`, `[Test]` and `[Pack]` targets on `jerrycurl.sln` and places any packaged `.nupkg` in the `/artifacts/packages` folder. Each target can also be run manually in Visual Studio if preferred.
 
-By default, the script above skips any test that requires live running database server. To help you to include these tests, you can use our [`docker compose` script](test/tools/boot-dbs.ps1) to boot up instances of our supported databases.
+By default, `Test` target skips any test that requires live running database server. To help you to include these, you can use our [`docker compose` script](test/tools/boot-dbs.ps1) to boot up instances of our supported databases.
 
 ```powershell
 PS> .\test\tools\boot-dbs.ps1 up sqlserver,mysql,postgres,oracle
 ```
+
 Please allow ~60 seconds for the databases to be ready after which you can re-run `build.ps1`.
 
 > If you already have an empty database running that can be used for testing, you can manually specify its connection string in the environment variable `JERRY_SQLSERVER_CONN`, `JERRY_MYSQL_CONN`, `JERRY_POSTGRES_CONN` or `JERRY_ORACLE_CONN`.
