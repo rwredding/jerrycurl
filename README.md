@@ -36,7 +36,7 @@ public class CustomersAccessor : Accessor
 {
     public async Task<IList<CustomerStatsView>> GetStats(DateTime createdAfter)
     {
-        var filter = new CustomerFilter()
+        var filter = new CustomerFilter
         {
             CreatedAfter = createdAfter,
         };
