@@ -6,6 +6,7 @@
 **Jerrycurl** is a free and lightweight **ORM for .NET** that focuses on elegant and type-safe **SQL** written with **Razor syntax**.
 ```sql
 -- Queries/Customers/GetStats.cssql
+
 @result CustomerStatsView
 @model CustomerFilter
 @project Order o
@@ -32,6 +33,7 @@ It allows you to build robust data access layers around ASP.NET-like **MVC** and
 
 ```csharp
 // Accessors/CustomersAccessor.cs
+
 public class CustomersAccessor : Accessor
 {
     public async Task<IList<CustomerStatsView>> GetStats(DateTime createdAfter)
