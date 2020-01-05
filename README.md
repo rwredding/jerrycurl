@@ -34,14 +34,14 @@ It allows you to build robust data access layers around ASP.NET-like **MVC** and
 // Accessors/CustomersAccessor.cs
 public class CustomersAccessor : Accessor
 {
-    public async Task<IList<CustomerStatsView>> GetStats(DateTime createdAfter)
+    public IList<CustomerStatsView> GetStats(DateTime createdAfter)
     {
         var filter = new CustomerFilter
         {
             CreatedAfter = createdAfter,
         };
         
-        return await this.QueryAsync<CustomerStatsView>(model: filter);
+        return this.Query<CustomerStatsView>(model: filter);
     }
 }
 ```
