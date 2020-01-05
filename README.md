@@ -1,5 +1,5 @@
 [![NuGet](https://img.shields.io/nuget/v/Jerrycurl)](https://nuget.org/packages/Jerrycurl)
-[![Build status](https://ci.appveyor.com/api/projects/status/onendmfb6ywd33je?svg=true)](https://ci.appveyor.com/project/rwredding/jerrycurl)
+[![Build status](https://ci.appveyor.com/api/projects/status/onendmfb6ywd33je/branch/master?svg=true)](https://ci.appveyor.com/project/rwredding/jerrycurl)
 [![License LGPLv3](https://img.shields.io/badge/license-LGPLv3-green.svg)](http://www.gnu.org/licenses/lgpl-3.0.html)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/jerrycurl-mvc/community)
 # Jerrycurl - Razor-powered ORM for SQL lovers
