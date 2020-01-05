@@ -63,7 +63,7 @@ public class CustomersAccessor : Accessor
 To learn more about Jerrycurl and how to get started, read [our official docs](https://jerrycurl.net/documentation) or check our [samples repo](https://github.com/rwredding/jerrycurl-samples).
 
 ## Building from source
-Jerrycurl can be built on any OS supported by .NET Core and included in this repository is a script that performs all build-related tasks.
+Jerrycurl can be built on any OS supported by .NET Core and included in this repository is a [script](build.ps1) that performs all build-related tasks.
 
 ### Prerequisites
 * .NET Core SDK 3.0
@@ -82,12 +82,12 @@ PS> .\build.ps1 [-NoTest] [-NoPack]
 
 This runs the `Restore`, `Clean`, `Build`, `[Test]` and `[Pack]` targets on `jerrycurl.sln` and places any packaged `.nupkg` in the `/artifacts/packages` folder. Each target can also be run manually in Visual Studio if preferred.
 
-> The script above skips by default any test that requires live running database server. To help you to include these tests, you can use our [`docker compose` script](test/tools/boot-dbs.ps1) to boot up instances of our supported databases.
+By default, the script above skips any test that requires live running database server. To help you to include these tests, you can use our [`docker compose` script](test/tools/boot-dbs.ps1) to boot up instances of our supported databases.
 
 ```powershell
 PS> .\test\tools\boot-dbs.ps1 up sqlserver,mysql,postgres,oracle
 ```
-Please allow ~60 seconds for the databases to be ready after which you can re-run your tests.
+Please allow ~60 seconds for the databases to be ready after which you can re-run `build.ps1`.
 
 > If you already have an empty database running that can be used for testing, you can manually specify its connection string in the environment variable `JERRY_SQLSERVER_CONN`, `JERRY_MYSQL_CONN`, `JERRY_POSTGRES_CONN` or `JERRY_ORACLE_CONN`.
 
