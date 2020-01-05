@@ -88,17 +88,17 @@ By default, `Test` target skips any test that requires live running database ser
 PS> .\test\tools\boot-dbs.ps1 up sqlserver,mysql,postgres,oracle
 ```
 
-Please allow ~60 seconds for the databases to be ready after which you can re-run `build.ps1`.
+Please allow ~60 seconds for the databases to be ready after which you can re-run `build.ps1`. When done, you can tear down your instances again.
+
+```powershell
+PS> .\test\tools\boot-dbs.ps1 down sqlserver,mysql,postgres,oracle
+```
 
 > If you already have an empty database running that can be used for testing, you can manually specify its connection string in the environment variable `JERRY_SQLSERVER_CONN`, `JERRY_MYSQL_CONN`, `JERRY_POSTGRES_CONN` or `JERRY_ORACLE_CONN`.
 
 > Oracle Database requires that you are logged into Docker and have accepted their [terms of service](https://hub.docker.com/_/oracle-database-enterprise-edition).
 
-When done, you can tear down your instances again.
 
-```powershell
-PS> .\test\tools\boot-dbs.ps1 down sqlserver,mysql,postgres,oracle
-```
 
 ## License
 Copyright © 2019 AC Dancode
