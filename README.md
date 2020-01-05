@@ -3,8 +3,9 @@
 [![License LGPLv3](https://img.shields.io/badge/license-LGPLv3-green.svg)](http://www.gnu.org/licenses/lgpl-3.0.html)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/jerrycurl-mvc/community)
 # Jerrycurl - Razor-powered ORM for SQL lovers
-**Jerrycurl** is an MVC-based **ORM** that focuses on elegant and type-safe **SQL** written with **Razor syntax**.
+**Jerrycurl** is a free and lightweight **ORM for .NET** that focuses on elegant and type-safe **SQL** written with **Razor syntax**.
 ```sql
+-- Queries/Customers/GetStats.cssql
 @result CustomerStatsView
 @model CustomerFilter
 @project Order o
@@ -27,26 +28,42 @@ ORDER BY
     @R.Col(m => m.CreatedDate) DESC
 ```
 
+It allows you to build robust data access layers around ASP.NET-like **MVC** and **CQS** conventions that organizes your code into models, queries, commands and **accessors**.
+
+```csharp
+// Accessors/CustomersAccessor.cs
+public class CustomersAccessor : Accessor
+{
+    public async Task<IList<CustomerStatsView>> GetStats(DateTime createdAfter)
+    {
+        var filter = new CustomerFilter()
+        {
+            CreatedAfter = createdAfter,
+        };
+        
+        return await this.QueryAsync<CustomerStatsView>(model: filter);
+    }
+}
+```
+
 ## Features
 * [Official support](https://nuget.org/packages/?q=Jerrycurl.Vendors) for SQL Server, PostgreSQL, MySQL, Oracle and SQLite
 * [CLI tool](https://nuget.org/packages/dotnet-jerry) to easily generate classes from your database schema
 * Extensive collection of Razor extensions for all boilerplate SQL
-* Multiset queries with `one-to-one`, `one-to-many`, `many-to-one`, `many-to-many` and `self-join` support
-* Batchable commands through simple `@foreach` expressions
-* Reusable subqueries and subcommands with *partials*
+* Single **queries** that map complete object graphs of any [cardinality](https://en.wikipedia.org/wiki/Cardinality_(data_modeling)) type
+* Batchable **commands** through simple `@foreach` expressions
 * [High performance](https://github.com/rhodosaur/RawDataAccessBencher/blob/master/Results/20191115_jerrycurl.txt) for all sync/async operations
 * Organized, ASP.NET-like project conventions with [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)
-* Native [command-query separation](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation) suitable for [ACID](https://en.wikipedia.org/wiki/ACID) or [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) operations
-* JSON support with `Newtonsoft.Json` or `System.Text.Json`
+* Native [command-query separation](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation) suitable for [ACID](https://en.wikipedia.org/wiki/ACID) or [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) scenarios
+* JSON support through `Newtonsoft.Json` or `System.Text.Json`
 * Integration with existing Entity Framework Core projects
 * Modern language features with .NET Standard 2.1 and C# 8
-* Free for commercial use
-* ...and more
+* Free and [available via NuGet](https://www.nuget.org/packages?q=Jerrycurl)
 
 To learn more about Jerrycurl and how to get started, read [our official docs](https://jerrycurl.net/documentation) or check our [samples repo](https://github.com/rwredding/jerrycurl-samples).
 
 ## Building from source
-Jerrycurl can be built on any OS supported by .NET Core and included in this repository is a script that performs all build related tasks.
+Jerrycurl can be built on any OS supported by .NET Core and included in this repository is a script that performs all build-related tasks.
 
 ### Prerequisites
 * .NET Core SDK 3.0
@@ -55,19 +72,17 @@ Jerrycurl can be built on any OS supported by .NET Core and included in this rep
 * Visual Studio 2019 (16.3+) (optional)
 * Docker (optional - for vendor testing)
 
-### Clone and Build
+### Clone, Build and Test
 Clone the repository and run our build script from PowerShell.
 ```powershell
 PS> git clone https://github.com/rwredding/jerrycurl
 PS> cd jerrycurl
 PS> .\build.ps1 [-NoTest] [-NoPack]
 ```
-This runs the `Restore`, `Clean`, `Build`, `[Test]` and `[Pack]` targets on `jerrycurl.sln`. Each target can also be run manually in Visual Studio if preferred.
 
-> Packaged `.nupkgs` are placed in `/artifacts/packages`.
+This runs the `Restore`, `Clean`, `Build`, `[Test]` and `[Pack]` targets on `jerrycurl.sln` and places any packaged `.nupkg` in the `/artifacts/packages` folder. Each target can also be run manually in Visual Studio if preferred.
 
-### Test
-The script above *cannot include all tests* out of the box, as those testing specific databases often require a live running server. To help you with this, you can use our [`docker compose` script](test/tools/boot-dbs.ps1) with PowerShell to boot up instances of our supported databases.
+> The script above skips by default any test that requires live running database server. To help you to include these tests, you can use our [`docker compose` script](test/tools/boot-dbs.ps1) to boot up instances of our supported databases.
 
 ```powershell
 PS> .\test\tools\boot-dbs.ps1 up sqlserver,mysql,postgres,oracle
@@ -78,7 +93,7 @@ Please allow ~60 seconds for the databases to be ready after which you can re-ru
 
 > Oracle Database requires that you are logged into Docker and have accepted their [terms of service](https://hub.docker.com/_/oracle-database-enterprise-edition).
 
-When done, you should tear down your instances again.
+When done, you can tear down your instances again.
 
 ```powershell
 PS> .\test\tools\boot-dbs.ps1 down sqlserver,mysql,postgres,oracle
