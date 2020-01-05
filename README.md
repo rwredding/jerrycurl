@@ -56,7 +56,7 @@ public class CustomersAccessor : Accessor
 * Organized, ASP.NET-like project conventions with [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)
 * Native [command-query separation](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation) suitable for [ACID](https://en.wikipedia.org/wiki/ACID) or [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) scenarios
 * JSON support through `Newtonsoft.Json` or `System.Text.Json`
-* Integration with existing Entity Framework Core projects
+* Integration with existing Entity Framework Core models
 * Modern language features with .NET Standard 2.1 and C# 8
 * Free and [available via NuGet](https://www.nuget.org/packages?q=Jerrycurl)
 
