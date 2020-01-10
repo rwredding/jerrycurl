@@ -50,7 +50,7 @@ public class CustomersAccessor : Accessor
 * [Official support](https://nuget.org/packages/?q=Jerrycurl.Vendors) for SQL Server, PostgreSQL, MySQL, Oracle and SQLite
 * [CLI tool](https://nuget.org/packages/dotnet-jerry) to easily generate classes from your database schema
 * Extensive collection of Razor extensions for all boilerplate SQL
-* Single **queries** that map complete object graphs of any [cardinality](https://en.wikipedia.org/wiki/Cardinality_(data_modeling)) type
+* Single **queries** that map complete object graphs of any [cardinality](https://en.wikipedia.org/wiki/Cardinality_(data_modeling))
 * Batchable **commands** through simple `@foreach` expressions
 * [High performance](https://github.com/rhodosaur/RawDataAccessBencher/blob/master/Results/20191115_jerrycurl.txt) for all sync/async operations
 * Organized, ASP.NET-like project conventions with [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)
@@ -82,13 +82,13 @@ PS> .\build.ps1 [-NoTest] [-NoPack]
 
 This runs the `Restore`, `Clean`, `Build`, `[Test]` and `[Pack]` targets on `jerrycurl.sln` and places any packaged `.nupkg` in the `/artifacts/packages` folder. Each target can also be run manually in Visual Studio if preferred.
 
-By default, `Test` target skips any test that requires live running database server. To help you to include these, you can use our [`docker compose` script](test/tools/boot-dbs.ps1) to boot up instances of our supported databases.
+By default, the `Test` target skips any test that requires live running database server. To help you to include these, you can use our [`docker compose` script](test/tools/boot-dbs.ps1) to boot up instances of our supported databases.
 
 ```powershell
 PS> .\test\tools\boot-dbs.ps1 up sqlserver,mysql,postgres,oracle
 ```
 
-Please allow ~60 seconds for the databases to be ready after which you can re-run `build.ps1`. When done, you can tear down your instances again.
+Please allow ~60 seconds for the databases to be ready after which you can re-run `build.ps1`, which will then automatically target the included databases instances. When done, you can tear everything down again.
 
 ```powershell
 PS> .\test\tools\boot-dbs.ps1 down sqlserver,mysql,postgres,oracle
