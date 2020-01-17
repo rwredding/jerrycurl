@@ -52,9 +52,9 @@ public class CustomersAccessor : Accessor
 * Extensive collection of Razor extensions for all boilerplate SQL
 * Single **queries** that map complete object graphs of any [cardinality](https://en.wikipedia.org/wiki/Cardinality_(data_modeling))
 * Batchable **commands** through simple `@foreach` expressions
-* [High performance](https://github.com/rhodosaur/RawDataAccessBencher/blob/master/Results/20191115_jerrycurl.txt) for all sync/async operations
+* [High performance](https://github.com/rhodosaur/RawDataAccessBencher/blob/master/Results/20191115_jerrycurl.txt) and support for all operations synchronously or asynchronously
 * Organized, ASP.NET-like project conventions with [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)
-* Native [command-query separation](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation) suitable for [ACID](https://en.wikipedia.org/wiki/ACID) or [BASE](https://en.wikipedia.org/wiki/Eventual_consistency) scenarios
+* Native [command-query separation](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation) suitable for [ACID](https://en.wikipedia.org/wiki/ACID) or [BASE](https://en.wikipedia.org/wiki/Eventual_consistency)/[CQRS](https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs) scenarios
 * JSON support through `Newtonsoft.Json` or `System.Text.Json`
 * Integration with existing Entity Framework Core models
 * Modern language features with .NET Standard 2.1 and C# 8
@@ -63,7 +63,7 @@ public class CustomersAccessor : Accessor
 To learn more about Jerrycurl and how to get started, read [our official docs](https://jerrycurl.net/documentation) or check our [samples repo](https://github.com/rwredding/jerrycurl-samples).
 
 ## Building from source
-Jerrycurl can be built on any OS supported by .NET Core and included in this repository is a [script](build.ps1) that performs all build-related tasks.
+Jerrycurl can be built on [any OS supported by .NET Core](https://docs.microsoft.com/en-us/dotnet/core/install/dependencies) and included in this repository is a [script](build.ps1) that performs all build-related tasks.
 
 ### Prerequisites
 * .NET Core SDK 3.0
