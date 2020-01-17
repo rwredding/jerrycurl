@@ -2,7 +2,6 @@
 using Jerrycurl.Mvc.Sql;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Jerrycurl.Mvc.Test.Conventions.Models
 {

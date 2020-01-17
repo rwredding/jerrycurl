@@ -1,16 +1,9 @@
 ﻿using Jerrycurl.Mvc.Projections;
 using Jerrycurl.Mvc.Sql;
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
-using Jerrycurl.Mvc.Metadata;
 using Jerrycurl.Relations;
-using Jerrycurl.Data;
-using Jerrycurl.Data.Metadata;
 using Jerrycurl.Vendors.SqlServer;
-using Jerrycurl.Vendors.SqlServer.Internal;
-using Jerrycurl.Relations.Metadata;
 using System.Linq;
 
 namespace Jerrycurl.Mvc.Sql.SqlServer
@@ -29,17 +22,12 @@ namespace Jerrycurl.Mvc.Sql.SqlServer
             else if (!projection.Attributes.Any())
                 throw ProjectionException.FromProjection(projection, "No attributes found.");
 
-            IProjectionMetadata metadata = TvpHelper.GetPreferredTvpMetadata(projection);
-            IField source = new Relation(projection.Source, metadata.Identity.Name).Scalar();
+            Relation relation = new Relation(projection.Source, projection.Attributes.Select(a => a.Metadata.Identity));
 
-            RelationIdentity identity = new RelationIdentity(metadata.Identity.Schema, projection.Attributes.Select(a => a.Metadata.Identity));
-
-            IBindingParameterContract contract = TvpCache.GetParameterContract(identity);
-
-            string paramName = projection.Context.Lookup.Custom("TP", projection.Identity, field: source);
+            string paramName = projection.Context.Lookup.Custom("TP", projection.Identity, field: projection.Source);
             string dialectName = projection.Context.Domain.Dialect.Parameter(paramName);
 
-            return projection.Attr().Append(dialectName).Append(new Parameter(paramName, source, contract));
+            return projection.Attr().Append(dialectName).Append(new TableValuedParameter(paramName, relation));
         }
 
         /// <summary>

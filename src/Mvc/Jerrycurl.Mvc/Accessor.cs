@@ -16,7 +16,6 @@ namespace Jerrycurl.Mvc
     {
         public AccessorContext Context { get; set; }
 
-#if NETSTANDARD2_1
         /// <summary>
         /// Executes an asynchronous Razor SQL query with a specified model and returns a single, continuous, unbuffered list from its result sets.
         /// </summary>
@@ -85,7 +84,6 @@ namespace Jerrycurl.Mvc
 
             return handler.EnumerateAsync(queries, cancellationToken);
         }
-#endif
 
         /// <summary>
         /// Executes a Razor SQL query with a specified model and returns a single, continuous, unbuffered list from its result sets.

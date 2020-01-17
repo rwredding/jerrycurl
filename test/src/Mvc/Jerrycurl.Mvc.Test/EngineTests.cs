@@ -1,13 +1,6 @@
-﻿using Jerrycurl.Mvc;
-using Jerrycurl.Mvc.Test.Conventions.Accessors;
+﻿using Jerrycurl.Mvc.Test.Conventions.Accessors;
 using Jerrycurl.Mvc.Test.Conventions2.NoDomain;
-using Jerrycurl.Mvc.Test.Conventions2.NoDomain.Queries;
 using Shouldly;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Jerrycurl.Mvc.Test
 {

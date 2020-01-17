@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Jerrycurl.Extensions.EntityFrameworkCore.Test.Entities;
+﻿using Jerrycurl.Extensions.EntityFrameworkCore.Test.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Jerrycurl.Extensions.EntityFrameworkCore.Test

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Jerrycurl.Mvc.Test.Conventions.DependencyInjection.Services
+﻿namespace Jerrycurl.Mvc.Test.Conventions.DependencyInjection.Services
 {
     public class MyService
     {

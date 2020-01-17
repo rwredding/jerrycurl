@@ -1,8 +1,5 @@
-﻿using Jerrycurl.Data.Filters;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data;
-using System.Text;
 using System.Transactions;
 
 namespace Jerrycurl.Data.Filters
@@ -31,43 +28,43 @@ namespace Jerrycurl.Data.Filters
             this.handler = () => new Handler(scopeFactory);
         }
 
-        public IFilterHandler GetHandler() => this.handler();
+        public IFilterHandler GetHandler(IDbConnection connection) => this.handler();
+        public IFilterAsyncHandler GetAsyncHandler(IDbConnection connection) => null;
 
         private class Handler : FilterHandler
         {
             private readonly Func<TransactionScope> factory;
             private TransactionScope transaction;
+            private bool handled = false;
 
             public Handler(Func<TransactionScope> factory)
             {
                 this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
             }
 
-            public override void OnConnectionOpening(AdoConnectionContext context)
+            public override void OnConnectionOpening(FilterContext context)
             {
                 this.transaction = this.factory();
             }
 
-            public override void OnConnectionClosing(AdoConnectionContext context)
+            public override void OnException(FilterContext context)
             {
-                this.transaction?.Complete();
+                if (!this.handled)
+                    this.handled = true;
             }
 
-            public override void OnCommandException(AdoCommandContext context)
+            public override void OnConnectionClosed(FilterContext context)
             {
-                this.transaction?.Dispose();
-                this.transaction = null;
-            }
+                if (!this.handled)
+                    this.transaction.Complete();
 
-            public override void OnConnectionException(AdoConnectionContext context)
-            {
-                this.transaction?.Dispose();
-                this.transaction = null;
+                this.handled = true;
             }
 
             public override void Dispose()
             {
                 this.transaction?.Dispose();
+                this.transaction = null;
             }
         }
     }

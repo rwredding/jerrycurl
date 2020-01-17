@@ -1,14 +1,11 @@
 ﻿using Jerrycurl.Data.Metadata;
-using Jerrycurl.Relations;
 using Jerrycurl.Relations.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using System.Linq;
-using Jerrycurl.Data;
 
 namespace Jerrycurl.Data.Commands.Internal
 {
@@ -26,7 +23,7 @@ namespace Jerrycurl.Data.Commands.Internal
 
         public Action<IDataReader, FieldData[]> Compile()
         {
-            if (this.columns.Length == 0)
+            if (this.columns.Length == 0 || this.attributes.All(m => m == null))
                 return (dr, fd) => { };
 
             List<Expression> body = new List<Expression>();

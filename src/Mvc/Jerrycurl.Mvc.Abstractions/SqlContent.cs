@@ -1,10 +1,8 @@
-﻿using Jerrycurl.Data;
-using Jerrycurl.Data.Commands;
-using Jerrycurl.Mvc;
+﻿using Jerrycurl.Data.Commands;
+using Jerrycurl.Data.Sessions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Jerrycurl.Mvc
 {

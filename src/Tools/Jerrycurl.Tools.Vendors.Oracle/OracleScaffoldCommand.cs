@@ -1,11 +1,8 @@
 ﻿using Jerrycurl.Tools.Scaffolding;
 using Jerrycurl.Tools.Scaffolding.Model;
 using Oracle.ManagedDataAccess.Client;
-using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;

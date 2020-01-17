@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Jerrycurl.Tools.Scaffolding.Model;
+﻿using System.Collections.Generic;
 
 namespace Jerrycurl.Tools.DotNet.Cli.Scaffolding
 {

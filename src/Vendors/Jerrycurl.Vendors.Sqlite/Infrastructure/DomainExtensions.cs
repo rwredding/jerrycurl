@@ -1,7 +1,5 @@
-﻿using Jerrycurl.Mvc;
-using Jerrycurl.Vendors.Sqlite.Metadata;
+﻿using Jerrycurl.Vendors.Sqlite.Metadata;
 using Microsoft.Data.Sqlite;
-using System;
 
 namespace Jerrycurl.Mvc
 {

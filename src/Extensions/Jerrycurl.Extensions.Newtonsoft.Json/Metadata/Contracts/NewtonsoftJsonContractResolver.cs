@@ -2,9 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace Jerrycurl.Extensions.Newtonsoft.Json.Metadata.Contracts
 {

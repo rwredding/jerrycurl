@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
 using Fixie;
 using Jerrycurl.Mvc;
 
@@ -29,8 +26,8 @@ namespace Jerrycurl.Test
             instance.Dispose();
         }
 
-        protected string GetEnvironmentVariable(string variableName) => Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.Machine) ??
-                                                                        Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.User) ??
-                                                                        Environment.GetEnvironmentVariable(variableName);
+        protected static string GetEnvironmentVariable(string variableName) => Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.Machine) ??
+                                                                               Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.User) ??
+                                                                               Environment.GetEnvironmentVariable(variableName);
     }
 }

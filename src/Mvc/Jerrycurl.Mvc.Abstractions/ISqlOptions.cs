@@ -1,7 +1,5 @@
 ﻿using Jerrycurl.Data.Filters;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Jerrycurl.Mvc
 {

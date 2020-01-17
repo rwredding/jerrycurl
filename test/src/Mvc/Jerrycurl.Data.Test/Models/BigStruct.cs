@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Jerrycurl.Data.Test.Models
+﻿namespace Jerrycurl.Data.Test.Models
 {
     public struct BigStruct
     {

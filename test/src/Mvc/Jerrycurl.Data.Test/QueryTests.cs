@@ -1,24 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Jerrycurl.Data;
-using Jerrycurl.Relations.Metadata;
-using Jerrycurl.Relations;
-using Jerrycurl.Data.Commands;
-using Microsoft.Data.Sqlite;
 using Shouldly;
-using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Queries;
 using Jerrycurl.Data.Test.Models;
 using Jerrycurl.Test;
+using Jerrycurl.Data.Sessions;
 
 namespace Jerrycurl.Data.Test
 {
     public class QueryTests
     {
-#if NETCOREAPP3_0
         public async Task Test_Binding_OfEnumerateAsyncWithMultipleSets()
         {
             SqliteTable table1 = new SqliteTable("Item")
@@ -37,7 +29,6 @@ namespace Jerrycurl.Data.Test
             DatabaseHelper.Default.Enumerate<int>(table1, table2).ShouldBe(new[] { 1, 2, 3, 4, 5, 6 });
             (await (DatabaseHelper.Default.EnumerateAsync<int>(table1, table2)).ToList()).ShouldBe(new[] { 1, 2, 3, 4, 5, 6 });
         }
-#endif
 
         public async Task Test_Binding_OfNestedStructs()
         {

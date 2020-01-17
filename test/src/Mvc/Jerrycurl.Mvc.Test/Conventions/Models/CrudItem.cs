@@ -1,8 +1,4 @@
 ﻿using Jerrycurl.Data.Metadata.Annotations;
-using Jerrycurl.Mvc.Metadata.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Jerrycurl.Mvc.Test.Conventions.Models
 {

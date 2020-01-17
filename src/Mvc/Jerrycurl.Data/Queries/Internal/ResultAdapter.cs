@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,8 +40,6 @@ namespace Jerrycurl.Data.Queries.Internal
 
         public async Task AddResultAsync(DbDataReader dataReader, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             this.SetState(dataReader);
 
             this.state.Initializer(this.Lists, this.Dicts, this.Bits);

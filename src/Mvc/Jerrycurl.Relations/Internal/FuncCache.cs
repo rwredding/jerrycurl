@@ -1,12 +1,6 @@
-﻿using Jerrycurl.Diagnostics;
-using Jerrycurl.Relations.Metadata;
+﻿using Jerrycurl.Relations.Metadata;
 using Jerrycurl.Relations.Internal.Nodes;
-using System;
-using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Jerrycurl.Relations.Internal
 {

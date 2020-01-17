@@ -3,7 +3,6 @@ using Jerrycurl.Relations.Internal.Nodes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Jerrycurl.Relations.Internal
 {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Text;
-
-namespace Jerrycurl.Tools.DotNet.Cli.Commands
+﻿namespace Jerrycurl.Tools.DotNet.Cli.Commands
 {
     public class ProxyArgs
     {

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data;
 using Jerrycurl.Diagnostics;
 using HashCode = Jerrycurl.Diagnostics.HashCode;
 
@@ -14,6 +11,14 @@ namespace Jerrycurl.Data
         public Type Type { get; }
         public int Index { get; }
         public string TypeName { get; }
+
+        public static ColumnIdentity FromField(IDataRecord dataRecord, int fieldIndex)
+        {
+            if (dataRecord == null)
+                throw new ArgumentNullException(nameof(dataRecord));
+
+            return new ColumnIdentity(dataRecord.GetName(fieldIndex), dataRecord.GetFieldType(fieldIndex), dataRecord.GetDataTypeName(fieldIndex), fieldIndex);
+        }
 
         public ColumnIdentity(string name, Type type, string typeName, int index)
         {

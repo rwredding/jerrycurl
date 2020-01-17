@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Jerrycurl.Data;
-using Jerrycurl.Relations.Metadata;
-using Jerrycurl.Relations;
+﻿using System.Collections.Generic;
 using Jerrycurl.Data.Commands;
-using Microsoft.Data.Sqlite;
 using Shouldly;
-using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Queries;
 using Jerrycurl.Data.Filters;
 using Jerrycurl.Test;
+using System.Data.Common;
+using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Jerrycurl.Data.Test
 {
@@ -35,7 +29,7 @@ namespace Jerrycurl.Data.Test
             {
                 DatabaseHelper.Default.Execute(command);
             }
-            catch (AdoException) { }
+            catch (DbException) { }
 
             this.GetCurrentValues().ShouldBe(new[] { 1, 2 });
         }
@@ -59,7 +53,53 @@ namespace Jerrycurl.Data.Test
             {
                 handler.Execute(command);
             }
-            catch (AdoException) { }
+            catch (DbException) { }
+
+            this.GetCurrentValues().ShouldBeEmpty();
+        }
+
+        public async Task Test_Inserts_WithoutAsyncTransaction()
+        {
+            this.CreateTable();
+            this.ClearTable();
+
+            CommandData command = new CommandData()
+            {
+                CommandText = @"INSERT INTO MyValues VALUES(1);
+                                INSERT INTO MyValues VALUES(2);
+                                INSERT INTO MyValues VALUES(NULL);
+                                INSERT INTO MyValues VALUES(3);"
+            };
+
+            try
+            {
+                await DatabaseHelper.Default.ExecuteAsync(command);
+            }
+            catch (DbException) { }
+
+            this.GetCurrentValues().ShouldBe(new[] { 1, 2 });
+        }
+
+        public async Task Test_Inserts_WithAsyncTransaction()
+        {
+            this.CreateTable();
+            this.ClearTable();
+
+            CommandData command = new CommandData()
+            {
+                CommandText = @"INSERT INTO MyValues VALUES(1);
+                                INSERT INTO MyValues VALUES(2);
+                                INSERT INTO MyValues VALUES(NULL);
+                                INSERT INTO MyValues VALUES(3);"
+            };
+
+            CommandHandler handler = new CommandHandler(DatabaseHelper.Default.GetCommandOptions(new TransactionFilter()));
+
+            try
+            {
+                await handler.ExecuteAsync(command);
+            }
+            catch (DbException) { }
 
             this.GetCurrentValues().ShouldBeEmpty();
         }

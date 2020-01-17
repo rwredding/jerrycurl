@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using Jerrycurl.Mvc;
-using Jerrycurl.Data.Metadata;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Jerrycurl.Extensions.Json.Metadata.Contracts;
 
 namespace Jerrycurl.Mvc

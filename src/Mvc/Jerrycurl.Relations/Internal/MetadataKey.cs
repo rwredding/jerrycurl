@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Jerrycurl.Diagnostics;
 using Jerrycurl.Relations.Metadata;
 using HashCode = Jerrycurl.Diagnostics.HashCode;

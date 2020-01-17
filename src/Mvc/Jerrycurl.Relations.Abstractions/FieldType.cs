@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Jerrycurl.Relations
+﻿namespace Jerrycurl.Relations
 {
     public enum FieldType
     {

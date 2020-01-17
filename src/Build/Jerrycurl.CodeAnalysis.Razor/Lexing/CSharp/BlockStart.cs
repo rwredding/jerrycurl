@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Jerrycurl.CodeAnalysis.Lexing;
+﻿using Jerrycurl.CodeAnalysis.Lexing;
 
 namespace Jerrycurl.CodeAnalysis.Razor.Lexing.CSharp
 {

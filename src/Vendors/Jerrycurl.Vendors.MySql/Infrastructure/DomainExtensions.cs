@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using Jerrycurl.Data;
-using Jerrycurl.Mvc;
-using Jerrycurl.Mvc.Metadata;
-using Jerrycurl.Mvc.Projections;
-using Jerrycurl.Relations.Metadata;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using Jerrycurl.Vendors.MySql;
+using Jerrycurl.Vendors.MySql.Metadata;
 
 namespace Jerrycurl.Mvc
 {

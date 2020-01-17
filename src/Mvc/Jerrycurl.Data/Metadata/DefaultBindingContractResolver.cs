@@ -5,10 +5,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Dynamic;
-using System.Text;
-using System.Threading.Tasks;
-using Jerrycurl.Data.Metadata;
-using Jerrycurl.Collections;
 using System.Xml.Linq;
 using Jerrycurl.Relations;
 

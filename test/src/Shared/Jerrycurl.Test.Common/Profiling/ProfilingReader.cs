@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,7 +20,6 @@ namespace Jerrycurl.Test.Profiling
         {
             this.InnerReader = innerReader ?? throw new ArgumentNullException(nameof(innerReader));
         }
-
 
         public override object this[int ordinal] => this.GetValue(ordinal);
         public override object this[string name] => this.GetValue(this.GetOrdinal(name));
@@ -161,25 +158,6 @@ namespace Jerrycurl.Test.Profiling
         public override string GetName(int ordinal) => this.InnerReader.GetName(ordinal);
         public override int GetOrdinal(string name) => this.InnerReader.GetOrdinal(name);
 
-        public override Type GetProviderSpecificFieldType(int ordinal)
-        {
-            return base.GetProviderSpecificFieldType(ordinal);
-        }
-
-        public override object GetProviderSpecificValue(int ordinal)
-        {
-            return base.GetProviderSpecificValue(ordinal);
-        }
-
-        public override int GetProviderSpecificValues(object[] values)
-        {
-            return base.GetProviderSpecificValues(values);
-        }
-
-        public override DataTable GetSchemaTable()
-        {
-            return base.GetSchemaTable();
-        }
 
         public override Stream GetStream(int ordinal)
         {
@@ -250,28 +228,41 @@ namespace Jerrycurl.Test.Profiling
             return this.InnerReader.ReadAsync(cancellationToken);
         }
 
+        private void VerifyReads()
+        {
+            foreach (var ords in this.nullReads)
+            {
+                if (ords.Value > 1)
+                    throw new InvalidOperationException($"Ordinal '{ords.Key}' was read {ords.Value} times (null read).");
+            }
+
+            foreach (var ords in this.valueReads)
+            {
+                if (ords.Value > 1)
+                    throw new InvalidOperationException($"Ordinal '{ords.Key}' was read {ords.Value} times (value read).");
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                foreach (var ords in this.nullReads)
-                {
-                    if (ords.Value > 1)
-                        throw new InvalidOperationException($"Ordinal '{ords.Key}' was read {ords.Value} times (null read).");
-                }
+                ((IDataReader)this.InnerReader).Dispose();
 
-                foreach (var ords in this.valueReads)
-                {
-                    if (ords.Value > 1)
-                        throw new InvalidOperationException($"Ordinal '{ords.Key}' was read {ords.Value} times (value read).");
-                }
+                this.VerifyReads();
             }
         }
 
 #if NETCOREAPP3_0
         public override Task CloseAsync() => this.InnerReader.CloseAsync();
-#endif
+        public async override ValueTask DisposeAsync()
+        {
+            await this.InnerReader.DisposeAsync();
 
+            this.VerifyReads();
+        }
+#endif
+        
         protected override DbDataReader GetDbDataReader(int ordinal) => throw new NotSupportedException();
         public override IEnumerator GetEnumerator() => ((IEnumerable)this.InnerReader).GetEnumerator();
     }

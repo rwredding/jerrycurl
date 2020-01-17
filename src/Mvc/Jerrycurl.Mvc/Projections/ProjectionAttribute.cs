@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Jerrycurl.Data;
 using Jerrycurl.Data.Commands;
+using Jerrycurl.Data.Sessions;
 using Jerrycurl.Mvc.Metadata;
 using Jerrycurl.Relations;
 

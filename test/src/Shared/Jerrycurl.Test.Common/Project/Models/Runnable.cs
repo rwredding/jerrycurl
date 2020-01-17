@@ -3,7 +3,6 @@ using Jerrycurl.Mvc.Projections;
 using Jerrycurl.Mvc.Sql;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Jerrycurl.Test.Project.Models
 {
@@ -51,6 +50,11 @@ namespace Jerrycurl.Test.Project.Models
             public Func<IProjection, ISqlWritable> Result { get; set; }
             public Func<IProjection, ISqlWritable> Model { get; set; }
         }
+    }
+
+    public class Runnable : Runnable<object, object>
+    {
+
     }
 
     public interface IRunnable

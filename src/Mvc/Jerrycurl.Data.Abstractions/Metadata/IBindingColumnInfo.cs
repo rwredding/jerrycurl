@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Jerrycurl.Data.Metadata
+﻿namespace Jerrycurl.Data.Metadata
 {
     public interface IBindingColumnInfo
     {

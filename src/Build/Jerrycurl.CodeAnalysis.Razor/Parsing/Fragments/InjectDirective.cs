@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Jerrycurl.CodeAnalysis.Razor.Parsing.Directives
+﻿namespace Jerrycurl.CodeAnalysis.Razor.Parsing.Directives
 {
     public class InjectDirective
     {

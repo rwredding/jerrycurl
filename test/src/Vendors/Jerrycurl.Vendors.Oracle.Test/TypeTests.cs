@@ -1,29 +1,21 @@
-﻿using Jerrycurl.Data.Queries;
-using Jerrycurl.Mvc.Sql;
-using Jerrycurl.Relations;
-using Jerrycurl.Relations.Metadata;
+﻿using Jerrycurl.Mvc.Sql;
 using Jerrycurl.Test;
 using Jerrycurl.Test.Project.Accessors;
 using Jerrycurl.Test.Project.Models;
 using Jerrycurl.Vendors.Oracle.Test.Models;
 using Shouldly;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Jerrycurl.Vendors.Oracle.Test
 {
     public class TypeTests
     {
-        public void TypesAndParameters_AreBoundProperly()
+        public void Test_Binding_OfCommonTypes()
         {
-            Runnable<object, object> drop1 = new Runnable<object, object>();
-            Runnable<object, object> drop2 = new Runnable<object, object>();
-            Runnable<object, object> create1 = new Runnable<object, object>();
-            Runnable<object, object> create2 = new Runnable<object, object>();
+            Runnable drop1 = new Runnable();
+            Runnable drop2 = new Runnable();
+            Runnable create1 = new Runnable();
+            Runnable create2 = new Runnable();
 
             drop1.Sql(@"
 BEGIN

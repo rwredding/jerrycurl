@@ -1,8 +1,5 @@
 ﻿using Jerrycurl.Tools.Info;
 using Oracle.ManagedDataAccess.Client;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Jerrycurl.Tools.Vendors.Oracle
 {

@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Data;
 using Jerrycurl.Data.Filters;
 using Oracle.ManagedDataAccess.Client;
 
 namespace Jerrycurl.Vendors.Oracle.Filters
 {
-    class OracleLongFilter : FilterHandler, IFilter
+    internal class OracleLongFilter : FilterHandler, IFilter
     {
-        public IFilterHandler GetHandler() => this;
+        public IFilterAsyncHandler GetAsyncHandler(IDbConnection connection) => null;
+        public IFilterHandler GetHandler(IDbConnection connection) => this;
 
-        public override void OnCommandCreated(AdoCommandContext context)
+        public override void OnCommandCreated(FilterContext context)
         {
             base.OnCommandCreated(context);
 

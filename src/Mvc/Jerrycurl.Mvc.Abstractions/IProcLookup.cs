@@ -1,9 +1,6 @@
 ﻿using Jerrycurl.Mvc.Projections;
 using Jerrycurl.Relations;
 using Jerrycurl.Relations.Metadata;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Jerrycurl.Mvc
 {
@@ -14,6 +11,6 @@ namespace Jerrycurl.Mvc
         string Variable(IProjectionIdentity identity, IField field);
         string Table(IProjectionIdentity identity, MetadataIdentity metadata);
 
-        string Custom(string prefix, IProjectionIdentity identity, MetadataIdentity metadata = null, IField field = null);
+        string Custom(string prefix, IProjectionIdentity identity = null, MetadataIdentity metadata = null, IField field = null);
     }
 }

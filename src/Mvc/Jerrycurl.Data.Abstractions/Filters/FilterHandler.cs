@@ -1,55 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
+﻿using System.Threading.Tasks;
 
 namespace Jerrycurl.Data.Filters
 {
-    public class FilterHandler : IFilterHandler
+    public class FilterHandler : IFilterHandler, IFilterAsyncHandler
     {
-        public virtual void OnCommandCreated(AdoCommandContext context)
-        {
+        #region " Synchronous "
+        public virtual void OnCommandCreated(FilterContext context) { }
+        public virtual void OnCommandExecuted(FilterContext context) { }
+        public virtual void OnConnectionClosed(FilterContext context) { }
+        public virtual void OnConnectionClosing(FilterContext context) { }
+        public virtual void OnConnectionOpened(FilterContext context) { }
+        public virtual void OnConnectionOpening(FilterContext context) { }
+        public virtual void OnConnectionException(FilterContext context) { }
+        public virtual void OnException(FilterContext context) { }
+        public virtual void Dispose() { }
 
-        }
+        #endregion
 
-        public virtual void OnCommandExecuted(AdoCommandContext context)
-        {
+        #region " Asynchronous "
 
-        }
+        public virtual Task OnConnectionOpeningAsync(FilterContext context) => Task.CompletedTask;
+        public virtual Task OnConnectionOpenedAsync(FilterContext context) => Task.CompletedTask;
+        public virtual Task OnConnectionClosingAsync(FilterContext context) => Task.CompletedTask;
+        public virtual Task OnConnectionClosedAsync(FilterContext context) => Task.CompletedTask;
+        public virtual Task OnCommandCreatedAsync(FilterContext context) => Task.CompletedTask;
+        public virtual Task OnCommandExecutedAsync(FilterContext context) => Task.CompletedTask;
+        public virtual Task OnExceptionAsync(FilterContext context) => Task.CompletedTask;
+        public virtual ValueTask DisposeAsync() => default;
 
-        public virtual void OnConnectionClosed(AdoConnectionContext context)
-        {
-
-        }
-
-        public virtual void OnConnectionClosing(AdoConnectionContext context)
-        {
-
-        }
-
-        public virtual void OnConnectionOpened(AdoConnectionContext context)
-        {
-
-        }
-
-        public virtual void OnConnectionOpening(AdoConnectionContext context)
-        {
-
-        }
-
-        public virtual void OnConnectionException(AdoConnectionContext context)
-        {
-
-        }
-
-        public virtual void OnCommandException(AdoCommandContext context)
-        {
-
-        }
-
-        public virtual void Dispose()
-        {
-
-        }
+        #endregion
     }
 }

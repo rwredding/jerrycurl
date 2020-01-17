@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using Jerrycurl.Collections;
 using Jerrycurl.Reflection;
 using Jerrycurl.Relations.Metadata;
@@ -16,6 +14,20 @@ namespace Jerrycurl.Data.Metadata
         public IBindingContractResolver DefaultResolver { get; set; } = new DefaultBindingContractResolver();
 
         public IBindingMetadata GetMetadata(IMetadataBuilderContext context) => this.GetMetadata(context, context.Identity);
+
+        public BindingMetadataBuilder()
+        {
+
+        }
+
+        public BindingMetadataBuilder(IEnumerable<IBindingContractResolver> resolvers)
+        {
+            if (resolvers == null)
+                throw new ArgumentNullException(nameof(resolvers));
+
+            foreach (IBindingContractResolver resolver in resolvers)
+                this.Add(resolver);
+        }
 
         private IBindingMetadata GetMetadata(IMetadataBuilderContext context, MetadataIdentity identity)
         {

@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using Jerrycurl.CodeAnalysis.Lexing;
 using Jerrycurl.CodeAnalysis.Projection;
-using Jerrycurl.CodeAnalysis.Razor.Lexing;
 using Jerrycurl.CodeAnalysis.Razor.Lexing.CSharp;
 using Jerrycurl.CodeAnalysis.Razor.Parsing;
 using Jerrycurl.CodeAnalysis.Razor.Parsing.Directives;

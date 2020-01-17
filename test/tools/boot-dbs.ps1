@@ -14,6 +14,10 @@ if ($Vendors -eq $null) {
     exit -1
 }
 
+if ($Vendors.Length -eq 1 -and $Vendors[0] -eq "*") {
+    $Vendors = "sqlserver", "oracle", "mysql", "postgres"
+}
+
 $args = @()
 
 if ($Vendors.Contains("sqlserver")) {

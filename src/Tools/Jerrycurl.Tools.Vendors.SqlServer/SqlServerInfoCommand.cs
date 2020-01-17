@@ -1,8 +1,5 @@
 ﻿using Jerrycurl.Tools.Info;
-using System;
-using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
-using System.Text;
 
 namespace Jerrycurl.Tools.Vendors.SqlServer
 {

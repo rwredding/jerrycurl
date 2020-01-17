@@ -1,26 +1,18 @@
-﻿using Jerrycurl.Data.Queries;
-using Jerrycurl.Mvc.Sql;
-using Jerrycurl.Relations;
-using Jerrycurl.Relations.Metadata;
+﻿using Jerrycurl.Mvc.Sql;
 using Jerrycurl.Test;
 using Jerrycurl.Test.Project.Accessors;
 using Jerrycurl.Test.Project.Models;
 using Jerrycurl.Vendors.Sqlite.Test.Models;
 using Shouldly;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Jerrycurl.Vendors.Sqlite.Test
 {
     public class TypeTests
     {
-        public void TypesAndParameters_AreBoundProperly()
+        public void Test_Binding_OfCommonTypes()
         {
-            Runnable<object, object> table = new Runnable<object, object>();
+            Runnable table = new Runnable();
 
             table.Sql(@"
 DROP TABLE IF EXISTS jerry_types;

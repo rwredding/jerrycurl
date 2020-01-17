@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Jerrycurl.Data;
-using Jerrycurl.Relations.Metadata;
 using Jerrycurl.Relations;
 using Jerrycurl.Data.Commands;
-using Microsoft.Data.Sqlite;
 using Shouldly;
-using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Test.Models;
 using Jerrycurl.Test;
+using Jerrycurl.Data.Sessions;
 
 namespace Jerrycurl.Data.Test
 {

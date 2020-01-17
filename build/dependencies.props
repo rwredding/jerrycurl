@@ -20,6 +20,7 @@
     <JsonPackageVersion>4.6.0</JsonPackageVersion>
 		<MsBuildPackageVersion>16.0.461</MsBuildPackageVersion>
     <CSharpPackageVersion>4.5.0</CSharpPackageVersion>
+    <AsyncInterfacesPackageVersion>1.1.0</AsyncInterfacesPackageVersion>
 	</PropertyGroup>
 
   <PropertyGroup Label="NuGet Package Versions (.NET Standard 2.1)">

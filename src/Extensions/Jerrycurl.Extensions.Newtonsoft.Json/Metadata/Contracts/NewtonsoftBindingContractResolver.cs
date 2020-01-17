@@ -4,8 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Jerrycurl.Data;
 using Jerrycurl.Data.Metadata;
 using Jerrycurl.Mvc.Metadata.Annotations;

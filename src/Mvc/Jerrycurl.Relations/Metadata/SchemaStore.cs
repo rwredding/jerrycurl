@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using Jerrycurl.Collections;
 
 namespace Jerrycurl.Relations.Metadata

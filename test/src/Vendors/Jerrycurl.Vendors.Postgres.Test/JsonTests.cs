@@ -1,20 +1,11 @@
-﻿using Jerrycurl.Data.Queries;
-using Jerrycurl.Mvc;
-using Jerrycurl.Mvc.Sql;
-using Jerrycurl.Relations;
-using Jerrycurl.Relations.Metadata;
+﻿using Jerrycurl.Mvc.Sql;
 using Jerrycurl.Test;
 using Jerrycurl.Test.Project.Accessors;
 using Jerrycurl.Test.Project.Models;
 using Jerrycurl.Vendors.Postgres.Test.Models;
 using Jerrycurl.Vendors.Postgres.Test.Views;
 using Shouldly;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Jerrycurl.Vendors.Postgres.Test
 {
@@ -22,7 +13,7 @@ namespace Jerrycurl.Vendors.Postgres.Test
     {
         public void JsonParameters_GetCorrectNpgsqlType()
         {
-            Runnable<object, object> table = new Runnable<object, object>();
+            Runnable table = new Runnable();
 
             table.Sql(@"
 DROP TABLE IF EXISTS jerry_json;

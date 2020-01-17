@@ -1,10 +1,8 @@
 ﻿using Jerrycurl.Mvc.Test.Conventions.Accessors;
 using Jerrycurl.Mvc.Test.Conventions.Models;
 using Shouldly;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Jerrycurl.Mvc.Test
 {

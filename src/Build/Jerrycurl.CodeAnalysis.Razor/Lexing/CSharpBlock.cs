@@ -1,8 +1,6 @@
 ﻿using Jerrycurl.CodeAnalysis.Razor.Lexing.Razor;
 using Jerrycurl.CodeAnalysis.Razor.Lexing.CSharp;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Jerrycurl.CodeAnalysis.Lexing;
 
 namespace Jerrycurl.CodeAnalysis.Razor.Lexing

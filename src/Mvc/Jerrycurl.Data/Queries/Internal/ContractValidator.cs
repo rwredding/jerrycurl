@@ -1,12 +1,8 @@
 ﻿using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Queries.Internal.Nodes;
 using Jerrycurl.Reflection;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
 
 namespace Jerrycurl.Data.Queries.Internal
 {

@@ -3,7 +3,6 @@ using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Queries.Internal.Builders;
 using Jerrycurl.Data.Queries.Internal.Nodes;
 using Jerrycurl.Data.Queries.Internal.State;
-using Jerrycurl.Linq.Expressions;
 using Jerrycurl.Relations.Metadata;
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Jerrycurl.Data.Queries.Internal
 {

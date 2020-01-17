@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Jerrycurl.Data;
-using Jerrycurl.Data.Filters;
+﻿using System.Collections.Generic;
+using Jerrycurl.Data.Sessions;
 
 namespace Jerrycurl.Data.Commands
 {

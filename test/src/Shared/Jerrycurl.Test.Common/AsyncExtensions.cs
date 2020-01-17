@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Jerrycurl.Test
 {
-#if NETCOREAPP3_0
     public static class AsyncExtensions
     {
         public static async Task<TItem> FirstOrDefault<TItem>(this IAsyncEnumerable<TItem> enumerable)
@@ -26,5 +23,4 @@ namespace Jerrycurl.Test
             return items;
         }
     }
-#endif
 }

@@ -1,9 +1,6 @@
 ﻿using Jerrycurl.Diagnostics;
 using Jerrycurl.Relations.Metadata;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using HashCode = Jerrycurl.Diagnostics.HashCode;
 
 namespace Jerrycurl.Relations

@@ -1,12 +1,6 @@
-﻿using Jerrycurl.Data;
-using Jerrycurl.Data.Metadata;
-using Jerrycurl.Diagnostics;
+﻿using Jerrycurl.Diagnostics;
 using Jerrycurl.Relations.Metadata;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HashCode = Jerrycurl.Diagnostics.HashCode;
 
 namespace Jerrycurl.Data.Commands.Internal
@@ -18,7 +12,7 @@ namespace Jerrycurl.Data.Commands.Internal
 
         public FuncColumnKey(MetadataIdentity metadata, ColumnIdentity column)
         {
-            this.Metadata = metadata ?? throw new ArgumentNullException(nameof(metadata));
+            this.Metadata = metadata;
             this.Column = column;
         }
 

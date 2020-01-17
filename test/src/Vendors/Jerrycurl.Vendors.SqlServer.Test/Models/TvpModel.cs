@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Jerrycurl.Data.Metadata.Annotations;
+﻿using Jerrycurl.Data.Metadata.Annotations;
 
 namespace Jerrycurl.Vendors.SqlServer.Test.Models
 {

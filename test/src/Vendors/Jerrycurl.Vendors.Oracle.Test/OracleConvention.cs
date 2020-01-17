@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Jerrycurl.Mvc;
+﻿using Jerrycurl.Mvc;
 using Jerrycurl.Test;
 
 namespace Jerrycurl.Vendors.Oracle.Test
@@ -17,6 +14,6 @@ namespace Jerrycurl.Vendors.Oracle.Test
             options.UseNewtonsoftJson();
         }
 
-        private string GetConnectionString() => this.GetEnvironmentVariable("JERRY_ORACLE_CONN");
+        public string GetConnectionString() => GetEnvironmentVariable("JERRY_ORACLE_CONN");
     }
 }

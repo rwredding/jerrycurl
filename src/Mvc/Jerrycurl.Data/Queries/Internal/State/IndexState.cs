@@ -4,9 +4,6 @@ using Jerrycurl.Diagnostics;
 using Jerrycurl.Relations.Metadata;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
 using HashCode = Jerrycurl.Diagnostics.HashCode;
 
 namespace Jerrycurl.Data.Queries.Internal.State
