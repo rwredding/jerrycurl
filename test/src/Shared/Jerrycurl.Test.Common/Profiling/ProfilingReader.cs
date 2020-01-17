@@ -251,7 +251,6 @@ namespace Jerrycurl.Test.Profiling
 
                 this.VerifyReads();
             }
-                
         }
 
 #if NETCOREAPP3_0
