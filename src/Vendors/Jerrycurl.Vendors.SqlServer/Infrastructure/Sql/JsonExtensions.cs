@@ -1,11 +1,7 @@
 ﻿using Jerrycurl.Mvc.Projections;
-using Jerrycurl.Mvc.Sql;
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 using Jerrycurl.Mvc.Metadata;
-using Jerrycurl.Mvc;
 
 namespace Jerrycurl.Mvc.Sql.SqlServer
 {

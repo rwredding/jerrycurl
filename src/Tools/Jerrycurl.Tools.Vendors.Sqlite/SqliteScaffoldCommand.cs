@@ -2,9 +2,7 @@
 using Jerrycurl.Tools.Scaffolding.Model;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using Microsoft.Data.Sqlite;
-using System.Text;
 using System.Linq;
 using System.Data.Common;
 using System.Threading;

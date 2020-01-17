@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Jerrycurl.Data;
-using Jerrycurl.Relations.Metadata;
-using Jerrycurl.Relations;
+﻿using System.Collections.Generic;
 using Jerrycurl.Data.Commands;
-using Microsoft.Data.Sqlite;
 using Shouldly;
-using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Queries;
 using Jerrycurl.Data.Filters;
 using Jerrycurl.Test;

@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Xml.Linq;
 using Jerrycurl.Data.Metadata.Annotations;
-using Jerrycurl.Mvc.Metadata.Annotations;
 
 namespace Jerrycurl.Vendors.Postgres.Test.Models
 {

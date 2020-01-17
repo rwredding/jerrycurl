@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Jerrycurl.CodeAnalysis.Lexing;
-
-namespace Jerrycurl.CodeAnalysis.Razor.Parsing
+﻿namespace Jerrycurl.CodeAnalysis.Razor.Parsing
 {
     public class RazorProjectItem
     {

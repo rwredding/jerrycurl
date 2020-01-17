@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Jerrycurl.CodeAnalysis.Razor.Lexing;
-using Jerrycurl.CodeAnalysis.Razor.Lexing.CSharp;
-using Jerrycurl.CodeAnalysis.Razor.Lexing.Razor;
+﻿using Jerrycurl.CodeAnalysis.Razor.Lexing.CSharp;
 
 namespace Jerrycurl.CodeAnalysis.Razor.Parsing.Fragments
 {

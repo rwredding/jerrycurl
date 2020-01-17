@@ -1,8 +1,6 @@
 ﻿using Jerrycurl.Mvc.Metadata;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using System.Text.Json;
 
 namespace Jerrycurl.Extensions.Json.Metadata.Contracts

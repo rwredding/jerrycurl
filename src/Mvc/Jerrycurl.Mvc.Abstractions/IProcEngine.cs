@@ -1,7 +1,5 @@
 ﻿using Jerrycurl.Mvc.Projections;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Jerrycurl.Mvc
 {

@@ -2,15 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Jerrycurl.Data;
-using Jerrycurl.Data.Commands;
 using Jerrycurl.Collections;
-using Jerrycurl.Data.Metadata;
-using Jerrycurl.Relations;
 using Jerrycurl.Relations.Metadata;
-using Jerrycurl.Data.Filters;
 using Jerrycurl.Data.Commands.Internal;
 using System.Data.Common;
 using System.Threading;
@@ -48,10 +42,10 @@ namespace Jerrycurl.Data.Commands
                     FieldData[] fields = command.GetHeading(tableInfo);
                     MetadataIdentity[] metadata = fields.Select(f => f?.Attribute).ToArray();
 
-                    var fun = FuncCache.GetFieldDataBinder(metadata, tableInfo);
+                    var binder = FuncCache.GetFieldDataBinder(metadata, tableInfo);
 
                     if (reader.Read())
-                        fun(reader, fields);
+                        binder(reader, fields);
                 }
             }
 
@@ -78,9 +72,9 @@ namespace Jerrycurl.Data.Commands
                 {
                     TableIdentity tableInfo = TableIdentity.FromRecord(dataReader);
                     FieldData[] fields = command.GetHeading(tableInfo);
-                    MetadataIdentity[] attributes = fields.Select(f => f.Attribute).ToArray();
+                    MetadataIdentity[] attributes = fields.Select(f => f?.Attribute).ToArray();
 
-                    Action<IDataReader, FieldData[]> binder = FuncCache.GetFieldDataBinder(attributes, tableInfo);
+                    var binder = FuncCache.GetFieldDataBinder(attributes, tableInfo);
 
                     if (await dataReader.ReadAsync().ConfigureAwait(false))
                         binder(dataReader, fields);

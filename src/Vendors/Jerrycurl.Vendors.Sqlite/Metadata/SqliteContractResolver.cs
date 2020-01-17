@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using Jerrycurl.Data;
 using Jerrycurl.Data.Metadata;
 
 namespace Jerrycurl.Vendors.Sqlite.Metadata

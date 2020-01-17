@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Jerrycurl.Relations.Metadata;
-using Jerrycurl.Relations;
 using Jerrycurl.Collections;
-using System.Linq.Expressions;
-using System.Collections;
-using System.Reflection;
 using Jerrycurl.Data.Metadata;
-using Jerrycurl.Data;
 using Jerrycurl.Data.Queries.Internal.Nodes;
 
 namespace Jerrycurl.Data.Queries.Internal.Builders

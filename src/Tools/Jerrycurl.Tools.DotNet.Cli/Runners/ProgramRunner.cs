@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Jerrycurl.Reflection;
 using Jerrycurl.Tools.DotNet.Cli.Commands;
-using Jerrycurl.Tools.Scaffolding;
 
 namespace Jerrycurl.Tools.DotNet.Cli.Runners
 {

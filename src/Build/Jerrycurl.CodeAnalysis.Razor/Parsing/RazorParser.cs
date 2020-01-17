@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using Jerrycurl.CodeAnalysis.Lexing;
-using Jerrycurl.CodeAnalysis.Razor;
 using Jerrycurl.CodeAnalysis.Razor.Lexing;
 using Jerrycurl.CodeAnalysis.Razor.Parsing.Fragments;
 using Jerrycurl.CodeAnalysis.Razor.Parsing.Directives;

@@ -1,8 +1,5 @@
-﻿using Jerrycurl.Data.Filters;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data;
-using System.Text;
 using System.Transactions;
 
 namespace Jerrycurl.Data.Filters

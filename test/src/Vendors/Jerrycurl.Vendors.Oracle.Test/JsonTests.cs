@@ -1,21 +1,11 @@
-﻿using Jerrycurl.Data.Queries;
-using Jerrycurl.Mvc;
-using Jerrycurl.Mvc.Sql;
+﻿using Jerrycurl.Mvc.Sql;
 using Jerrycurl.Mvc.Sql.Oracle;
-using Jerrycurl.Relations;
-using Jerrycurl.Relations.Metadata;
-using Jerrycurl.Test;
 using Jerrycurl.Test.Project.Accessors;
 using Jerrycurl.Test.Project.Models;
 using Jerrycurl.Vendors.Oracle.Test.Models;
 using Jerrycurl.Vendors.Oracle.Test.Views;
 using Shouldly;
-using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Jerrycurl.Vendors.Oracle.Test
 {

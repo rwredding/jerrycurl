@@ -1,9 +1,6 @@
-﻿using Jerrycurl.Data.Filters;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data;
 using System.Data.Common;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Jerrycurl.Data.Filters

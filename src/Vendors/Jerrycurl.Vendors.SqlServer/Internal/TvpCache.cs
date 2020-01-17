@@ -1,11 +1,6 @@
-﻿using Jerrycurl.Data.Metadata;
-using Jerrycurl.Relations;
-using Jerrycurl.Relations.Metadata;
+﻿using Jerrycurl.Relations;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 #if SQLSERVER_LEGACY
 using System.Data.SqlClient;
 #else

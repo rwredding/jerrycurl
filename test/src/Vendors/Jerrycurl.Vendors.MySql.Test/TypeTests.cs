@@ -1,19 +1,10 @@
-﻿using Jerrycurl.Data.Queries;
-using Jerrycurl.Mvc.Sql;
-using Jerrycurl.Relations;
-using Jerrycurl.Relations.Metadata;
+﻿using Jerrycurl.Mvc.Sql;
 using Jerrycurl.Test;
 using Jerrycurl.Test.Project.Accessors;
 using Jerrycurl.Test.Project.Models;
 using Jerrycurl.Vendors.MySql.Test.Models;
-using MySql.Data.MySqlClient;
 using Shouldly;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Jerrycurl.Vendors.MySql.Test
 {

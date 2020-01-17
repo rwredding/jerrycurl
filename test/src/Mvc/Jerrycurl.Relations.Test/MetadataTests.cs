@@ -1,16 +1,11 @@
-﻿using Jerrycurl.Relations;
-using Jerrycurl.Relations.Metadata;
-using Jerrycurl.Relations.Test;
+﻿using Jerrycurl.Relations.Metadata;
 using Jerrycurl.Relations.Test.Metadata;
 using Jerrycurl.Relations.Test.Models;
 using Jerrycurl.Relations.Tests.Models;
 using Jerrycurl.Test;
 using Shouldly;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Jerrycurl.Relations.Tests
 {

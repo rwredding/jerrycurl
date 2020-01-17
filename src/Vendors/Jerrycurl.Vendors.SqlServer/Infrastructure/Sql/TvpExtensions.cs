@@ -1,18 +1,10 @@
 ﻿using Jerrycurl.Mvc.Projections;
 using Jerrycurl.Mvc.Sql;
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
-using Jerrycurl.Mvc.Metadata;
 using Jerrycurl.Relations;
-using Jerrycurl.Data;
-using Jerrycurl.Data.Metadata;
 using Jerrycurl.Vendors.SqlServer;
-using Jerrycurl.Vendors.SqlServer.Internal;
-using Jerrycurl.Relations.Metadata;
 using System.Linq;
-using Jerrycurl.Data.Sessions;
 
 namespace Jerrycurl.Mvc.Sql.SqlServer
 {

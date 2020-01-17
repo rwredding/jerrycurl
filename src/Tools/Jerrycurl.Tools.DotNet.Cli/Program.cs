@@ -1,16 +1,7 @@
 ﻿using Jerrycurl.CommandLine;
-using Jerrycurl.Reflection;
 using Jerrycurl.Tools.DotNet.Cli.Commands;
 using Jerrycurl.Tools.DotNet.Cli.Runners;
-using Jerrycurl.Tools.Scaffolding;
-using Jerrycurl.Tools.Scaffolding.Model;
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Jerrycurl.Tools.DotNet.Cli

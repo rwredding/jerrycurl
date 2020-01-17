@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using Jerrycurl.Collections;
 using Jerrycurl.Reflection;
 using Jerrycurl.Relations.Metadata;

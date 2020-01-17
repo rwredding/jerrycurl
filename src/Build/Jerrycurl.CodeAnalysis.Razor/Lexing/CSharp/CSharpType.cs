@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Jerrycurl.CodeAnalysis.Razor.Lexing.CSharp
+﻿namespace Jerrycurl.CodeAnalysis.Razor.Lexing.CSharp
 {
     public enum CSharpType
     {

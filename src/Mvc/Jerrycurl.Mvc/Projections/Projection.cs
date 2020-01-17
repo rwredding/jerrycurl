@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Jerrycurl.Collections;
-using Jerrycurl.Data;
 using Jerrycurl.Data.Commands;
 using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Sessions;

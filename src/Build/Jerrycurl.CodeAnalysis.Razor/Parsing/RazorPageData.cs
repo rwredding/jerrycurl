@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Jerrycurl.CodeAnalysis.Lexing;
+﻿using System.Collections.Generic;
 using Jerrycurl.CodeAnalysis.Razor.Parsing.Directives;
 
 namespace Jerrycurl.CodeAnalysis.Razor.Parsing

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Jerrycurl.CodeAnalysis.Razor.Parsing;
-using Jerrycurl.CodeAnalysis.Razor.Parsing.Directives;
 
 namespace Jerrycurl.CodeAnalysis.Razor.Generation
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Jerrycurl.Relations.Internal.Nodes
+﻿namespace Jerrycurl.Relations.Internal.Nodes
 {
     internal class ListNode : MemberNode
     {

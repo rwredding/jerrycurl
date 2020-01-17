@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Jerrycurl.Mvc
+﻿namespace Jerrycurl.Mvc
 {
     public interface IProcExecutionStack
     {

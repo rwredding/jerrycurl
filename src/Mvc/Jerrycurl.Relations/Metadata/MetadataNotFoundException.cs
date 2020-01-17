@@ -1,12 +1,6 @@
-﻿using Jerrycurl.Diagnostics;
-using Jerrycurl.Reflection;
-using Jerrycurl.Relations;
-using Jerrycurl.Relations.Metadata;
+﻿using Jerrycurl.Reflection;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace Jerrycurl.Relations.Metadata
 {

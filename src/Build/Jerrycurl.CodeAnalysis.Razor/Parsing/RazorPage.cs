@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Jerrycurl.CodeAnalysis.Razor.Parsing;
-
-namespace Jerrycurl.CodeAnalysis.Razor.Parsing
+﻿namespace Jerrycurl.CodeAnalysis.Razor.Parsing
 {
     public class RazorPage
     {

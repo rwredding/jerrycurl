@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Jerrycurl.Tools.Info
+﻿namespace Jerrycurl.Tools.Info
 {
     public abstract class InfoCommand
     {

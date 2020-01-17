@@ -1,7 +1,4 @@
-﻿using Jerrycurl.Relations.Metadata;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 
 namespace Jerrycurl.Relations
 {

@@ -1,12 +1,7 @@
-﻿using Jerrycurl.Data;
-using Jerrycurl.Data.Metadata;
-using Jerrycurl.Data.Sessions;
-using Jerrycurl.Relations;
+﻿using Jerrycurl.Data.Sessions;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 
 namespace Jerrycurl.Data.Queries.Internal
 {

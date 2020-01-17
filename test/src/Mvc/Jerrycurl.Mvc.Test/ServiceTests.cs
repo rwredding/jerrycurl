@@ -1,13 +1,9 @@
 ﻿using Jerrycurl.Mvc.Test.Conventions.Accessors;
 using Jerrycurl.Mvc.Test.Conventions.DependencyInjection;
 using Jerrycurl.Mvc.Test.Conventions.DependencyInjection.Services;
-using Jerrycurl.Mvc.Test.Conventions.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Jerrycurl.Mvc.Test
 {

@@ -1,7 +1,4 @@
-﻿using Jerrycurl.Data;
-using Jerrycurl.Data.Metadata;
-using Jerrycurl.Data.Queries;
-using Jerrycurl.Data.Queries.Internal;
+﻿using Jerrycurl.Data.Queries.Internal;
 using Jerrycurl.Data.Queries.Internal.State;
 using Jerrycurl.Relations.Metadata;
 using System;
@@ -9,7 +6,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 
 namespace Jerrycurl.Data.Queries

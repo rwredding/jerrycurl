@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Jerrycurl.Data;
 using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Commands;
 using Jerrycurl.Mvc.Metadata;

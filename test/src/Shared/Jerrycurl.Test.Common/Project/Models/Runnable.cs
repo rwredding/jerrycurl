@@ -3,7 +3,6 @@ using Jerrycurl.Mvc.Projections;
 using Jerrycurl.Mvc.Sql;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Jerrycurl.Test.Project.Models
 {

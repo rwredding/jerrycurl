@@ -1,15 +1,11 @@
-﻿using Jerrycurl.Data.Metadata;
-using Jerrycurl.Data.Metadata.Annotations;
-using Jerrycurl.Mvc.Metadata.Annotations;
+﻿using Jerrycurl.Data.Metadata.Annotations;
 using Jerrycurl.Relations.Metadata;
-using Jerrycurl.Relations.Metadata.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Jerrycurl.Extensions.EntityFrameworkCore.Metadata.Builders
 {

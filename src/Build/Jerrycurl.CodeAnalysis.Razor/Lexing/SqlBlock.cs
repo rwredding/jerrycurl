@@ -1,8 +1,5 @@
 ﻿using Jerrycurl.CodeAnalysis.Lexing;
 using Jerrycurl.CodeAnalysis.Razor.Lexing.Sql;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Jerrycurl.CodeAnalysis.Razor.Lexing
 {

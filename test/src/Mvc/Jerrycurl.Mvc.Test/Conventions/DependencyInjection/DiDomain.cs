@@ -1,10 +1,4 @@
-﻿using Jerrycurl.Mvc;
-using Jerrycurl.Mvc.Test.Conventions.DependencyInjection.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Jerrycurl.Mvc.Test.Conventions.DependencyInjection.Services;
 
 namespace Jerrycurl.Mvc.Test.Conventions.DependencyInjection
 {

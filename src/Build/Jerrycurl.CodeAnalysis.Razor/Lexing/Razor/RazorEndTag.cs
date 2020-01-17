@@ -1,7 +1,4 @@
 ﻿using Jerrycurl.CodeAnalysis.Lexing;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Jerrycurl.CodeAnalysis.Razor.Lexing.Razor
 {

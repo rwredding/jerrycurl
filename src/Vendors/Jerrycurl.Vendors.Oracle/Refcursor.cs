@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Sessions;
 using Jerrycurl.Relations;
 using Oracle.ManagedDataAccess.Client;

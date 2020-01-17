@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Jerrycurl.Relations.Metadata;
-using System.Reflection;
-using Jerrycurl.Mvc.Projections;
-using Jerrycurl.Data.Filters;
 
 namespace Jerrycurl.Mvc
 {

@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Jerrycurl.Data.Metadata;
-using Jerrycurl.Relations;
 using Jerrycurl.Relations.Metadata;
 
 namespace Jerrycurl.Mvc.Metadata

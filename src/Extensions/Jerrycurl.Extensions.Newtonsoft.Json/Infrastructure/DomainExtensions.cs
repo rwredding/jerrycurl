@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using Jerrycurl.Mvc;
-using Newtonsoft.Json;
-using Jerrycurl.Data.Metadata;
+﻿using Newtonsoft.Json;
 using Jerrycurl.Extensions.Newtonsoft.Json.Metadata.Contracts;
 
 namespace Jerrycurl.Mvc

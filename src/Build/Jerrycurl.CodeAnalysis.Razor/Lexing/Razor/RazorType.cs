@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Jerrycurl.CodeAnalysis.Razor.Lexing.Razor
+﻿namespace Jerrycurl.CodeAnalysis.Razor.Lexing.Razor
 {
     public enum RazorType
     {

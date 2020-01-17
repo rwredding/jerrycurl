@@ -1,10 +1,5 @@
-﻿using Jerrycurl.Data.Metadata;
-using Jerrycurl.Diagnostics;
-using System;
+﻿using Jerrycurl.Diagnostics;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HashCode = Jerrycurl.Diagnostics.HashCode;
 
 namespace Jerrycurl.Data.Metadata

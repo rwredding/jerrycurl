@@ -1,11 +1,5 @@
-﻿using Jerrycurl.Data.Metadata;
-using Jerrycurl.Mvc.Metadata;
+﻿using Jerrycurl.Mvc.Metadata;
 using Jerrycurl.Mvc.Projections;
-using Jerrycurl.Relations.Metadata;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Text;
 
 namespace Jerrycurl.Mvc.Sql.Oracle
 {

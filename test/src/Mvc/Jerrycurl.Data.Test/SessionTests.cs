@@ -1,29 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Jerrycurl.Data;
-using Jerrycurl.Relations.Metadata;
-using Jerrycurl.Relations;
 using Jerrycurl.Data.Commands;
 using Microsoft.Data.Sqlite;
 using Shouldly;
-using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Queries;
-using Jerrycurl.Data.Test.Models;
 using Jerrycurl.Test;
 using System.Data;
 using System.Threading;
-using System.Data.Common;
 using Jerrycurl.Data.Sessions;
 
 namespace Jerrycurl.Data.Test
 {
     public class SessionTests
     {
-#if NETCOREAPP3_0
-        public async Task Test_ConnectionManagement_WithAsync()
+        public async Task Test_ConnectionManagement_WithAsyncSession()
         {
             var connection = new SqliteConnection(DatabaseHelper.TestDbConnectionString);
 
@@ -45,8 +35,31 @@ namespace Jerrycurl.Data.Test
 
             connection.State.ShouldBe(ConnectionState.Closed);
         }
-#endif
-        public void Test_ConnectionManagement_WithSharedFactory()
+
+        public void Test_ConnectionManagement_WithSyncSession()
+        {
+            var connection = new SqliteConnection(DatabaseHelper.TestDbConnectionString);
+
+            QueryOptions options = new QueryOptions()
+            {
+                ConnectionFactory = () => connection,
+                Schemas = DatabaseHelper.Default.Schemas,
+            };
+
+            using (var ado = new SyncSession(options))
+            {
+                foreach (var r in ado.Execute(new AdoCommandBuilder("SELECT 12; SELECT 12")))
+                {
+                    r.Read().ShouldBeTrue();
+                    r.GetInt32(0).ShouldBe(12);
+                    r.Read().ShouldBeFalse();
+                }
+            }
+
+            connection.State.ShouldBe(ConnectionState.Closed);
+        }
+
+        public void Test_ConnectionManagement_WithOpenConnection()
         {
             var connection = new SqliteConnection(DatabaseHelper.TestDbConnectionString);
 
@@ -66,63 +79,78 @@ namespace Jerrycurl.Data.Test
                 }
                 finally
                 {
-                    connection.Close();
+                    connection.Dispose();
                 }
             });
         }
 
-        public void Test_ConnectionManagement_WithTransientFactory()
+        public async Task Test_ConnectionManagement_WithCommandHandler()
         {
-            bool wasCreated = false;
+            var connection1 = new SqliteConnection(DatabaseHelper.TestDbConnectionString);
+            var connection2 = new SqliteConnection(DatabaseHelper.TestDbConnectionString);
 
-            QueryOptions options = new QueryOptions()
+            try
             {
-                ConnectionFactory = () =>
+                CommandOptions options1 = new CommandOptions()
                 {
-                    if (!wasCreated)
-                    {
-                        wasCreated = true;
+                    ConnectionFactory = () => connection1,
+                };
 
-                        return new SqliteConnection(DatabaseHelper.TestDbConnectionString);
-                    }
-
-                    throw new InvalidOperationException();
-                },
-                Schemas = DatabaseHelper.Default.Schemas,
-            };
-
-            var ado = new SyncSession(options);
-
-            using (ado)
-            {
-                foreach (var r in ado.Execute(new AdoCommandBuilder("SELECT 12; SELECT 12")))
+                CommandOptions options2 = new CommandOptions()
                 {
-                    r.Read().ShouldBeTrue();
-                    r.GetInt32(0).ShouldBe(12);
-                    r.Read().ShouldBeFalse();
-                }
+                    ConnectionFactory = () => connection2,
+                };
 
-                foreach (var r in ado.Execute(new AdoCommandBuilder("SELECT 12; SELECT 12")))
-                {
-                    r.Read().ShouldBeTrue();
-                    r.GetInt32(0).ShouldBe(12);
-                    r.Read().ShouldBeFalse();
-                }
+                CommandHandler handler1 = new CommandHandler(options1);
+                CommandHandler handler2 = new CommandHandler(options2);
+
+                handler1.Execute(new CommandData() { CommandText = "SELECT 0;" });
+                await handler2.ExecuteAsync(new CommandData() { CommandText = "SELECT 0;" });
+
+                connection1.State.ShouldBe(ConnectionState.Closed);
+                connection2.State.ShouldBe(ConnectionState.Closed);
             }
-
-            Should.Throw<ObjectDisposedException>(() =>
+            finally
             {
-                foreach (var r in ado.Execute(new AdoCommandBuilder("SELECT 12; SELECT 12")))
-                    ;
-            });
+                connection1.Dispose();
+                connection2.Dispose();
+            }
+        }
 
-            Should.Throw<ObjectDisposedException>(() =>
+
+        public async Task Test_ConnectionManagement_WithQueryHandler()
+        {
+            var connection1 = new SqliteConnection(DatabaseHelper.TestDbConnectionString);
+            var connection2 = new SqliteConnection(DatabaseHelper.TestDbConnectionString);
+
+            try
             {
-                var ado2 = new SyncSession(options);
+                QueryOptions options1 = new QueryOptions()
+                {
+                    ConnectionFactory = () => connection1,
+                    Schemas = DatabaseHelper.Default.Schemas,
+                };
 
-                foreach (var r in ado2.Execute(new AdoCommandBuilder("SELECT 12; SELECT 12")))
-                    ;
-            });
+                QueryOptions options2 = new QueryOptions()
+                {
+                    ConnectionFactory = () => connection2,
+                    Schemas = DatabaseHelper.Default.Schemas,
+                };
+
+                QueryHandler handler1 = new QueryHandler(options1);
+                QueryHandler handler2 = new QueryHandler(options2);
+
+                handler1.List<int>(new QueryData() { QueryText = "SELECT 0 AS [Item];" });
+                await handler2.ListAsync<int>(new QueryData() { QueryText = "SELECT 0 AS [Item];" });
+
+                connection1.State.ShouldBe(ConnectionState.Closed);
+                connection2.State.ShouldBe(ConnectionState.Closed);
+            }
+            finally
+            {
+                connection1.Dispose();
+                connection2.Dispose();
+            }
         }
     }
 }

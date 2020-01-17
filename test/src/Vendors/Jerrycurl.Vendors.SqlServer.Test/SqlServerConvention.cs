@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Text;
-using Jerrycurl.Mvc;
+﻿using Jerrycurl.Mvc;
 using Jerrycurl.Test;
 
 namespace Jerrycurl.Vendors.SqlServer.Test

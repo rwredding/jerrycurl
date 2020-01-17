@@ -1,8 +1,5 @@
 ﻿using Jerrycurl.Tools.Info;
 using Microsoft.Data.Sqlite;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Jerrycurl.Tools.Vendors.Sqlite
 {
