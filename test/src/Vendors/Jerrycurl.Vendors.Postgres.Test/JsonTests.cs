@@ -22,7 +22,7 @@ namespace Jerrycurl.Vendors.Postgres.Test
     {
         public void JsonParameters_GetCorrectNpgsqlType()
         {
-            Runnable<object, object> table = new Runnable<object, object>();
+            Runnable table = new Runnable();
 
             table.Sql(@"
 DROP TABLE IF EXISTS jerry_json;

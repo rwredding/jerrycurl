@@ -19,9 +19,9 @@ namespace Jerrycurl.Vendors.Postgres.Test
 {
     public class TypeTests
     {
-        public void TypesAndParameters_AreBoundProperly()
+        public void Test_Binding_OfCommonTypes()
         {
-            Runnable<object, object> table = new Runnable<object, object>();
+            Runnable table = new Runnable();
 
             table.Sql(@"
 DROP TABLE IF EXISTS jerry_types;

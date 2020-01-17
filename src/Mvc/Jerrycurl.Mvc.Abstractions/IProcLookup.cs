@@ -14,6 +14,6 @@ namespace Jerrycurl.Mvc
         string Variable(IProjectionIdentity identity, IField field);
         string Table(IProjectionIdentity identity, MetadataIdentity metadata);
 
-        string Custom(string prefix, IProjectionIdentity identity, MetadataIdentity metadata = null, IField field = null);
+        string Custom(string prefix, IProjectionIdentity identity = null, MetadataIdentity metadata = null, IField field = null);
     }
 }

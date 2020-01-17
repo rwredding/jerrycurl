@@ -18,12 +18,12 @@ namespace Jerrycurl.Vendors.Oracle.Test
 {
     public class TypeTests
     {
-        public void TypesAndParameters_AreBoundProperly()
+        public void Test_Binding_OfCommonTypes()
         {
-            Runnable<object, object> drop1 = new Runnable<object, object>();
-            Runnable<object, object> drop2 = new Runnable<object, object>();
-            Runnable<object, object> create1 = new Runnable<object, object>();
-            Runnable<object, object> create2 = new Runnable<object, object>();
+            Runnable drop1 = new Runnable();
+            Runnable drop2 = new Runnable();
+            Runnable create1 = new Runnable();
+            Runnable create2 = new Runnable();
 
             drop1.Sql(@"
 BEGIN

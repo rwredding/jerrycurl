@@ -91,7 +91,7 @@ namespace Jerrycurl.Data.Sessions
         private IDbConnection GetOpenConnection()
         {
             if (this.wasDisposed)
-                throw new InvalidOperationException("Connection is no longer usable; it is disposed.");
+                throw new ObjectDisposedException("Connection is no longer usable; it is disposed.");
 
             if (this.wasOpened)
                 return this.connection;

@@ -53,6 +53,11 @@ namespace Jerrycurl.Test.Project.Models
         }
     }
 
+    public class Runnable : Runnable<object, object>
+    {
+
+    }
+
     public interface IRunnable
     {
         void Execute(ISqlPage page);

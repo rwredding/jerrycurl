@@ -23,8 +23,8 @@ namespace Jerrycurl.Vendors.Oracle.Test
     {
         public void JsonValue_IsReferencedCorrectly()
         {
-            Runnable<object, object> drop = new Runnable<object, object>();
-            Runnable<object, object> create = new Runnable<object, object>();
+            Runnable drop = new Runnable();
+            Runnable create = new Runnable();
 
             drop.Sql(@"
 BEGIN

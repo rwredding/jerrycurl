@@ -42,7 +42,7 @@ namespace Jerrycurl.Data.Queries
 
             foreach (QueryData queryData in queries.NotNull())
             {
-                QueryOperation builder = new QueryOperation(queryData);
+                Query builder = new Query(queryData);
 
                 if (string.IsNullOrWhiteSpace(queryData.QueryText))
                     continue;
@@ -70,7 +70,7 @@ namespace Jerrycurl.Data.Queries
 
             foreach (QueryData queryData in queries.NotNull())
             {
-                QueryOperation builder = new QueryOperation(queryData);
+                Query builder = new Query(queryData);
 
                 if (string.IsNullOrWhiteSpace(queryData.QueryText))
                     continue;
@@ -95,12 +95,12 @@ namespace Jerrycurl.Data.Queries
 
             foreach (QueryData queryData in queries.NotNull())
             {
-                QueryOperation helper = new QueryOperation(queryData);
+                Query query = new Query(queryData);
 
                 if (string.IsNullOrWhiteSpace(queryData.QueryText))
                     continue;
 
-                await foreach (DbDataReader dataReader in connection.ExecuteAsync(helper, cancellationToken).ConfigureAwait(false))
+                await foreach (DbDataReader dataReader in connection.ExecuteAsync(query, cancellationToken).ConfigureAwait(false))
                     yield return new QueryReader(dataReader, this.Options.Schemas);
             }
         }
@@ -131,12 +131,12 @@ namespace Jerrycurl.Data.Queries
 
             foreach (QueryData queryData in queries.NotNull())
             {
-                QueryOperation helper = new QueryOperation(queryData);
+                Query query = new Query(queryData);
 
                 if (string.IsNullOrWhiteSpace(queryData.QueryText))
                     continue;
 
-                foreach (IDataReader reader in connection.Execute(helper))
+                foreach (IDataReader reader in connection.Execute(query))
                     yield return new QueryReader(reader, this.Options.Schemas);
             }
         }

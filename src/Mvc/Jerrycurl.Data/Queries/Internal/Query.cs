@@ -10,12 +10,12 @@ using System.Text;
 
 namespace Jerrycurl.Data.Queries.Internal
 {
-    internal class QueryOperation : IOperation
+    internal class Query : IOperation
     {
         public QueryData Data { get; }
         public object Source => this.Data;
 
-        public QueryOperation(QueryData queryData)
+        public Query(QueryData queryData)
         {
             this.Data = queryData ?? throw new ArgumentNullException(nameof(queryData));
         }

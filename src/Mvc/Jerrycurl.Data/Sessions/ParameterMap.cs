@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
+using Jerrycurl.Data.Sessions;
 using Jerrycurl.Relations;
 
-namespace Jerrycurl.Data
+namespace Jerrycurl.Data.Sessions
 {
     public class ParameterMap : Collection<IParameter>
     {
@@ -30,10 +32,6 @@ namespace Jerrycurl.Data
             return param;
         }
 
-        public IEnumerable<IParameter> Add(ITuple tuple)
-        {
-            foreach (IField field in tuple)
-                yield return this.Add(field);
-        }
+        public IReadOnlyList<IParameter> Add(ITuple tuple) => tuple.Select(this.Add).ToList();
     }
 }

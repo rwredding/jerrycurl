@@ -5,18 +5,24 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using Jerrycurl.Data.Metadata;
+using Jerrycurl.Data.Sessions;
+using Jerrycurl.Relations;
 using Oracle.ManagedDataAccess.Client;
 
 namespace Jerrycurl.Vendors.Oracle
 {
-    public class RefcursorContract : IBindingParameterContract
+    public class Refcursor : IParameter
     {
-        public BindingParameterWriter Write => this.GetWriteParameterProxy;
-        public BindingParameterConverter Convert => o => DBNull.Value;
+        public string Name { get; }
 
-        private void GetWriteParameterProxy(IBindingParameterInfo paramInfo)
+        public Refcursor(string name)
         {
-            if (paramInfo.Parameter is OracleParameter op)
+            this.Name = name ?? throw new ArgumentNullException(nameof(name));
+        }
+
+        public void Build(IDbDataParameter adoParameter)
+        {
+            if (adoParameter is OracleParameter op)
             {
                 op.Direction = ParameterDirection.ReturnValue;
                 op.OracleDbType = OracleDbType.RefCursor;
@@ -24,5 +30,7 @@ namespace Jerrycurl.Vendors.Oracle
             else
                 throw new InvalidOperationException("Refcursors are only available for parameters of type OracleParameter.");
         }
+
+        IField IParameter.Field => null;
     }
 }

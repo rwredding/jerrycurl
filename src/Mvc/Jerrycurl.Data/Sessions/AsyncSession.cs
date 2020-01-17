@@ -96,7 +96,7 @@ namespace Jerrycurl.Data.Sessions
         private async Task<DbConnection> GetOpenConnectionAsync(CancellationToken cancellationToken)
         {
             if (this.wasDisposed)
-                throw new InvalidOperationException("Connection is no longer usable; it is disposed.");
+                throw new ObjectDisposedException("Connection is no longer usable; it is disposed.");
 
             if (this.wasOpened)
                 return this.connection;

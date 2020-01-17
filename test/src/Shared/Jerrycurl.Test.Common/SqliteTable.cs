@@ -1,6 +1,7 @@
 ﻿using Jerrycurl.Data;
 using Jerrycurl.Data.Commands;
 using Jerrycurl.Data.Queries;
+using Jerrycurl.Data.Sessions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

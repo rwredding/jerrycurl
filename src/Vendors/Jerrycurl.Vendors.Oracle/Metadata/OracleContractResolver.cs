@@ -6,17 +6,17 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Jerrycurl.Data.Metadata;
-using MySql.Data.MySqlClient;
+using Oracle.ManagedDataAccess.Client;
 
-namespace Jerrycurl.Vendors.MySql
+namespace Jerrycurl.Vendors.Oracle.Metadata
 {
-    public class MySqlContractResolver : IBindingContractResolver
+    public class OracleContractResolver : IBindingContractResolver
     {
         public int Priority => 1000;
 
-        private MethodInfo GetMySqlReaderMethod(string methodName)
+        private MethodInfo GetOracleReaderMethod(string methodName)
         {
-            Type reader = typeof(MySqlDataReader);
+            Type reader = typeof(OracleDataReader);
 
             return reader.GetMethod(methodName, new[] { typeof(int) }) ?? throw new InvalidOperationException("No such method.");
         }
@@ -24,15 +24,9 @@ namespace Jerrycurl.Vendors.MySql
         private MethodInfo GetValueReaderProxy(IBindingColumnInfo columnInfo, IBindingValueContract fallback)
         {
             if (columnInfo.Column.Type == typeof(TimeSpan))
-                return this.GetMySqlReaderMethod(nameof(MySqlDataReader.GetTimeSpan));
-            else if (columnInfo.Column.Type == typeof(sbyte))
-                return this.GetMySqlReaderMethod(nameof(MySqlDataReader.GetSByte));
-            else if (columnInfo.Column.Type == typeof(ushort))
-                return this.GetMySqlReaderMethod(nameof(MySqlDataReader.GetUInt16));
-            else if (columnInfo.Column.Type == typeof(uint))
-                return this.GetMySqlReaderMethod(nameof(MySqlDataReader.GetUInt32));
-            else if (columnInfo.Column.Type == typeof(ulong))
-                return this.GetMySqlReaderMethod(nameof(MySqlDataReader.GetUInt64));
+                return this.GetOracleReaderMethod(nameof(OracleDataReader.GetTimeSpan));
+            else if (columnInfo.Column.Type == typeof(DateTimeOffset) || columnInfo.Column.TypeName == "TimeStampTZ")
+                return this.GetOracleReaderMethod(nameof(OracleDataReader.GetDateTimeOffset));
 
             return fallback?.Read(columnInfo);
         }

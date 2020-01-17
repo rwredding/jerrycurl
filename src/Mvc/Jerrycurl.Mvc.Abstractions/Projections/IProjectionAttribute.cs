@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Jerrycurl.Data;
 using Jerrycurl.Data.Commands;
+using Jerrycurl.Data.Sessions;
 using Jerrycurl.Mvc.Metadata;
 using Jerrycurl.Relations;
 using Jerrycurl.Relations.Metadata;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Jerrycurl.Data.Metadata;
 using Jerrycurl.Relations;
 
-namespace Jerrycurl.Data
+namespace Jerrycurl.Data.Sessions
 {
     public interface IParameter
     {

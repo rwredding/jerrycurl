@@ -19,10 +19,9 @@ namespace Jerrycurl.Vendors.MySql.Test
 {
     public class TypeTests
     {
-
-        public void TypesAndParameters_AreBoundProperly()
+        public void Test_Binding_OfCommonTypes()
         {
-            Runnable<object, object> table = new Runnable<object, object>();
+            Runnable table = new Runnable();
 
             table.Sql(@"
 DROP TABLE IF EXISTS jerry_types;
@@ -115,6 +114,7 @@ CREATE TABLE jerry_types(
             fromDb.MediumBlob.ShouldBe(sample.MediumBlob);
             fromDb.MediumInt.ShouldBe(sample.MediumInt);
             fromDb.MediumText.ShouldBe(sample.MediumText);
+            fromDb.Set.ShouldBe(sample.Set);
             fromDb.SmallInt.ShouldBe(sample.SmallInt);
             fromDb.Text.ShouldBe(sample.Text);
             fromDb.Time.ShouldBe(sample.Time);
@@ -130,7 +130,6 @@ CREATE TABLE jerry_types(
             fromDb.VarBinary.ShouldBe(sample.VarBinary);
             fromDb.VarChar.ShouldBe(sample.VarChar);
             fromDb.Year.ShouldBe(sample.Year);
-            fromDb.Set.ShouldBe(sample.Set);
         }
     }
 }

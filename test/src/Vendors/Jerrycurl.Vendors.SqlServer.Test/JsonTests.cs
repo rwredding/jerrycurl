@@ -23,7 +23,7 @@ namespace Jerrycurl.Vendors.SqlServer.Test
     {
         public void JsonValue_IsReferencedCorrectly()
         {
-            Runnable<object, object> table = new Runnable<object, object>();
+            Runnable table = new Runnable();
 
             table.Sql(@"
 DROP TABLE IF EXISTS jerry_json;

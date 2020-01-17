@@ -8,25 +8,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Jerrycurl.Data
+namespace Jerrycurl.Data.Sessions
 {
     public class Parameter : IParameter
     {
         public string Name { get; }
         public IField Field { get; }
-        public IBindingParameterContract Contract { get; }
 
-        public Parameter(string name, IField field = null, IBindingParameterContract contract = null)
+        public Parameter(string name, IField field = null)
         {
             this.Name = name ?? throw new ArgumentNullException(nameof(name));
             this.Field = field;
-            this.Contract = contract;
         }
 
         public void Build(IDbDataParameter adoParameter)
         {
             IBindingMetadata metadata = this.Field?.Identity.GetMetadata<IBindingMetadata>();
-            IBindingParameterContract contract = this.Contract ?? metadata?.Parameter;
+            IBindingParameterContract contract = metadata?.Parameter;
 
             adoParameter.ParameterName = this.Name;
 

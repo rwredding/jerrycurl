@@ -17,6 +17,20 @@ namespace Jerrycurl.Data.Metadata
 
         public IBindingMetadata GetMetadata(IMetadataBuilderContext context) => this.GetMetadata(context, context.Identity);
 
+        public BindingMetadataBuilder()
+        {
+
+        }
+
+        public BindingMetadataBuilder(IEnumerable<IBindingContractResolver> resolvers)
+        {
+            if (resolvers == null)
+                throw new ArgumentNullException(nameof(resolvers));
+
+            foreach (IBindingContractResolver resolver in resolvers)
+                this.Add(resolver);
+        }
+
         private IBindingMetadata GetMetadata(IMetadataBuilderContext context, MetadataIdentity identity)
         {
             MetadataIdentity parentIdentity = identity.Parent();

@@ -25,7 +25,7 @@ namespace Jerrycurl.Mvc
             return this.nameMap[key] = key.Prefix + prefixes;
         }
 
-        public string Custom(string prefix, IProjectionIdentity identity, MetadataIdentity metadata = null, IField field = null) => this.FromKey(new ProcLookupKey(prefix, identity, metadata, field));
+        public string Custom(string prefix, IProjectionIdentity identity = null, MetadataIdentity metadata = null, IField field = null) => this.FromKey(new ProcLookupKey(prefix, identity, metadata, field));
 
         public string Parameter(IProjectionIdentity identity, IField field) => this.Custom("P", identity, field: field);
         public string Parameter(IProjectionIdentity identity, MetadataIdentity metadata) => this.Custom("P", identity, metadata: metadata);

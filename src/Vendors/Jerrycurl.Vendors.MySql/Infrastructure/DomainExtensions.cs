@@ -11,6 +11,7 @@ using Jerrycurl.Mvc.Projections;
 using Jerrycurl.Relations.Metadata;
 using MySql.Data.MySqlClient;
 using Jerrycurl.Vendors.MySql;
+using Jerrycurl.Vendors.MySql.Metadata;
 
 namespace Jerrycurl.Mvc
 {

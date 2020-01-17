@@ -14,7 +14,7 @@ using System.Data.SqlClient;
 using Microsoft.Data.SqlClient;
 #endif
 
-namespace Jerrycurl.Vendors.SqlServer
+namespace Jerrycurl.Vendors.SqlServer.Metadata
 {
     public class SqlServerContractResolver : IBindingContractResolver
     {

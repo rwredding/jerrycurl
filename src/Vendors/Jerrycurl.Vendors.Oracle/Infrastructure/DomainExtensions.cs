@@ -1,6 +1,7 @@
 ﻿using Jerrycurl.Mvc;
 using Jerrycurl.Vendors.Oracle;
 using Jerrycurl.Vendors.Oracle.Filters;
+using Jerrycurl.Vendors.Oracle.Metadata;
 using Oracle.ManagedDataAccess.Client;
 using System;
 

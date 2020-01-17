@@ -1,5 +1,6 @@
 ﻿using Jerrycurl.Data;
 using Jerrycurl.Data.Commands;
+using Jerrycurl.Data.Sessions;
 using Jerrycurl.Mvc;
 using System;
 using System.Collections.Generic;

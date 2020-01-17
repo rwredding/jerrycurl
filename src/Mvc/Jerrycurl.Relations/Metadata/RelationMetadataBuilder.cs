@@ -17,6 +17,20 @@ namespace Jerrycurl.Relations.Metadata
 
         public IRelationMetadata GetMetadata(IMetadataBuilderContext context) => this.GetMetadata(context, context.Identity);
 
+        public RelationMetadataBuilder()
+        {
+            
+        }
+
+        public RelationMetadataBuilder(IEnumerable<IRelationContractResolver> resolvers)
+        {
+            if (resolvers == null)
+                throw new ArgumentNullException(nameof(resolvers));
+
+            foreach (IRelationContractResolver resolver in resolvers)
+                this.Add(resolver);
+        }
+
         private IRelationMetadata GetMetadata(IMetadataBuilderContext context, MetadataIdentity identity)
         {
             MetadataIdentity parentIdentity = identity.Parent();

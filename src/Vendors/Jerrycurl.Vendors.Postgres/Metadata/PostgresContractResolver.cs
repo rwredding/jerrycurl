@@ -11,7 +11,7 @@ using Jerrycurl.Mvc.Metadata.Annotations;
 using Npgsql;
 using NpgsqlTypes;
 
-namespace Jerrycurl.Vendors.Postgres
+namespace Jerrycurl.Vendors.Postgres.Metadata
 {
     public class PostgresContractResolver : IBindingContractResolver
     {

@@ -13,6 +13,7 @@ using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Queries;
 using Jerrycurl.Data.Test.Models;
 using Jerrycurl.Test;
+using Jerrycurl.Data.Sessions;
 
 namespace Jerrycurl.Data.Test
 {

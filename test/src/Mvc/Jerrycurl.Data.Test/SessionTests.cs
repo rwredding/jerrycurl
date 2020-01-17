@@ -58,24 +58,17 @@ namespace Jerrycurl.Data.Test
                 Schemas = DatabaseHelper.Default.Schemas,
             };
 
-            using (var ado = new SyncSession(options))
+            Should.Throw<InvalidOperationException>(() =>
             {
-                foreach (var r in ado.Execute(new AdoCommandBuilder("SELECT 12; SELECT 12")))
+                try
                 {
-                    r.Read().ShouldBeTrue();
-                    r.GetInt32(0).ShouldBe(12);
-                    r.Read().ShouldBeFalse();
+                    new SyncSession(options);
                 }
-
-                foreach (var r in ado.Execute(new AdoCommandBuilder("SELECT 12; SELECT 12")))
+                finally
                 {
-                    r.Read().ShouldBeTrue();
-                    r.GetInt32(0).ShouldBe(12);
-                    r.Read().ShouldBeFalse();
+                    connection.Close();
                 }
-            }
-
-            connection.State.ShouldBe(ConnectionState.Closed);
+            });
         }
 
         public void Test_ConnectionManagement_WithTransientFactory()
@@ -117,13 +110,13 @@ namespace Jerrycurl.Data.Test
                 }
             }
 
-            Should.Throw<DbException>(() =>
+            Should.Throw<ObjectDisposedException>(() =>
             {
                 foreach (var r in ado.Execute(new AdoCommandBuilder("SELECT 12; SELECT 12")))
                     ;
             });
 
-            Should.Throw<DbException>(() =>
+            Should.Throw<ObjectDisposedException>(() =>
             {
                 var ado2 = new SyncSession(options);
 

@@ -37,15 +37,15 @@ namespace Jerrycurl.Data.Commands
 
             foreach (CommandData commandData in commands.NotNull())
             {
-                CommandOperation helper = new CommandOperation(commandData, fieldMap);
+                Command command = new Command(commandData, fieldMap);
 
                 if (string.IsNullOrWhiteSpace(commandData.CommandText))
                     continue;
 
-                foreach (IDataReader reader in session.Execute(helper))
+                foreach (IDataReader reader in session.Execute(command))
                 {
                     TableIdentity tableInfo = TableIdentity.FromRecord(reader);
-                    FieldData[] fields = helper.GetHeading(tableInfo);
+                    FieldData[] fields = command.GetHeading(tableInfo);
                     MetadataIdentity[] metadata = fields.Select(f => f?.Attribute).ToArray();
 
                     var fun = FuncCache.GetFieldDataBinder(metadata, tableInfo);
@@ -69,15 +69,15 @@ namespace Jerrycurl.Data.Commands
 
             foreach (CommandData commandData in commands.NotNull())
             {
-                CommandOperation helper = new CommandOperation(commandData, fieldMap);
+                Command command = new Command(commandData, fieldMap);
 
                 if (string.IsNullOrWhiteSpace(commandData.CommandText))
                     continue;
 
-                await foreach (DbDataReader dataReader in session.ExecuteAsync(helper, cancellationToken).ConfigureAwait(false))
+                await foreach (DbDataReader dataReader in session.ExecuteAsync(command, cancellationToken).ConfigureAwait(false))
                 {
                     TableIdentity tableInfo = TableIdentity.FromRecord(dataReader);
-                    FieldData[] fields = helper.GetHeading(tableInfo);
+                    FieldData[] fields = command.GetHeading(tableInfo);
                     MetadataIdentity[] attributes = fields.Select(f => f.Attribute).ToArray();
 
                     Action<IDataReader, FieldData[]> binder = FuncCache.GetFieldDataBinder(attributes, tableInfo);

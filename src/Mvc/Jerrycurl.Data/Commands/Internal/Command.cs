@@ -11,7 +11,7 @@ using Jerrycurl.Data.Sessions;
 
 namespace Jerrycurl.Data.Commands.Internal
 {
-    internal class CommandOperation : IOperation
+    internal class Command : IOperation
     {
         private readonly Dictionary<string, FieldData> headingMap = new Dictionary<string, FieldData>(StringComparer.OrdinalIgnoreCase);
 
@@ -19,7 +19,7 @@ namespace Jerrycurl.Data.Commands.Internal
         public FieldMap Map { get; }
         public object Source => this.Data;
 
-        public CommandOperation(CommandData commandData, FieldMap fieldMap)
+        public Command(CommandData commandData, FieldMap fieldMap)
         {
             this.Data = commandData ?? throw new ArgumentNullException(nameof(commandData));
             this.Map = fieldMap ?? throw new ArgumentNullException(nameof(fieldMap));

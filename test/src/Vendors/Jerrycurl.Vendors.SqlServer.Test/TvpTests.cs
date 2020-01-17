@@ -23,7 +23,7 @@ namespace Jerrycurl.Vendors.SqlServer.Test
     {
         public void TableValuedParameters_AreBoundCorrectly()
         {
-            Runnable<object, object> table = new Runnable<object, object>();
+            Runnable table = new Runnable();
 
             table.Sql(@"
 IF type_id('jerry_tt') IS NOT NULL
