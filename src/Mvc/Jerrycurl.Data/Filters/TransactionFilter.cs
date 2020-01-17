@@ -125,14 +125,6 @@ namespace Jerrycurl.Data.Filters
                 this.handled = true;
             }
 
-            private async Task HandleAsync(Func<Task> action)
-            {
-                if (!this.handled)
-                    await action();
-
-                this.handled = true;
-            }
-
             public override async ValueTask DisposeAsync()
             {
                 await this.transaction.DisposeAsync();

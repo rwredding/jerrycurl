@@ -47,6 +47,12 @@ namespace Jerrycurl.Data.Filters
                 this.transaction = this.factory();
             }
 
+            public override void OnException(FilterContext context)
+            {
+                if (!this.handled)
+                    this.handled = true;
+            }
+
             public override void OnConnectionClosed(FilterContext context)
             {
                 if (!this.handled)

@@ -14,6 +14,6 @@ namespace Jerrycurl.Vendors.Oracle.Test
             options.UseNewtonsoftJson();
         }
 
-        private string GetConnectionString() => this.GetEnvironmentVariable("JERRY_ORACLE_CONN");
+        public string GetConnectionString() => GetEnvironmentVariable("JERRY_ORACLE_CONN");
     }
 }

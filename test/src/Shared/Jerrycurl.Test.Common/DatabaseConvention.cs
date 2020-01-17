@@ -26,8 +26,8 @@ namespace Jerrycurl.Test
             instance.Dispose();
         }
 
-        protected string GetEnvironmentVariable(string variableName) => Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.Machine) ??
-                                                                        Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.User) ??
-                                                                        Environment.GetEnvironmentVariable(variableName);
+        protected static string GetEnvironmentVariable(string variableName) => Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.Machine) ??
+                                                                               Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.User) ??
+                                                                               Environment.GetEnvironmentVariable(variableName);
     }
 }
