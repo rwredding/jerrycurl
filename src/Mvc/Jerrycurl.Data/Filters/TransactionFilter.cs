@@ -8,7 +8,9 @@ namespace Jerrycurl.Data.Filters
     public class TransactionFilter : IFilter
     {
         private readonly Func<Handler> factory;
+#pragma warning disable IDE0052
         private readonly Func<AsyncHandler> asyncFactory;
+#pragma warning restore IDE0052
 
         public TransactionFilter()
         {
@@ -81,20 +83,19 @@ namespace Jerrycurl.Data.Filters
         }
 
 
+#if !NETSTANDARD2_0
         private class AsyncHandler : FilterHandler
         {
             private readonly Func<IDbConnection, IDbTransaction> factory;
-#if !NETSTANDARD2_0
+
             private DbTransaction transaction;
             private bool handled = false;
-#endif
 
             public AsyncHandler(Func<IDbConnection, IDbTransaction> factory)
             {
                 this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
             }
 
-#if !NETSTANDARD2_0
             public override Task OnConnectionOpenedAsync(FilterContext context)
             {
                 this.transaction = this.factory(context.Connection) as DbTransaction;
@@ -131,8 +132,15 @@ namespace Jerrycurl.Data.Filters
 
                 this.transaction = null;
             }
-
-#endif
         }
+#else
+        private class AsyncHandler : FilterHandler
+        {
+            public AsyncHandler(Func<IDbConnection, IDbTransaction> _)
+            {
+
+            }
+        }
+#endif
     }
 }
