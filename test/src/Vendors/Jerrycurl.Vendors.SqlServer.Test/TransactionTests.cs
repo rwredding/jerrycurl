@@ -80,8 +80,6 @@ namespace Jerrycurl.Vendors.SqlServer.Test
                 CommandText = @"DELETE FROM MyValues;",
             };
 
-            DatabaseHelper.Default.Execute(command);
-
             CommandHandler handler = new CommandHandler(options);
 
             handler.Execute(command);
