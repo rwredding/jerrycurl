@@ -2,7 +2,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/onendmfb6ywd33je/branch/master?svg=true)](https://ci.appveyor.com/project/rwredding/jerrycurl/branch/master)
 [![License LGPLv3](https://img.shields.io/badge/license-LGPLv3-green.svg)](http://www.gnu.org/licenses/lgpl-3.0.html)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/jerrycurl-mvc/community)
-# Jerrycurl - Razor-powered ORM for SQL lovers
+# Jerrycurl - Razor-powered ORM for .NET
 **Jerrycurl** is a free and lightweight **ORM for .NET** that focuses on elegant and type-safe **SQL** written with **Razor syntax**.
 ```sql
 -- Queries/Customers/GetStats.cssql
@@ -49,7 +49,7 @@ public class CustomersAccessor : Accessor
 ## Features
 * [Official support](https://nuget.org/packages/?q=Jerrycurl.Vendors) for SQL Server, PostgreSQL, MySQL, Oracle and SQLite
 * [CLI tool](https://nuget.org/packages/dotnet-jerry) to easily generate classes from your database schema
-* Extensive collection of Razor extensions for all boilerplate SQL
+* Extensive collection of type-safe Razor extensions for all boilerplate SQL output
 * Single **queries** that map complete object graphs of any [cardinality](https://en.wikipedia.org/wiki/Cardinality_(data_modeling))
 * Batchable **commands** through simple `@foreach` expressions
 * [High performance](https://github.com/rhodosaur/RawDataAccessBencher/blob/master/Results/20191115_jerrycurl.txt) and support for all operations synchronously or asynchronously
