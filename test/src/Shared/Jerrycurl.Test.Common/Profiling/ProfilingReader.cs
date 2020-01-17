@@ -247,7 +247,7 @@ namespace Jerrycurl.Test.Profiling
         {
             if (disposing)
             {
-                ((IDbConnection)this.InnerReader).Dispose();
+                ((IDataReader)this.InnerReader).Dispose();
 
                 this.VerifyReads();
             }
