@@ -17,7 +17,7 @@
         <dependencies>
             <group targetFramework="netstandard2.0">
                 <dependency id="Jerrycurl.Relations" version="$PackageVersion$" />
-                <dependency id="Microsoft.Bcl.AsyncInterfaces" version="$AsyncInterfacesPackageVersion$" />
+                <!--<dependency id="Microsoft.Bcl.AsyncInterfaces" version="$AsyncInterfacesPackageVersion$" />-->
             </group>
             <group targetFramework="netstandard2.1">
                 <dependency id="Jerrycurl.Relations" version="$PackageVersion$" />
