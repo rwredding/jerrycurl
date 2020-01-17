@@ -11,7 +11,6 @@ namespace Jerrycurl.Data.Test
 {
     public class QueryTests
     {
-#if NETCOREAPP3_0
         public async Task Test_Binding_OfEnumerateAsyncWithMultipleSets()
         {
             SqliteTable table1 = new SqliteTable("Item")
@@ -30,7 +29,6 @@ namespace Jerrycurl.Data.Test
             DatabaseHelper.Default.Enumerate<int>(table1, table2).ShouldBe(new[] { 1, 2, 3, 4, 5, 6 });
             (await (DatabaseHelper.Default.EnumerateAsync<int>(table1, table2)).ToList()).ShouldBe(new[] { 1, 2, 3, 4, 5, 6 });
         }
-#endif
 
         public async Task Test_Binding_OfNestedStructs()
         {
