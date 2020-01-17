@@ -25,8 +25,19 @@ namespace Jerrycurl.Data.Filters
             this.asyncFactory = () => new AsyncHandler(c => c.BeginTransaction(isolationLevel));
         }
 
-        public IFilterHandler GetHandler() => this.factory();
-        public IFilterAsyncHandler GetAsyncHandler() => this.asyncFactory();
+        public IFilterHandler GetHandler(IDbConnection connection) => this.factory();
+
+#if !NETSTANDARD2_0
+        public IFilterAsyncHandler GetAsyncHandler(IDbConnection connection)
+        {
+            if (connection is DbConnection)
+                return this.asyncFactory();
+
+            return null;
+        }
+#else
+        public IFilterAsyncHandler GetAsyncHandler(IDbConnection connection) => null;
+#endif
 
         private class Handler : FilterHandler
         {
@@ -44,30 +55,23 @@ namespace Jerrycurl.Data.Filters
                 this.transaction = this.factory(context.Connection);
             }
 
-            public override void OnCommandCreated(AdoCommandContext context)
+            public override void OnCommandCreated(FilterContext context)
             {
                 context.Command.Transaction = this.transaction;
             }
 
-            public override void OnCommandException(AdoCommandContext context)
+            public override void OnException(FilterContext context)
             {
-                this.Handle(() => this.transaction.Rollback());
-            }
+                if (!this.handled)
+                    this.transaction.Rollback();
 
-            public override void OnConnectionException(FilterContext context)
-            {
-                this.Handle(() => this.transaction.Rollback());
+                this.handled = true;
             }
 
             public override void OnConnectionClosing(FilterContext context)
             {
-                this.Handle(() => this.transaction.Commit());
-            }
-
-            private void Handle(Action action)
-            {
                 if (!this.handled)
-                    action();
+                    this.transaction.Commit();
 
                 this.handled = true;
             }
@@ -79,23 +83,24 @@ namespace Jerrycurl.Data.Filters
             }
         }
 
+
         private class AsyncHandler : FilterHandler
         {
             private readonly Func<IDbConnection, IDbTransaction> factory;
+#if !NETSTANDARD2_0
             private DbTransaction transaction;
             private bool handled = false;
+#endif
 
             public AsyncHandler(Func<IDbConnection, IDbTransaction> factory)
             {
                 this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
             }
 
+#if !NETSTANDARD2_0
             public override Task OnConnectionOpenedAsync(FilterContext context)
             {
                 this.transaction = this.factory(context.Connection) as DbTransaction;
-
-                if (this.transaction == null)
-                    throw new InvalidOperationException("Async not available.");
 
                 return Task.CompletedTask;
             }
@@ -107,19 +112,20 @@ namespace Jerrycurl.Data.Filters
                 return Task.CompletedTask;
             }
 
-            public override async Task OnCommandExceptionAsync(FilterContext context)
+            public override async Task OnExceptionAsync(FilterContext context)
             {
-                await this.HandleAsync(() => this.transaction.RollbackAsync());
-            }
+                if (!this.handled)
+                    await this.transaction.RollbackAsync();
 
-            public override async Task OnConnectionExceptionAsync(FilterContext context)
-            {
-                await this.HandleAsync(() => this.transaction.RollbackAsync());
+                this.handled = true;
             }
 
             public override async Task OnConnectionClosingAsync(FilterContext context)
             {
-                await this.HandleAsync(() => this.transaction.CommitAsync());
+                if (!this.handled)
+                    await this.transaction.CommitAsync();
+
+                this.handled = true;
             }
 
             private async Task HandleAsync(Func<Task> action)
@@ -130,11 +136,14 @@ namespace Jerrycurl.Data.Filters
                 this.handled = true;
             }
 
-            public override void Dispose()
+            public override async ValueTask DisposeAsync()
             {
-                this.transaction.Dispose();
+                await this.transaction.DisposeAsync();
+
                 this.transaction = null;
             }
+
+#endif
         }
     }
 }

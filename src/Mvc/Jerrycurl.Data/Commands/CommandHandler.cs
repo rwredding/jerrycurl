@@ -14,6 +14,7 @@ using Jerrycurl.Data.Filters;
 using Jerrycurl.Data.Commands.Internal;
 using System.Data.Common;
 using System.Threading;
+using Jerrycurl.Data.Sessions;
 
 namespace Jerrycurl.Data.Commands
 {
@@ -32,26 +33,25 @@ namespace Jerrycurl.Data.Commands
         {
             FieldMap fieldMap = new FieldMap();
 
-            using (AdoConnection connection = new AdoConnection(this.Options))
+            using SyncSession session = new SyncSession(this.Options);
+
+            foreach (CommandData commandData in commands.NotNull())
             {
-                foreach (CommandData commandData in commands.NotNull())
+                CommandOperation helper = new CommandOperation(commandData, fieldMap);
+
+                if (string.IsNullOrWhiteSpace(commandData.CommandText))
+                    continue;
+
+                foreach (IDataReader reader in session.Execute(helper))
                 {
-                    AdoHelper helper = new AdoHelper(commandData, fieldMap);
+                    TableIdentity tableInfo = TableIdentity.FromRecord(reader);
+                    FieldData[] fields = helper.GetHeading(tableInfo);
+                    MetadataIdentity[] metadata = fields.Select(f => f?.Attribute).ToArray();
 
-                    if (string.IsNullOrWhiteSpace(commandData.CommandText))
-                        continue;
+                    var fun = FuncCache.GetFieldDataBinder(metadata, tableInfo);
 
-                    foreach (IDataReader reader in connection.Execute(helper))
-                    {
-                        TableIdentity tableInfo = TableIdentity.FromRecord(reader);
-                        FieldData[] fields = helper.GetHeading(tableInfo);
-                        MetadataIdentity[] metadata = fields.Select(f => f?.Attribute).ToArray();
-
-                        var fun = FuncCache.GetFieldDataBinder(metadata, tableInfo);
-
-                        if (reader.Read())
-                            fun(reader, fields);
-                    }
+                    if (reader.Read())
+                        fun(reader, fields);
                 }
             }
 
@@ -61,71 +61,35 @@ namespace Jerrycurl.Data.Commands
 
         public Task ExecuteAsync(CommandData command, CancellationToken cancellationToken = default) => this.ExecuteAsync(new[] { command }, cancellationToken);
 
-#if NETSTANDARD2_0
         public async Task ExecuteAsync(IEnumerable<CommandData> commands, CancellationToken cancellationToken = default)
         {
             FieldMap fieldMap = new FieldMap();
 
-            static async Task consumer(AdoHelper helper, DbDataReader reader)
+            await using AsyncSession session = new AsyncSession(this.Options);
+
+            foreach (CommandData commandData in commands.NotNull())
             {
-                TableIdentity tableInfo = TableIdentity.FromRecord(reader);
-                FieldData[] fields = helper.GetHeading(tableInfo);
-                MetadataIdentity[] attributes = fields.Select(f => f.Attribute).ToArray();
+                CommandOperation helper = new CommandOperation(commandData, fieldMap);
 
-                var fun = FuncCache.GetFieldDataBinder(attributes, tableInfo);
+                if (string.IsNullOrWhiteSpace(commandData.CommandText))
+                    continue;
 
-                if (await reader.ReadAsync().ConfigureAwait(false))
-                    fun(reader, fields);
-            }
-
-            using (AdoConnection connection = new AdoConnection(this.Options))
-            {
-                foreach (CommandData commandData in commands.NotNull())
+                await foreach (DbDataReader dataReader in session.ExecuteAsync(helper, cancellationToken).ConfigureAwait(false))
                 {
-                    AdoHelper helper = new AdoHelper(commandData, fieldMap);
+                    TableIdentity tableInfo = TableIdentity.FromRecord(dataReader);
+                    FieldData[] fields = helper.GetHeading(tableInfo);
+                    MetadataIdentity[] attributes = fields.Select(f => f.Attribute).ToArray();
 
-                    if (string.IsNullOrWhiteSpace(commandData.CommandText))
-                        continue;
+                    Action<IDataReader, FieldData[]> binder = FuncCache.GetFieldDataBinder(attributes, tableInfo);
 
-                    await connection.ExecuteAsync(helper, r => consumer(helper, r), cancellationToken).ConfigureAwait(false);
+                    if (await dataReader.ReadAsync().ConfigureAwait(false))
+                        binder(dataReader, fields);
                 }
             }
 
             foreach (FieldData fieldData in fieldMap)
                 fieldData.Bind();
         }
-#elif NETSTANDARD2_1
-        public async Task ExecuteAsync(IEnumerable<CommandData> commands, CancellationToken cancellationToken = default)
-        {
-            FieldMap fieldMap = new FieldMap();
-
-            using (AdoConnection connection = new AdoConnection(this.Options))
-            {
-                foreach (CommandData commandData in commands.NotNull())
-                {
-                    AdoHelper helper = new AdoHelper(commandData, fieldMap);
-
-                    if (string.IsNullOrWhiteSpace(commandData.CommandText))
-                        continue;
-
-                    await foreach (DbDataReader dataReader in connection.ExecuteAsync(helper, cancellationToken).ConfigureAwait(false))
-                    {
-                        TableIdentity tableInfo = TableIdentity.FromRecord(dataReader);
-                        FieldData[] fields = helper.GetHeading(tableInfo);
-                        MetadataIdentity[] attributes = fields.Select(f => f.Attribute).ToArray();
-
-                        Action<IDataReader, FieldData[]> binder = FuncCache.GetFieldDataBinder(attributes, tableInfo);
-
-                        if (await dataReader.ReadAsync().ConfigureAwait(false))
-                            binder(dataReader, fields);
-                    }
-                }
-            }
-
-            foreach (FieldData fieldData in fieldMap)
-                fieldData.Bind();
-        }
-#endif
 
     }
 }

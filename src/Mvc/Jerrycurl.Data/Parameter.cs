@@ -23,6 +23,33 @@ namespace Jerrycurl.Data
             this.Contract = contract;
         }
 
+        public void Build(IDbDataParameter adoParameter)
+        {
+            IBindingMetadata metadata = this.Field?.Identity.GetMetadata<IBindingMetadata>();
+            IBindingParameterContract contract = this.Contract ?? metadata?.Parameter;
+
+            adoParameter.ParameterName = this.Name;
+
+            if (contract?.Convert != null)
+                adoParameter.Value = contract.Convert(this.Field?.Value);
+            else if (this.Field != null)
+                adoParameter.Value = this.Field.Value;
+            else
+                adoParameter.Value = DBNull.Value;
+
+            if (contract?.Write != null)
+            {
+                BindingParameterInfo paramInfo = new BindingParameterInfo()
+                {
+                    Metadata = metadata,
+                    Parameter = adoParameter,
+                    Field = this.Field,
+                };
+
+                contract.Write(paramInfo);
+            }
+        }
+
         public override string ToString() => this.Name;
     }
 }

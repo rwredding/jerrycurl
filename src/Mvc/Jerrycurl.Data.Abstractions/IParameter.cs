@@ -13,6 +13,7 @@ namespace Jerrycurl.Data
     {
         string Name { get; }
         IField Field { get; }
-        IBindingParameterContract Contract { get; }
+
+        void Build(IDbDataParameter adoParameter);
     }
 }

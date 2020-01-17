@@ -16,12 +16,12 @@ namespace Jerrycurl.Data
     {
         public IReadOnlyList<ColumnIdentity> Columns { get; }
 
-        public static TableIdentity FromRecord(IDataRecord adoRecord)
+        public static TableIdentity FromRecord(IDataRecord dataRecord)
         {
-            if (adoRecord == null)
-                throw new ArgumentNullException(nameof(adoRecord));
+            if (dataRecord == null)
+                throw new ArgumentNullException(nameof(dataRecord));
 
-            IEnumerable<ColumnIdentity> columns = Enumerable.Range(0, GetFieldCount(adoRecord)).Select(i => new ColumnIdentity(adoRecord.GetName(i), adoRecord.GetFieldType(i), adoRecord.GetDataTypeName(i), i));
+            IEnumerable<ColumnIdentity> columns = Enumerable.Range(0, GetFieldCount(dataRecord)).Select(i => ColumnIdentity.FromField(dataRecord, i));
 
             return new TableIdentity(columns);
         }

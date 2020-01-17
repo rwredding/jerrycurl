@@ -13,6 +13,7 @@ using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Queries;
 using Jerrycurl.Data.Filters;
 using Jerrycurl.Test;
+using System.Data.Common;
 
 namespace Jerrycurl.Data.Test
 {
@@ -35,7 +36,7 @@ namespace Jerrycurl.Data.Test
             {
                 DatabaseHelper.Default.Execute(command);
             }
-            catch (AdoException) { }
+            catch (DbException) { }
 
             this.GetCurrentValues().ShouldBe(new[] { 1, 2 });
         }
@@ -59,7 +60,7 @@ namespace Jerrycurl.Data.Test
             {
                 handler.Execute(command);
             }
-            catch (AdoException) { }
+            catch (DbException) { }
 
             this.GetCurrentValues().ShouldBeEmpty();
         }

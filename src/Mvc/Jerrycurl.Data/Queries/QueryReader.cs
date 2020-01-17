@@ -32,7 +32,6 @@ namespace Jerrycurl.Data.Queries
             this.schemas = schemas ?? throw new ArgumentNullException(nameof(schemas));
         }
 
-#if NETSTANDARD2_1
         public async IAsyncEnumerable<TItem> ReadAsync<TItem>([EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
             if (this.asyncReader == null)
@@ -44,7 +43,6 @@ namespace Jerrycurl.Data.Queries
             while (await this.asyncReader.ReadAsync(cancellationToken).ConfigureAwait(false))
                 yield return state.Item(this.asyncReader);
         }
-#endif
 
         public IEnumerable<TItem> Read<TItem>()
         {

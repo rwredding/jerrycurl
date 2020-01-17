@@ -31,12 +31,14 @@ namespace Jerrycurl.Data.Filters
             this.handler = () => new Handler(scopeFactory);
         }
 
-        public IFilterHandler GetHandler() => this.handler();
+        public IFilterHandler GetHandler(IDbConnection connection) => this.handler();
+        public IFilterAsyncHandler GetAsyncHandler(IDbConnection connection) => null;
 
         private class Handler : FilterHandler
         {
             private readonly Func<TransactionScope> factory;
             private TransactionScope transaction;
+            private bool handled = false;
 
             public Handler(Func<TransactionScope> factory)
             {
@@ -48,26 +50,18 @@ namespace Jerrycurl.Data.Filters
                 this.transaction = this.factory();
             }
 
-            public override void OnConnectionClosing(FilterContext context)
+            public override void OnConnectionClosed(FilterContext context)
             {
-                this.transaction?.Complete();
-            }
+                if (!this.handled)
+                    this.transaction.Complete();
 
-            public override void OnCommandException(AdoCommandContext context)
-            {
-                this.transaction?.Dispose();
-                this.transaction = null;
-            }
-
-            public override void OnConnectionException(FilterContext context)
-            {
-                this.transaction?.Dispose();
-                this.transaction = null;
+                this.handled = true;
             }
 
             public override void Dispose()
             {
                 this.transaction?.Dispose();
+                this.transaction = null;
             }
         }
     }

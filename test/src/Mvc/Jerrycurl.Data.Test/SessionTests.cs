@@ -15,17 +15,17 @@ using Jerrycurl.Data.Test.Models;
 using Jerrycurl.Test;
 using System.Data;
 using System.Threading;
+using System.Data.Common;
+using Jerrycurl.Data.Sessions;
 
 namespace Jerrycurl.Data.Test
 {
-    public class AdoTests
+    public class SessionTests
     {
 #if NETCOREAPP3_0
         public async Task Test_ConnectionManagement_WithAsync()
         {
             var connection = new SqliteConnection(DatabaseHelper.TestDbConnectionString);
-
-            await connection.OpenAsync();
 
             QueryOptions options = new QueryOptions()
             {
@@ -33,7 +33,7 @@ namespace Jerrycurl.Data.Test
                 Schemas = DatabaseHelper.Default.Schemas,
             };
 
-            await using (var ado = new AdoConnection(options))
+            await using (var ado = new AsyncSession(options))
             {
                 await foreach (var r in ado.ExecuteAsync(new AdoCommandBuilder("SELECT 12; SELECT 12"), CancellationToken.None))
                 {
@@ -58,7 +58,7 @@ namespace Jerrycurl.Data.Test
                 Schemas = DatabaseHelper.Default.Schemas,
             };
 
-            using (var ado = new AdoConnection(options))
+            using (var ado = new SyncSession(options))
             {
                 foreach (var r in ado.Execute(new AdoCommandBuilder("SELECT 12; SELECT 12")))
                 {
@@ -98,7 +98,7 @@ namespace Jerrycurl.Data.Test
                 Schemas = DatabaseHelper.Default.Schemas,
             };
 
-            var ado = new AdoConnection(options);
+            var ado = new SyncSession(options);
 
             using (ado)
             {
@@ -117,15 +117,15 @@ namespace Jerrycurl.Data.Test
                 }
             }
 
-            Should.Throw<AdoException>(() =>
+            Should.Throw<DbException>(() =>
             {
                 foreach (var r in ado.Execute(new AdoCommandBuilder("SELECT 12; SELECT 12")))
                     ;
             });
 
-            Should.Throw<AdoException>(() =>
+            Should.Throw<DbException>(() =>
             {
-                var ado2 = new AdoConnection(options);
+                var ado2 = new SyncSession(options);
 
                 foreach (var r in ado2.Execute(new AdoCommandBuilder("SELECT 12; SELECT 12")))
                     ;

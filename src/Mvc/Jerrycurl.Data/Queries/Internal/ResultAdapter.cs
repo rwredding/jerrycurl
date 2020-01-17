@@ -41,8 +41,6 @@ namespace Jerrycurl.Data.Queries.Internal
 
         public async Task AddResultAsync(DbDataReader dataReader, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             this.SetState(dataReader);
 
             this.state.Initializer(this.Lists, this.Dicts, this.Bits);

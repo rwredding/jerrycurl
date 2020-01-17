@@ -7,17 +7,19 @@ using System.Data;
 using System.Linq;
 using Jerrycurl.Collections;
 using System.Text;
+using Jerrycurl.Data.Sessions;
 
 namespace Jerrycurl.Data.Commands.Internal
 {
-    internal class AdoHelper : IAdoCommandBuilder
+    internal class CommandOperation : IOperation
     {
         private readonly Dictionary<string, FieldData> headingMap = new Dictionary<string, FieldData>(StringComparer.OrdinalIgnoreCase);
 
         public CommandData Data { get; }
         public FieldMap Map { get; }
+        public object Source => this.Data;
 
-        public AdoHelper(CommandData commandData, FieldMap fieldMap)
+        public CommandOperation(CommandData commandData, FieldMap fieldMap)
         {
             this.Data = commandData ?? throw new ArgumentNullException(nameof(commandData));
             this.Map = fieldMap ?? throw new ArgumentNullException(nameof(fieldMap));
@@ -33,7 +35,9 @@ namespace Jerrycurl.Data.Commands.Internal
 
             foreach (IParameter parameter in this.Data.Parameters.Where(p => !adoMap.ContainsKey(p.Name)))
             {
-                IDbDataParameter adoParameter = ParameterHelper.CreateAdoParameter(adoCommand, parameter);
+                IDbDataParameter adoParameter = adoCommand.CreateParameter();
+
+                parameter.Build(adoParameter);
 
                 if (parameter.Field != null)
                 {
@@ -70,7 +74,10 @@ namespace Jerrycurl.Data.Commands.Internal
 
                     if (adoParameter == null)
                     {
-                        adoParameter = ParameterHelper.CreateAdoParameter(adoCommand, new Parameter(parameterBinding.ParameterName, field: parameterBinding.Field));
+                        adoParameter = adoCommand.CreateParameter();
+
+                        adoParameter.ParameterName = parameterBinding.ParameterName;
+                        adoParameter.Value = DBNull.Value;
 
                         this.SetParameterDirection(adoParameter, ParameterDirection.Output);
 

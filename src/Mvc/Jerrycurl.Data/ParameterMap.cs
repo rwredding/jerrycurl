@@ -22,6 +22,7 @@ namespace Jerrycurl.Data
             if (!this.innerMap.TryGetValue(field.Identity, out IParameter param))
             {
                 string paramName = $"{this.Prefix}P{this.innerMap.Count}";
+
                 this.innerMap.Add(field.Identity, param = new Parameter(paramName, field));
                 this.Add(param);
             }

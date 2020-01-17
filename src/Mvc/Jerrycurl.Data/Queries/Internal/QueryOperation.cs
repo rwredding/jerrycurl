@@ -1,5 +1,6 @@
 ﻿using Jerrycurl.Data;
 using Jerrycurl.Data.Metadata;
+using Jerrycurl.Data.Sessions;
 using Jerrycurl.Relations;
 using System;
 using System.Collections.Generic;
@@ -9,11 +10,12 @@ using System.Text;
 
 namespace Jerrycurl.Data.Queries.Internal
 {
-    internal class AdoHelper : IAdoCommandBuilder
+    internal class QueryOperation : IOperation
     {
         public QueryData Data { get; }
+        public object Source => this.Data;
 
-        public AdoHelper(QueryData queryData)
+        public QueryOperation(QueryData queryData)
         {
             this.Data = queryData ?? throw new ArgumentNullException(nameof(queryData));
         }
@@ -25,7 +27,13 @@ namespace Jerrycurl.Data.Queries.Internal
             if (this.Data.Parameters != null)
             {
                 foreach (IParameter parameter in this.Data.Parameters.GroupBy(p => p.Name).Select(g => g.First()))
-                    adoCommand.Parameters.Add(ParameterHelper.CreateAdoParameter(adoCommand, parameter));
+                {
+                    IDbDataParameter adoParameter = adoCommand.CreateParameter();
+
+                    parameter.Build(adoParameter);
+
+                    adoCommand.Parameters.Add(adoParameter);
+                }
             }
         }
     }

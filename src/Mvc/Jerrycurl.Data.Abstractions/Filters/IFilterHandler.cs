@@ -11,9 +11,8 @@ namespace Jerrycurl.Data.Filters
         void OnConnectionOpened(FilterContext context);
         void OnConnectionClosing(FilterContext context);
         void OnConnectionClosed(FilterContext context);
-        void OnConnectionException(FilterContext context);
         void OnCommandCreated(FilterContext context);
         void OnCommandExecuted(FilterContext context);
-        void OnCommandException(FilterContext context);
+        void OnException(FilterContext context);
     }
 }
