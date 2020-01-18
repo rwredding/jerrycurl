@@ -25,7 +25,7 @@
   <PropertyGroup>
     <CleanDependsOn>$(CleanDependsOn);JerryClean</CleanDependsOn>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PropertyPageSchema Include="$(MSBuildThisFileDirectory)ProjectItemsSchema.xml" />
     <PropertyPageSchema Include="$(MSBuildThisFileDirectory)rules\JerryFile.xml">
@@ -41,7 +41,7 @@
     <RemoveDuplicates Inputs="@(JerryFile)">
       <Output TaskParameter="Filtered" ItemName="_JerryFile"/>
     </RemoveDuplicates>
-    
+
     <Jcst Sources="@(_JerryFile)"
 			  SkeletonPath="$(JerrycurlSkeletonPath)"
 			  IntermediatePath="$(JerrycurlIntermediatePath)"

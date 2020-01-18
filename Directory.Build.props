@@ -1,40 +1,40 @@
 <Project>
-	<Import Project="$(MSBuildThisFileDirectory)build\dependencies.props" />
+    <Import Project="$(MSBuildThisFileDirectory)build\dependencies.props" />
 
-	<PropertyGroup Label="Target Monikers">
-		<NetStandardMoniker>netstandard2.0</NetStandardMoniker>
-		<NetFrameworkMoniker>net472</NetFrameworkMoniker>
-    <NetStandardMultiTargetMoniker>netstandard2.0;netstandard2.1</NetStandardMultiTargetMoniker>
-		<MultiTargetMoniker>$(NetFrameworkMoniker);$(NetStandardMoniker)</MultiTargetMoniker>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<NoWarn>1591;NU5105;NU5048</NoWarn>
-	</PropertyGroup>
+    <PropertyGroup Label="Target Monikers">
+        <NetStandardMoniker>netstandard2.0</NetStandardMoniker>
+        <NetFrameworkMoniker>net472</NetFrameworkMoniker>
+        <NetStandardMultiTargetMoniker>netstandard2.0;netstandard2.1</NetStandardMultiTargetMoniker>
+        <MultiTargetMoniker>$(NetFrameworkMoniker);$(NetStandardMoniker)</MultiTargetMoniker>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>1591;NU5105;NU5048</NoWarn>
+    </PropertyGroup>
 
-	<PropertyGroup>
-		<Copyright>2019 AC Dancode</Copyright>
-    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)key.snk</AssemblyOriginatorKeyFile>
-    <SignAssembly>false</SignAssembly>
-    <UseCodeAnalysis>false</UseCodeAnalysis>
+    <PropertyGroup>
+        <Copyright>2019 AC Dancode</Copyright>
+        <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)key.snk</AssemblyOriginatorKeyFile>
+        <SignAssembly>false</SignAssembly>
+        <UseCodeAnalysis>false</UseCodeAnalysis>
 
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/rwredding/jerrycurl</RepositoryUrl>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>embedded</DebugType>
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/rwredding/jerrycurl</RepositoryUrl>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>embedded</DebugType>
+        <DefaultLanguage>en-US</DefaultLanguage>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
 
-  <PropertyGroup Label="Package Specification">
-    <IsPackable>false</IsPackable>
-    <PackageOutputPath>$(MSBuildThisFileDirectory)artifacts\packages</PackageOutputPath>
-    <PackageOwners>AC Dancode</PackageOwners>
-    <PackageAuthors>R. W. Redding</PackageAuthors>
-    <IncludeSymbols>false</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageProjectUrl>https://jerrycurl.net</PackageProjectUrl>
-    <PackageIconUrl>https://jerrycurl.net/nuget/icon2.png</PackageIconUrl>
-    <PackageId>$(MSBuildProjectName)</PackageId>
-    <PackageLicense>LGPL-3.0-or-later</PackageLicense>
-    <PackageTags>orm, sql, razor, mvc, cqs, database, dotnet</PackageTags>
-  </PropertyGroup>
+    <PropertyGroup Label="Package Specification">
+        <IsPackable>false</IsPackable>
+        <PackageOutputPath>$(MSBuildThisFileDirectory)artifacts\packages</PackageOutputPath>
+        <PackageOwners>AC Dancode</PackageOwners>
+        <PackageAuthors>R. W. Redding</PackageAuthors>
+        <IncludeSymbols>false</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageProjectUrl>https://jerrycurl.net</PackageProjectUrl>
+        <PackageIconUrl>https://jerrycurl.net/nuget/icon2.png</PackageIconUrl>
+        <PackageId>$(MSBuildProjectName)</PackageId>
+        <PackageLicense>LGPL-3.0-or-later</PackageLicense>
+        <PackageTags>orm, sql, razor, mvc, cqs, database, dotnet</PackageTags>
+    </PropertyGroup>
 </Project>
