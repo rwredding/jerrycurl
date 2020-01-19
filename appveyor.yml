@@ -6,7 +6,6 @@ skip_commits:
     - '**/*.md'
 
 environment:
-  APPVEYOR: true
   PGUSER: postgres
   PGPASSWORD: Password12!
   PGDATABASE: jerry_testdb
