@@ -2,7 +2,7 @@
 
 namespace Jerrycurl.Data.Metadata.Annotations
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = true, Inherited = true)]
     public class AggregateAttribute : Attribute
     {
 
