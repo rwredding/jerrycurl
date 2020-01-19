@@ -1,6 +1,6 @@
 [![NuGet](https://img.shields.io/nuget/v/Jerrycurl)](https://nuget.org/packages/Jerrycurl)
 [![Build status](https://ci.appveyor.com/api/projects/status/onendmfb6ywd33je/branch/master?svg=true)](https://ci.appveyor.com/project/rwredding/jerrycurl/branch/master)
-[![Test status](https://img.shields.io/appveyor/tests/rwredding/jerrycurl)](https://ci.appveyor.com/project/rwredding/jerrycurl/branch/master/tests)
+[![Test status](https://img.shields.io/appveyor/tests/rwredding/jerrycurl/master?compact_message)](https://ci.appveyor.com/project/rwredding/jerrycurl/branch/master/tests)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/jerrycurl-mvc/community)
 # Jerrycurl - Razor-powered ORM for .NET
 **Jerrycurl** is a free and lightweight **ORM for .NET** that focuses on elegant and type-safe **SQL** written with **Razor syntax**.
