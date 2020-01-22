@@ -3,28 +3,124 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
+using System.Threading.Tasks;
 using Jerrycurl.Data.Commands;
 using Jerrycurl.Data.Filters;
 using Jerrycurl.Data.Queries;
 using Jerrycurl.Test;
-using Jerrycurl.Test.Transactions;
 using Microsoft.Data.SqlClient;
 using Shouldly;
 
 namespace Jerrycurl.Vendors.SqlServer.Test
 {
-    public class TransactionTests : TransactionTestBase
+    public class TransactionTests
     {
-        protected override Func<IDbConnection> GetConnectionFactory() => () => SqlServerConvention.GetConnection();
+        private readonly TransactionHelper helper = new TransactionHelper(() => SqlServerConvention.GetConnection(), CreateSql, InsertSql, SelectSql);
 
-        protected override IEnumerable<CommandData> GetEnsureTableCommands()
+        private const string InsertSql = @"INSERT INTO tran_values VALUES(1)
+                                           INSERT INTO tran_values VALUES(2)
+                                           INSERT INTO tran_values VALUES(NULL)";
+        private const string SelectSql = @"SELECT v AS ""Item"" FROM tran_values";
+        private const string CreateSql = @"IF EXISTS(SELECT 0 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tran_values')
+                                                DROP TABLE tran_values;
+                                           CREATE TABLE tran_values ( v int NOT NULL );";
+
+
+
+        public void Test_Inserts_WithoutTransaction()
         {
-            yield return new CommandData()
+            this.helper.CreateTable();
+
+            CommandData command = this.helper.GetInsert();
+            CommandHandler handler = this.helper.GetCommandHandler();
+
+            try
             {
-                CommandText = @"IF NOT EXISTS(SELECT 0 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tran_values')
-                                    CREATE TABLE tran_values ( Value int NOT NULL );
-                                TRUNCATE TABLE tran_values;",
-            };
+                handler.Execute(command);
+            }
+            catch (DbException) { }
+
+            this.helper.VerifyNonTransaction();
+        }
+
+        public void Test_Inserts_WithTransaction()
+        {
+            this.helper.CreateTable();
+
+            CommandData command = this.helper.GetInsert();
+            CommandHandler handler = this.helper.GetCommandHandler(new TransactionFilter());
+
+            try
+            {
+                handler.Execute(command);
+            }
+            catch (DbException) { }
+
+            this.helper.VerifyTransaction();
+        }
+
+        public async Task Test_InsertsAsync_WithoutTransaction()
+        {
+            this.helper.CreateTable();
+
+            CommandData command = this.helper.GetInsert();
+            CommandHandler handler = this.helper.GetCommandHandler();
+
+            try
+            {
+                await handler.ExecuteAsync(command);
+            }
+            catch (DbException) { }
+
+            this.helper.VerifyNonTransaction();
+        }
+
+        public async Task Test_InsertsAsync_WithTransaction()
+        {
+            this.helper.CreateTable();
+
+            CommandData command = this.helper.GetInsert();
+            CommandHandler handler = this.helper.GetCommandHandler(new TransactionFilter());
+
+            try
+            {
+                await handler.ExecuteAsync(command);
+            }
+            catch (DbException) { }
+
+            this.helper.VerifyTransaction();
+        }
+
+        public async Task Test_InsertsAsync_WithTransactionScope()
+        {
+            this.helper.CreateTable();
+
+            CommandData command = this.helper.GetInsert();
+            CommandHandler handler = this.helper.GetCommandHandler(new TransactionScopeFilter());
+
+            try
+            {
+                await handler.ExecuteAsync(command);
+            }
+            catch (DbException) { }
+
+            this.helper.VerifyTransaction();
+        }
+
+        public void Test_Inserts_WithTransactionScope()
+        {
+            this.helper.CreateTable();
+
+            CommandData command = this.helper.GetInsert();
+            CommandHandler handler = this.helper.GetCommandHandler(new TransactionScopeFilter());
+
+            try
+            {
+                handler.Execute(command);
+            }
+            catch (DbException) { }
+
+            this.helper.VerifyTransaction();
         }
     }
 }
