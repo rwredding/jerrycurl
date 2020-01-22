@@ -1,4 +1,5 @@
-﻿using Jerrycurl.Data.Filters;
+﻿using Jerrycurl.Collections;
+using Jerrycurl.Data.Filters;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,7 +15,7 @@ namespace Jerrycurl.Data.Sessions
     {
         private readonly IDbConnection connectionBase;
         private readonly DbConnection connection;
-        private readonly (IFilterHandler, IFilterAsyncHandler)[] filters;
+        private readonly IFilterAsyncHandler[] filters;
 
         private bool wasDisposed = false;
         private bool wasOpened = false;
@@ -26,7 +27,7 @@ namespace Jerrycurl.Data.Sessions
 
             this.connectionBase = options?.ConnectionFactory?.Invoke();
             this.connection = this.connectionBase as DbConnection;
-            this.filters = options?.Filters.Select(f => (f.GetHandler(this.connectionBase), f.GetAsyncHandler(this.connectionBase))).ToArray() ?? Array.Empty<(IFilterHandler, IFilterAsyncHandler)>();
+            this.filters = options?.Filters.Select(f => f.GetAsyncHandler(this.connectionBase)).NotNull().ToArray() ?? Array.Empty<IFilterAsyncHandler>();
 
             this.VerifyAsyncSetup();
         }
@@ -137,74 +138,19 @@ namespace Jerrycurl.Data.Sessions
 
         private async Task ApplyFiltersAsync(Action<IFilterHandler> action, Func<IFilterAsyncHandler, Task> asyncAction)
         {
-            foreach (var (handler, asyncHandler) in this.filters)
-            {
-                if (asyncHandler != null)
-                    await asyncAction(asyncHandler).ConfigureAwait(false);
-                else if (handler != null)
-                    action(handler);
-            }
+            foreach (var asyncHandler in this.filters)
+                await asyncAction(asyncHandler).ConfigureAwait(false);
         }
 
-        private void ApplyFilters(Func<IFilterHandler, Action<FilterContext>> action, FilterContext context)
+        private async ValueTask DisposeFiltersAsync()
         {
-            foreach (var (handler, _) in this.filters)
-            {
-                if (handler != null)
-                    action(handler)(context);
-            }
-        }
-
-        private void DisposeFilters()
-        {
-            foreach (var (handler, asyncHandler) in this.filters)
-            {
-                if (asyncHandler != null)
-                    asyncHandler.Dispose();
-                else if (handler != null)
-                    handler.Dispose();
-            }
-        }
-
-        private async Task DisposeFiltersAsync()
-        {
-            foreach (var (handler, asyncHandler) in this.filters)
-            {
-                if (asyncHandler != null)
-                    await asyncHandler.DisposeAsync().ConfigureAwait(false);
-                else if (handler != null)
-                    handler.Dispose();
-            }
-        }
-
-        
-
-        public void Dispose()
-        {
-            if (!this.wasDisposed)
+            foreach (var asyncHandler in this.filters)
             {
                 try
                 {
-                    if (this.wasOpened)
-                        this.ApplyFilters(h => h.OnConnectionClosing, new FilterContext(this.connection, null));
+                    await asyncHandler.DisposeAsync();
                 }
-                finally
-                {
-                    this.connection?.Dispose();
-                }
-
-                try
-                {
-                    if (this.wasOpened)
-                        this.ApplyFilters(h => h.OnConnectionClosed, new FilterContext(this.connection, null));
-                }
-                finally
-                {
-                    this.DisposeFilters();
-
-                    this.wasDisposed = true;
-                }
-
+                catch { }
             }
         }
 

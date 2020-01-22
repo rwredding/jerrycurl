@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Jerrycurl.Data.Filters
 {
-    public partial interface IFilterAsyncHandler : IAsyncDisposable, IDisposable
+    public partial interface IFilterAsyncHandler : IAsyncDisposable
     {
         Task OnConnectionOpeningAsync(FilterContext context);
         Task OnConnectionOpenedAsync(FilterContext context);

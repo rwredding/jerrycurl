@@ -60,7 +60,7 @@ namespace Jerrycurl.Data.Filters
 
             public override void Dispose()
             {
-                this.transaction?.Dispose();
+                this.transaction.Dispose();
                 this.transaction = null;
             }
         }
@@ -95,7 +95,7 @@ namespace Jerrycurl.Data.Filters
 
             public override ValueTask DisposeAsync()
             {
-                this.transaction?.Dispose();
+                this.transaction.Dispose();
                 this.transaction = null;
 
                 return default;
