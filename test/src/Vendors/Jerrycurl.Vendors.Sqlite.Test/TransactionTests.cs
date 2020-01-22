@@ -8,22 +8,21 @@ using Jerrycurl.Data.Filters;
 using Jerrycurl.Data.Queries;
 using Jerrycurl.Test;
 using Jerrycurl.Test.Transactions;
-using Microsoft.Data.SqlClient;
+using Jerrycurl.Vendors.Sqlite.Test;
 using Shouldly;
 
-namespace Jerrycurl.Vendors.SqlServer.Test
+namespace Jerrycurl.Vendors.Sqlite.Test
 {
     public class TransactionTests : TransactionTestBase
     {
-        protected override Func<IDbConnection> GetConnectionFactory() => () => SqlServerConvention.GetConnection();
+        protected override Func<IDbConnection> GetConnectionFactory() => () => SqliteConvention.GetConnection();
 
         protected override IEnumerable<CommandData> GetEnsureTableCommands()
         {
             yield return new CommandData()
             {
-                CommandText = @"IF NOT EXISTS(SELECT 0 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tran_values')
-                                    CREATE TABLE tran_values ( Value int NOT NULL );
-                                TRUNCATE TABLE tran_values;",
+                CommandText = @"CREATE TABLE IF NOT EXISTS tran_values ( Value int NOT NULL );
+                                DELETE FROM tran_values;",
             };
         }
     }

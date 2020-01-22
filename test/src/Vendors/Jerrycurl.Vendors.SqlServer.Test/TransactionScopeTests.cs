@@ -13,7 +13,7 @@ using Shouldly;
 
 namespace Jerrycurl.Vendors.SqlServer.Test
 {
-    public class TransactionTests : TransactionTestBase
+    public class TransactionScopeTests : TransactionScopeTestBase
     {
         protected override Func<IDbConnection> GetConnectionFactory() => () => SqlServerConvention.GetConnection();
 

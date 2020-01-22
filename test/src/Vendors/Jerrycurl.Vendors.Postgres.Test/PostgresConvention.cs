@@ -1,5 +1,6 @@
 ﻿using Jerrycurl.Mvc;
 using Jerrycurl.Test;
+using Npgsql;
 
 namespace Jerrycurl.Vendors.Postgres.Test
 {
@@ -15,5 +16,6 @@ namespace Jerrycurl.Vendors.Postgres.Test
         }
 
         public static string GetConnectionString() => GetEnvironmentVariable("JERRY_POSTGRES_CONN");
+        public static NpgsqlConnection GetConnection() => new NpgsqlConnection(GetConnectionString());
     }
 }
