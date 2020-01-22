@@ -83,7 +83,12 @@ namespace Jerrycurl.Data.Sessions
             }
             finally
             {
+#if !NETSTANDARD2_0
+                if (reader != null)
+                    await reader.DisposeAsync();
+#else
                 reader?.Dispose();
+#endif
             }
 
             if (this.filters.Length > 0)
