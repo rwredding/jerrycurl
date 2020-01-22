@@ -9,13 +9,13 @@ namespace Jerrycurl.Data.Filters
         private readonly Func<Handler> handler;
 
         public TransactionScopeFilter()
-            : this(() => new TransactionScope())
+            : this(() => new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
         {
 
         }
 
         public TransactionScopeFilter(TransactionScopeOption scopeOption)
-            : this(() => new TransactionScope(scopeOption))
+            : this(() => new TransactionScope(scopeOption, TransactionScopeAsyncFlowOption.Enabled))
         {
 
         }
