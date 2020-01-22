@@ -47,7 +47,7 @@ namespace Jerrycurl.Test
         public void VerifyTransaction() => this.SelectValues().ShouldBeEmpty();
         public void VerifyNonTransaction() => this.SelectValues().ShouldNotBeEmpty();
 
-        private IList<int> SelectValues()
+        public IList<int> SelectValues()
         {
             QueryOptions options = new QueryOptions()
             {

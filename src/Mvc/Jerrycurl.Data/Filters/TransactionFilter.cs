@@ -113,7 +113,7 @@ namespace Jerrycurl.Data.Filters
             public override async Task OnExceptionAsync(FilterContext context)
             {
                 if (!this.handled)
-                    await this.transaction.RollbackAsync();
+                    await this.transaction.RollbackAsync().ConfigureAwait(false);
 
                 this.handled = true;
             }
@@ -121,14 +121,14 @@ namespace Jerrycurl.Data.Filters
             public override async Task OnConnectionClosingAsync(FilterContext context)
             {
                 if (!this.handled)
-                    await this.transaction.CommitAsync();
+                    await this.transaction.CommitAsync().ConfigureAwait(false);
 
                 this.handled = true;
             }
 
             public override async ValueTask DisposeAsync()
             {
-                await this.transaction.DisposeAsync();
+                await this.transaction.DisposeAsync().ConfigureAwait(false);
 
                 this.transaction = null;
             }

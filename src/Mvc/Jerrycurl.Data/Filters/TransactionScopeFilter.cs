@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Threading.Tasks;
 using System.Transactions;
 
 namespace Jerrycurl.Data.Filters
@@ -7,6 +8,7 @@ namespace Jerrycurl.Data.Filters
     public class TransactionScopeFilter : IFilter
     {
         private readonly Func<Handler> handler;
+        private readonly Func<AsyncHandler> asyncHandler;
 
         public TransactionScopeFilter()
             : this(() => new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -26,25 +28,20 @@ namespace Jerrycurl.Data.Filters
                 throw new ArgumentNullException(nameof(scopeFactory));
 
             this.handler = () => new Handler(scopeFactory);
+            this.asyncHandler = () => new AsyncHandler(scopeFactory);
         }
 
         public IFilterHandler GetHandler(IDbConnection connection) => this.handler();
-        public IFilterAsyncHandler GetAsyncHandler(IDbConnection connection) => null;
+        public IFilterAsyncHandler GetAsyncHandler(IDbConnection connection) => this.asyncHandler();
 
         private class Handler : FilterHandler
         {
-            private readonly Func<TransactionScope> factory;
             private TransactionScope transaction;
             private bool handled = false;
 
             public Handler(Func<TransactionScope> factory)
             {
-                this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
-            }
-
-            public override void OnConnectionOpening(FilterContext context)
-            {
-                this.transaction = this.factory();
+                this.transaction = factory();
             }
 
             public override void OnException(FilterContext context)
@@ -65,6 +62,43 @@ namespace Jerrycurl.Data.Filters
             {
                 this.transaction?.Dispose();
                 this.transaction = null;
+            }
+        }
+
+        private class AsyncHandler : FilterHandler
+        {
+            private TransactionScope transaction;
+            private bool handled = false;
+
+            public AsyncHandler(Func<TransactionScope> factory)
+            {
+                this.transaction = factory();
+            }
+
+            public override Task OnExceptionAsync(FilterContext context)
+            {
+                if (!this.handled)
+                    this.handled = true;
+
+                return Task.CompletedTask;
+            }
+
+            public override Task OnConnectionClosedAsync(FilterContext context)
+            {
+                if (!this.handled)
+                    this.transaction.Complete();
+
+                this.handled = true;
+
+                return Task.CompletedTask;
+            }
+
+            public override ValueTask DisposeAsync()
+            {
+                this.transaction?.Dispose();
+                this.transaction = null;
+
+                return default;
             }
         }
     }

@@ -55,13 +55,13 @@ namespace Jerrycurl.Data.Sessions
             }
             catch (Exception ex)
             {
-                await this.ApplyCommandFiltersAsync(h => h.OnException, h => h.OnExceptionAsync, dbCommand, ex, operation.Source);
+                await this.ApplyCommandFiltersAsync(h => h.OnException, h => h.OnExceptionAsync, dbCommand, ex, operation.Source).ConfigureAwait(false);
 
                 throw;
             }
 
             if (this.filters.Length > 0)
-                await this.ApplyCommandFiltersAsync(h => h.OnCommandCreated, h => h.OnCommandCreatedAsync, dbCommand, source: operation.Source);
+                await this.ApplyCommandFiltersAsync(h => h.OnCommandCreated, h => h.OnCommandCreatedAsync, dbCommand, source: operation.Source).ConfigureAwait(false);
 
             DbDataReader reader = null;
 
@@ -71,7 +71,7 @@ namespace Jerrycurl.Data.Sessions
             }
             catch (Exception ex)
             {
-                await this.ApplyCommandFiltersAsync(h => h.OnException, h => h.OnExceptionAsync, dbCommand, ex, operation.Source);
+                await this.ApplyCommandFiltersAsync(h => h.OnException, h => h.OnExceptionAsync, dbCommand, ex, operation.Source).ConfigureAwait(false);
 
                 throw;
             }
@@ -92,7 +92,7 @@ namespace Jerrycurl.Data.Sessions
             }
 
             if (this.filters.Length > 0)
-                await this.ApplyCommandFiltersAsync(h => h.OnCommandExecuted, h => h.OnCommandExecutedAsync, dbCommand, source: operation.Source);
+                await this.ApplyCommandFiltersAsync(h => h.OnCommandExecuted, h => h.OnCommandExecutedAsync, dbCommand, source: operation.Source).ConfigureAwait(false);
         }
 
         private async Task<DbConnection> GetOpenConnectionAsync(CancellationToken cancellationToken)
@@ -107,9 +107,9 @@ namespace Jerrycurl.Data.Sessions
             {
                 if (!this.wasOpened)
                 {
-                    await this.ApplyConnectionFiltersAsync(h => h.OnConnectionOpening, h => h.OnConnectionOpeningAsync);
+                    await this.ApplyConnectionFiltersAsync(h => h.OnConnectionOpening, h => h.OnConnectionOpeningAsync).ConfigureAwait(false);
                     await this.connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                    await this.ApplyConnectionFiltersAsync(h => h.OnConnectionOpened, h => h.OnConnectionOpenedAsync);
+                    await this.ApplyConnectionFiltersAsync(h => h.OnConnectionOpened, h => h.OnConnectionOpenedAsync).ConfigureAwait(false);
                 }
             }
             finally
@@ -124,7 +124,7 @@ namespace Jerrycurl.Data.Sessions
         {
             FilterContext context = new FilterContext(command, exception, source);
 
-            await this.ApplyFiltersAsync(h => action(h)(context), h => asyncAction(h)(context));
+            await this.ApplyFiltersAsync(h => action(h)(context), h => asyncAction(h)(context)).ConfigureAwait(false);
         }
             
 
@@ -132,7 +132,7 @@ namespace Jerrycurl.Data.Sessions
         {
             FilterContext context = new FilterContext(this.connection, exception, null);
 
-            await this.ApplyFiltersAsync(h => action(h)(context), h => asyncAction(h)(context));
+            await this.ApplyFiltersAsync(h => action(h)(context), h => asyncAction(h)(context)).ConfigureAwait(false);
         }
 
         private async Task ApplyFiltersAsync(Action<IFilterHandler> action, Func<IFilterAsyncHandler, Task> asyncAction)
@@ -140,7 +140,7 @@ namespace Jerrycurl.Data.Sessions
             foreach (var (handler, asyncHandler) in this.filters)
             {
                 if (asyncHandler != null)
-                    await asyncAction(asyncHandler);
+                    await asyncAction(asyncHandler).ConfigureAwait(false);
                 else if (handler != null)
                     action(handler);
             }
@@ -171,7 +171,7 @@ namespace Jerrycurl.Data.Sessions
             foreach (var (handler, asyncHandler) in this.filters)
             {
                 if (asyncHandler != null)
-                    await asyncHandler.DisposeAsync();
+                    await asyncHandler.DisposeAsync().ConfigureAwait(false);
                 else if (handler != null)
                     handler.Dispose();
             }
@@ -215,13 +215,13 @@ namespace Jerrycurl.Data.Sessions
                 try
                 {
                     if (this.wasOpened)
-                        await this.ApplyConnectionFiltersAsync(h => h.OnConnectionClosing, h => h.OnConnectionClosingAsync);
+                        await this.ApplyConnectionFiltersAsync(h => h.OnConnectionClosing, h => h.OnConnectionClosingAsync).ConfigureAwait(false);
                 }
                 finally
                 {
 #if !NETSTANDARD2_0
                     if (this.connection != null)
-                        await this.connection.DisposeAsync();
+                        await this.connection.DisposeAsync().ConfigureAwait(false);
 #else
                     this.connection?.Dispose();
 #endif
@@ -230,11 +230,11 @@ namespace Jerrycurl.Data.Sessions
                 try
                 {
                     if (this.wasOpened)
-                        await this.ApplyConnectionFiltersAsync(h => h.OnConnectionClosed, h => h.OnConnectionClosedAsync);
+                        await this.ApplyConnectionFiltersAsync(h => h.OnConnectionClosed, h => h.OnConnectionClosedAsync).ConfigureAwait(false);
                 }
                 finally
                 {
-                    await this.DisposeFiltersAsync();
+                    await this.DisposeFiltersAsync().ConfigureAwait(false);
 
                     this.wasDisposed = true;
                 }
