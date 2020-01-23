@@ -5,7 +5,7 @@
         <NetStandardMoniker>netstandard2.0</NetStandardMoniker>
         <NetFrameworkMoniker>net472</NetFrameworkMoniker>
         <NetStandardMultiTargetMoniker>netstandard2.0;netstandard2.1</NetStandardMultiTargetMoniker>
-        <MultiTargetMoniker>$(NetFrameworkMoniker);$(NetStandardMoniker)</MultiTargetMoniker>
+        <ToolingTargetMoniker>$(NetFrameworkMoniker);$(NetStandardMoniker)</ToolingTargetMoniker>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>1591;NU5105;NU5048</NoWarn>
     </PropertyGroup>

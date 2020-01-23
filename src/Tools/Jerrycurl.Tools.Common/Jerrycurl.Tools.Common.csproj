@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>$(MultiTargetMoniker)</TargetFrameworks>
+		<TargetFrameworks>$(ToolingTargetMoniker)</TargetFrameworks>
 		<RootNamespace>Jerrycurl.Tools</RootNamespace>
 		<IsPackable>true</IsPackable>
 	</PropertyGroup>
