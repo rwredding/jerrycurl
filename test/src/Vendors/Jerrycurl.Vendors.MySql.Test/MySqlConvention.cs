@@ -1,5 +1,6 @@
 ﻿using Jerrycurl.Mvc;
 using Jerrycurl.Test;
+using MySql.Data.MySqlClient;
 
 namespace Jerrycurl.Vendors.MySql.Test
 {
@@ -15,5 +16,6 @@ namespace Jerrycurl.Vendors.MySql.Test
         }
 
         public static string GetConnectionString() => GetEnvironmentVariable("JERRY_MYSQL_CONN");
+        public static MySqlConnection GetConnection() => new MySqlConnection(GetConnectionString());
     }
 }

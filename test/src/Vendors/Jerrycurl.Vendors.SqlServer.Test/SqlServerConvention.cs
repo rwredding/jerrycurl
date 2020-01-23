@@ -1,5 +1,6 @@
 ﻿using Jerrycurl.Mvc;
 using Jerrycurl.Test;
+using Microsoft.Data.SqlClient;
 
 namespace Jerrycurl.Vendors.SqlServer.Test
 {
@@ -15,5 +16,6 @@ namespace Jerrycurl.Vendors.SqlServer.Test
         }
 
         public static string GetConnectionString() => GetEnvironmentVariable("JERRY_SQLSERVER_CONN");
+        public static SqlConnection GetConnection() => new SqlConnection(GetConnectionString());
     }
 }

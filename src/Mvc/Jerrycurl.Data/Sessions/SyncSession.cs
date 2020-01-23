@@ -21,12 +21,12 @@ namespace Jerrycurl.Data.Sessions
                 throw new ArgumentNullException(nameof(options));
 
             this.connection = options?.ConnectionFactory?.Invoke();
-            this.filters = options?.Filters.Select(f => f.GetHandler(this.connection)).ToArray() ?? Array.Empty<IFilterHandler>();
+            this.VerifyConnection();
 
-            this.VerifySetup();
+            this.filters = options?.Filters.Select(f => f.GetHandler(this.connection)).NotNull().ToArray() ?? Array.Empty<IFilterHandler>();
         }
 
-        private void VerifySetup()
+        private void VerifyConnection()
         {
             if (this.connection == null)
                 throw new InvalidOperationException("No connection returned from ConnectionFactory.");
@@ -38,22 +38,26 @@ namespace Jerrycurl.Data.Sessions
         public IEnumerable<IDataReader> Execute(IOperation operation)
         {
             IDbConnection connection = this.GetOpenConnection();
+            IDbCommand dbCommand = null;
 
-            using IDbCommand dbCommand = connection.CreateCommand();
+            void applyException(Exception ex) => this.ApplyFilters(h => h.OnException, dbCommand: dbCommand, exception: ex, source: operation.Source, swallowExceptions: true);
 
             try
             {
+                dbCommand = connection.CreateCommand();
+
                 operation.Build(dbCommand);
             }
             catch (Exception ex)
             {
-                this.ApplyCommandFilters(h => h.OnException, dbCommand, ex, operation.Source);
+                applyException(ex);
+
+                dbCommand?.Dispose();
 
                 throw;
             }
 
-            if (this.filters.Length > 0)
-                this.ApplyCommandFilters(h => h.OnCommandCreated, dbCommand, source: operation.Source);
+            this.ApplyFilters(h => h.OnCommandCreated, dbCommand: dbCommand, source: operation.Source);
 
             IDataReader reader = null;
 
@@ -63,75 +67,116 @@ namespace Jerrycurl.Data.Sessions
             }
             catch (Exception ex)
             {
-                this.ApplyCommandFilters(h => h.OnException, dbCommand, ex, operation.Source);
+                applyException(ex);
 
                 throw;
             }
 
-            try
-            {
-                do yield return reader; 
-                while (reader.NextResult());
-            }
-            finally
-            {
-                reader?.Dispose();
-            }
+            return innerReader();
 
-            if (this.filters.Length > 0)
-                this.ApplyCommandFilters(h => h.OnCommandExecuted, dbCommand, source: operation.Source);
+            IEnumerable<IDataReader> innerReader()
+            {
+                try
+                {
+                    bool nextResult = true;
+
+                    while (nextResult)
+                    {
+                        yield return reader;
+
+                        try
+                        {
+                            nextResult = reader.NextResult();
+                        }
+                        catch (Exception ex)
+                        {
+                            applyException(ex);
+
+                            throw;
+                        }
+                    }
+
+                    this.ApplyFilters(h => h.OnCommandExecuted, dbCommand, source: operation.Source);
+                }
+                finally
+                {
+                    reader.Dispose();
+                }
+            }
         }
 
         private IDbConnection GetOpenConnection()
         {
             if (this.wasDisposed)
-                throw new ObjectDisposedException("Connection is no longer usable; it is disposed.");
+                throw new ObjectDisposedException("Session is no longer usable; it is disposed.");
 
             if (this.wasOpened)
                 return this.connection;
 
-            try
+            if (!this.wasOpened)
             {
-                if (!this.wasOpened)
-                {
-                    this.ApplyConnectionFilters(h => h.OnConnectionOpening);
-                    this.connection.Open();
-                    this.ApplyConnectionFilters(h => h.OnConnectionOpened);
-                }
-            }
-            finally
-            {
+                this.ApplyFilters(h => h.OnConnectionOpening);
+                this.connection.Open();
+                this.ApplyFilters(h => h.OnConnectionOpened);
+
                 this.wasOpened = true;
             }
 
             return this.connection;
         }
 
-
-        private void ApplyCommandFilters(Func<IFilterHandler, Action<FilterContext>> action, IDbCommand command, Exception exception = null, object source = null)
+        private void ApplyFilters(Func<IFilterHandler, Action<FilterContext>> action, IDbCommand dbCommand = null, Exception exception = null, object source = null, bool swallowExceptions = false)
         {
-            FilterContext context = new FilterContext(command, exception, source);
+            if (this.filters.Length > 0)
+            {
+                FilterContext context = new FilterContext(this.connection, dbCommand, exception, source);
 
-            this.ApplyFilters(action, context);
+                this.ApplyFilters(action, context, swallowExceptions);
+            }
         }
 
-        private void ApplyConnectionFilters(Func<IFilterHandler, Action<FilterContext>> action, Exception exception = null)
+        private void ApplyFilters(Func<IFilterHandler, Action<FilterContext>> action, FilterContext context, bool swallowExceptions = false)
         {
-            FilterContext context = new FilterContext(this.connection, exception, null);
+            foreach (IFilterHandler handler in this.filters)
+            {
+                try
+                {
+                    action(handler)(context);
+                }
+                catch (Exception ex)
+                {
+                    if (!swallowExceptions)
+                    {
+                        FilterContext exceptionContext = new FilterContext(context.Connection, context.Command, ex, context.SourceObject);
 
-            this.ApplyFilters(action, context);
-        }
+                        this.ApplyFilters(h => h.OnException, exceptionContext, swallowExceptions: true);
 
-        private void ApplyFilters(Func<IFilterHandler, Action<FilterContext>> action, FilterContext context)
-        {
-            foreach (IFilterHandler handler in this.filters.NotNull())
-                action(handler)(context);
+                        throw;
+                    }
+                }
+            }
         }
 
         private void DisposeFilters()
         {
-            foreach (IFilterHandler handler in this.filters.NotNull())
-                handler.Dispose();
+            List<Exception> exceptions = new List<Exception>();
+
+            foreach (IFilterHandler handler in this.filters)
+            {
+                try
+                {
+                    handler.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
+                }
+            }
+
+            if (exceptions.Count == 1)
+                throw exceptions[0];
+            else if (exceptions.Count > 1)
+                throw new AggregateException(exceptions);
         }
 
         public void Dispose()
@@ -141,23 +186,34 @@ namespace Jerrycurl.Data.Sessions
                 try
                 {
                     if (this.wasOpened)
-                        this.ApplyFilters(h => h.OnConnectionClosing, new FilterContext(this.connection, null));
-                }
-                finally
-                {
-                    this.connection?.Dispose();
-                }
+                        this.ApplyFilters(h => h.OnConnectionClosing);
 
-                try
-                {
+                    try
+                    {
+                        this.connection?.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        this.ApplyFilters(h => h.OnException, exception: ex, swallowExceptions: true);
+
+                        throw;
+                    }
+
                     if (this.wasOpened)
-                        this.ApplyFilters(h => h.OnConnectionClosed, new FilterContext(this.connection, null));
+                        this.ApplyFilters(h => h.OnConnectionClosed);
                 }
                 finally
                 {
-                    this.DisposeFilters();
-
                     this.wasDisposed = true;
+
+                    try
+                    {
+                        this.DisposeFilters();
+                    }
+                    finally
+                    {
+                        this.connection?.Dispose();
+                    }
                 }
             }
         }

@@ -8,9 +8,7 @@ namespace Jerrycurl.Data.Filters
     public class TransactionFilter : IFilter
     {
         private readonly Func<Handler> factory;
-#pragma warning disable IDE0052
         private readonly Func<AsyncHandler> asyncFactory;
-#pragma warning restore IDE0052
 
         public TransactionFilter()
         {
@@ -25,18 +23,7 @@ namespace Jerrycurl.Data.Filters
         }
 
         public IFilterHandler GetHandler(IDbConnection connection) => this.factory();
-
-#if !NETSTANDARD2_0
-        public IFilterAsyncHandler GetAsyncHandler(IDbConnection connection)
-        {
-            if (connection is DbConnection)
-                return this.asyncFactory();
-
-            return null;
-        }
-#else
-        public IFilterAsyncHandler GetAsyncHandler(IDbConnection connection) => null;
-#endif
+        public IFilterAsyncHandler GetAsyncHandler(IDbConnection connection) => this.asyncFactory();
 
         private class Handler : FilterHandler
         {
@@ -62,7 +49,13 @@ namespace Jerrycurl.Data.Filters
             public override void OnException(FilterContext context)
             {
                 if (!this.handled)
-                    this.transaction.Rollback();
+                {
+                    try
+                    {
+                        this.transaction.Rollback();
+                    }
+                    catch { }
+                }
 
                 this.handled = true;
             }
@@ -82,12 +75,9 @@ namespace Jerrycurl.Data.Filters
             }
         }
 
-
-#if !NETSTANDARD2_0
         private class AsyncHandler : FilterHandler
         {
             private readonly Func<IDbConnection, IDbTransaction> factory;
-
             private DbTransaction transaction;
             private bool handled = false;
 
@@ -110,10 +100,17 @@ namespace Jerrycurl.Data.Filters
                 return Task.CompletedTask;
             }
 
+            #if !NETSTANDARD2_0
             public override async Task OnExceptionAsync(FilterContext context)
             {
                 if (!this.handled)
-                    await this.transaction.RollbackAsync();
+                {
+                    try
+                    {
+                        await this.transaction.RollbackAsync().ConfigureAwait(false);
+                    }
+                    catch { }
+                }
 
                 this.handled = true;
             }
@@ -121,26 +118,52 @@ namespace Jerrycurl.Data.Filters
             public override async Task OnConnectionClosingAsync(FilterContext context)
             {
                 if (!this.handled)
-                    await this.transaction.CommitAsync();
+                    await this.transaction.CommitAsync().ConfigureAwait(false);
 
                 this.handled = true;
             }
 
             public override async ValueTask DisposeAsync()
             {
-                await this.transaction.DisposeAsync();
+                await this.transaction.DisposeAsync().ConfigureAwait(false);
 
                 this.transaction = null;
             }
-        }
 #else
-        private class AsyncHandler : FilterHandler
-        {
-            public AsyncHandler(Func<IDbConnection, IDbTransaction> _)
+            public override Task OnExceptionAsync(FilterContext context)
             {
+                if (!this.handled)
+                {
+                    try
+                    {
+                        this.transaction.Dispose();
+                    }
+                    catch { }
+                }
 
+                this.handled = true;
+
+                return Task.CompletedTask;
             }
-        }
+
+            public override Task OnConnectionClosingAsync(FilterContext context)
+            {
+                if (!this.handled)
+                    this.transaction.Commit();
+
+                this.handled = true;
+
+                return Task.CompletedTask;
+            }
+
+            public override ValueTask DisposeAsync()
+            {
+                this.transaction.Dispose();
+                this.transaction = null;
+
+                return default;
+            }
 #endif
+        }
     }
 }

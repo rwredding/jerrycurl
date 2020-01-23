@@ -25,7 +25,7 @@ namespace Jerrycurl.Data.Test
 
             await using (var ado = new AsyncSession(options))
             {
-                await foreach (var r in ado.ExecuteAsync(new AdoCommandBuilder("SELECT 12; SELECT 12"), CancellationToken.None))
+                await foreach (var r in ado.ExecuteAsync(new SqlOperation("SELECT 12; SELECT 12"), CancellationToken.None))
                 {
                     (await r.ReadAsync()).ShouldBeTrue();
                     (await r.GetFieldValueAsync<int>(0)).ShouldBe(12);
@@ -48,7 +48,7 @@ namespace Jerrycurl.Data.Test
 
             using (var ado = new SyncSession(options))
             {
-                foreach (var r in ado.Execute(new AdoCommandBuilder("SELECT 12; SELECT 12")))
+                foreach (var r in ado.Execute(new SqlOperation("SELECT 12; SELECT 12")))
                 {
                     r.Read().ShouldBeTrue();
                     r.GetInt32(0).ShouldBe(12);

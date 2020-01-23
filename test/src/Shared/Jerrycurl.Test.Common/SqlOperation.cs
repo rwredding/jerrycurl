@@ -3,13 +3,13 @@ using Jerrycurl.Data.Sessions;
 
 namespace Jerrycurl.Test
 {
-    public class AdoCommandBuilder : IOperation
+    public class SqlOperation : IOperation
     {
         private readonly string commandText;
 
         public object Source => null;
 
-        public AdoCommandBuilder(string commandText)
+        public SqlOperation(string commandText)
         {
             this.commandText = commandText;
         }       
