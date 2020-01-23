@@ -13,7 +13,7 @@
         <tags>$PackageTags$</tags>
         <repository type="git" branch="master" url="$RepositoryUrl$" commit="$GitCommitId$" />
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Microsoft SQL Server support for Jerrycurl targeting legacy package System.Data.SqlClient.</description>
+        <description>Microsoft SQL Server legacy support for Jerrycurl. Targets System.Data.SqlClient.</description>
         <dependencies>
             <group targetFramework="netstandard2.0">
                 <dependency id="Jerrycurl.Mvc" version="$PackageVersion$" />
