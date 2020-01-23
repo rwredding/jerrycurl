@@ -3,6 +3,7 @@ version: '3.1'
 services:
   oracle:
     image: store/oracle/database-enterprise:12.2.0.1-slim
+    container_name: oracle
     restart: unless-stopped
     ports:
         - 1521:1521
