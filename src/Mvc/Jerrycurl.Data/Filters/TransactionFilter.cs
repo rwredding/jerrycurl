@@ -136,7 +136,7 @@ namespace Jerrycurl.Data.Filters
                 {
                     try
                     {
-                        this.transaction.Dispose();
+                        this.transaction.Rollback();
                     }
                     catch { }
                 }
