@@ -27,12 +27,12 @@ namespace Jerrycurl.Data.Sessions
 
             this.connectionBase = options?.ConnectionFactory?.Invoke();
             this.connection = this.connectionBase as DbConnection;
-            this.filters = options?.Filters.Select(f => f.GetAsyncHandler(this.connectionBase)).NotNull().ToArray() ?? Array.Empty<IFilterAsyncHandler>();
+            this.VerifyConnection();
 
-            this.VerifyAsyncSetup();
+            this.filters = options?.Filters.Select(f => f.GetAsyncHandler(this.connectionBase)).NotNull().ToArray() ?? Array.Empty<IFilterAsyncHandler>();
         }
 
-        private void VerifyAsyncSetup()
+        private void VerifyConnection()
         {
             if (this.connectionBase == null)
                 throw new InvalidOperationException("No connection returned from ConnectionFactory.");
@@ -44,114 +44,201 @@ namespace Jerrycurl.Data.Sessions
                 throw new InvalidOperationException("Connection is managed automatically and should be initially closed.");
         }
 
+
         public async IAsyncEnumerable<DbDataReader> ExecuteAsync(IOperation operation, [EnumeratorCancellation]CancellationToken cancellationToken)
         {
             DbConnection connection = await this.GetOpenConnectionAsync(cancellationToken).ConfigureAwait(false);
+            DbCommand dbCommand = null;
 
-            using DbCommand dbCommand = connection.CreateCommand();
+            Task applyException(Exception ex) => this.ApplyFilters(h => h.OnExceptionAsync, dbCommand: dbCommand, exception: ex, source: operation.Source, swallowExceptions: true);
 
             try
             {
+                dbCommand = connection.CreateCommand();
+
                 operation.Build(dbCommand);
             }
             catch (Exception ex)
             {
-                await this.ApplyCommandFiltersAsync(h => h.OnException, h => h.OnExceptionAsync, dbCommand, ex, operation.Source).ConfigureAwait(false);
+                await applyException(ex).ConfigureAwait(false);
+
+                dbCommand?.Dispose();
 
                 throw;
             }
 
-            if (this.filters.Length > 0)
-                await this.ApplyCommandFiltersAsync(h => h.OnCommandCreated, h => h.OnCommandCreatedAsync, dbCommand, source: operation.Source).ConfigureAwait(false);
+            await this.ApplyFilters(h => h.OnCommandCreatedAsync, dbCommand: dbCommand, source: operation.Source).ConfigureAwait(false);
 
             DbDataReader reader = null;
 
             try
             {
-                reader = await dbCommand.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                reader = dbCommand.ExecuteReader();
             }
             catch (Exception ex)
             {
-                await this.ApplyCommandFiltersAsync(h => h.OnException, h => h.OnExceptionAsync, dbCommand, ex, operation.Source).ConfigureAwait(false);
+                await applyException(ex).ConfigureAwait(false);
 
                 throw;
             }
 
             try
             {
-                do yield return reader;
-                while (await reader.NextResultAsync(cancellationToken).ConfigureAwait(false));
+                bool nextResult = true;
+
+                while (nextResult)
+                {
+                    yield return reader;
+
+                    try
+                    {
+                        nextResult = await reader.NextResultAsync().ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        await applyException(ex).ConfigureAwait(false);
+
+                        throw;
+                    }
+                }
+
+                await this.ApplyFilters(h => h.OnCommandExecutedAsync, dbCommand: dbCommand, source: operation.Source).ConfigureAwait(false);
             }
             finally
             {
 #if !NETSTANDARD2_0
-                if (reader != null)
-                    await reader.DisposeAsync();
+                await reader.DisposeAsync().ConfigureAwait(false);
 #else
-                reader?.Dispose();
+                reader.Dispose();
 #endif
             }
-
-            if (this.filters.Length > 0)
-                await this.ApplyCommandFiltersAsync(h => h.OnCommandExecuted, h => h.OnCommandExecutedAsync, dbCommand, source: operation.Source).ConfigureAwait(false);
         }
+
+
+//        public async IAsyncEnumerable<DbDataReader> ExecuteAsync(IOperation operation, [EnumeratorCancellation]CancellationToken cancellationToken)
+//        {
+//            DbConnection connection = await this.GetOpenConnectionAsync(cancellationToken).ConfigureAwait(false);
+
+//            using DbCommand dbCommand = connection.CreateCommand();
+
+//            try
+//            {
+//                operation.Build(dbCommand);
+//            }
+//            catch (Exception ex)
+//            {
+//                await this.ApplyCommandFiltersAsync(h => h.OnException, h => h.OnExceptionAsync, dbCommand, ex, operation.Source).ConfigureAwait(false);
+
+//                throw;
+//            }
+
+//            if (this.filters.Length > 0)
+//                await this.ApplyFilters(h => h.OnCommandCreated, h => h.OnCommandCreatedAsync, dbCommand, source: operation.Source).ConfigureAwait(false);
+
+//            DbDataReader reader = null;
+
+//            try
+//            {
+//                reader = await dbCommand.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+//            }
+//            catch (Exception ex)
+//            {
+//                await this.ApplyFilters(h => h.OnException, h => h.OnExceptionAsync, dbCommand: dbCommand, ex, operation.Source).ConfigureAwait(false);
+
+//                throw;
+//            }
+
+//            try
+//            {
+//                do yield return reader;
+//                while (await reader.NextResultAsync(cancellationToken).ConfigureAwait(false));
+//            }
+//            finally
+//            {
+//#if !NETSTANDARD2_0
+//                if (reader != null)
+//                    await reader.DisposeAsync();
+//#else
+//                reader?.Dispose();
+//#endif
+//            }
+
+//            if (this.filters.Length > 0)
+//                await this.ApplyFilters(h => h.OnCommandExecutedAsync, dbCommand: dbCommand, source: operation.Source).ConfigureAwait(false);
+//        }
 
         private async Task<DbConnection> GetOpenConnectionAsync(CancellationToken cancellationToken)
         {
             if (this.wasDisposed)
-                throw new ObjectDisposedException("Connection is no longer usable; it is disposed.");
+                throw new ObjectDisposedException("Session is no longer usable; it is disposed.");
 
             if (this.wasOpened)
                 return this.connection;
 
-            try
+            if (!this.wasOpened)
             {
-                if (!this.wasOpened)
-                {
-                    await this.ApplyConnectionFiltersAsync(h => h.OnConnectionOpening, h => h.OnConnectionOpeningAsync).ConfigureAwait(false);
-                    await this.connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                    await this.ApplyConnectionFiltersAsync(h => h.OnConnectionOpened, h => h.OnConnectionOpenedAsync).ConfigureAwait(false);
-                }
-            }
-            finally
-            {
+                await this.ApplyFilters(h => h.OnConnectionOpeningAsync).ConfigureAwait(false);
+                await this.connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                await this.ApplyFilters(h => h.OnConnectionOpenedAsync).ConfigureAwait(false);
+
                 this.wasOpened = true;
             }
 
             return this.connection;
         }
 
-        private async Task ApplyCommandFiltersAsync(Func<IFilterHandler, Action<FilterContext>> action, Func<IFilterAsyncHandler, Func<FilterContext, Task>> asyncAction, IDbCommand command, Exception exception = null, object source = null)
+        private async Task ApplyFilters(Func<IFilterAsyncHandler, Func<FilterContext, Task>> action, IDbCommand dbCommand = null, Exception exception = null, object source = null, bool swallowExceptions = false)
         {
-            FilterContext context = new FilterContext(command, exception, source);
+            if (this.filters.Length > 0)
+            {
+                FilterContext context = new FilterContext(this.connection, dbCommand, exception, source);
 
-            await this.ApplyFiltersAsync(h => action(h)(context), h => asyncAction(h)(context)).ConfigureAwait(false);
-        }
-            
-
-        private async Task ApplyConnectionFiltersAsync(Func<IFilterHandler, Action<FilterContext>> action, Func<IFilterAsyncHandler, Func<FilterContext, Task>> asyncAction, Exception exception = null)
-        {
-            FilterContext context = new FilterContext(this.connection, exception, null);
-
-            await this.ApplyFiltersAsync(h => action(h)(context), h => asyncAction(h)(context)).ConfigureAwait(false);
+                await this.ApplyFilters(action, context, swallowExceptions).ConfigureAwait(false);
+            }
         }
 
-        private async Task ApplyFiltersAsync(Action<IFilterHandler> action, Func<IFilterAsyncHandler, Task> asyncAction)
+        private async Task ApplyFilters(Func<IFilterAsyncHandler, Func<FilterContext, Task>> action, FilterContext context, bool swallowExceptions = false)
         {
-            foreach (var asyncHandler in this.filters)
-                await asyncAction(asyncHandler).ConfigureAwait(false);
+            foreach (IFilterAsyncHandler handler in this.filters)
+            {
+                try
+                {
+                    await action(handler)(context).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    if (!swallowExceptions)
+                    {
+                        FilterContext exceptionContext = new FilterContext(context.Connection, context.Command, ex, context.SourceObject);
+
+                        await this.ApplyFilters(h => h.OnExceptionAsync, exceptionContext, swallowExceptions: true).ConfigureAwait(false);
+
+                        throw;
+                    }
+                }
+            }
         }
 
         private async ValueTask DisposeFiltersAsync()
         {
-            foreach (var asyncHandler in this.filters)
+            List<Exception> exceptions = new List<Exception>();
+
+            foreach (IFilterAsyncHandler asyncHandler in this.filters)
             {
                 try
                 {
-                    await asyncHandler.DisposeAsync();
+                    await asyncHandler.DisposeAsync().ConfigureAwait(false);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
+                }
             }
+
+            if (exceptions.Count == 1)
+                throw exceptions[0];
+            else if (exceptions.Count > 1)
+                throw new AggregateException(exceptions);
         }
 
         public async ValueTask DisposeAsync()
@@ -161,28 +248,39 @@ namespace Jerrycurl.Data.Sessions
                 try
                 {
                     if (this.wasOpened)
-                        await this.ApplyConnectionFiltersAsync(h => h.OnConnectionClosing, h => h.OnConnectionClosingAsync).ConfigureAwait(false);
+                        await this.ApplyFilters(h => h.OnConnectionClosingAsync).ConfigureAwait(false);
+
+                    try
+                    {
+                        this.connection?.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        await this.ApplyFilters(h => h.OnExceptionAsync, exception: ex, swallowExceptions: true).ConfigureAwait(false);
+
+                        throw;
+                    }
+
+                    if (this.wasOpened)
+                        await this.ApplyFilters(h => h.OnConnectionClosedAsync).ConfigureAwait(false);
                 }
                 finally
                 {
+                    this.wasDisposed = true;
+
+                    try
+                    {
+                        await this.DisposeFiltersAsync().ConfigureAwait(false);
+                    }
+                    finally
+                    {
 #if !NETSTANDARD2_0
                     if (this.connection != null)
                         await this.connection.DisposeAsync().ConfigureAwait(false);
 #else
-                    this.connection?.Dispose();
+                        this.connection?.Dispose();
 #endif
-                }
-
-                try
-                {
-                    if (this.wasOpened)
-                        await this.ApplyConnectionFiltersAsync(h => h.OnConnectionClosed, h => h.OnConnectionClosedAsync).ConfigureAwait(false);
-                }
-                finally
-                {
-                    await this.DisposeFiltersAsync().ConfigureAwait(false);
-
-                    this.wasDisposed = true;
+                    }
                 }
             }
         }

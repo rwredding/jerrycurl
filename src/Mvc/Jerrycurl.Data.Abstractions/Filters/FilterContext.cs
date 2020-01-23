@@ -17,10 +17,10 @@ namespace Jerrycurl.Data.Filters
             this.SourceObject = sourceObject;
         }
 
-        internal FilterContext(IDbCommand command, Exception exception, object sourceObject = null)
+        internal FilterContext(IDbConnection connection, IDbCommand command, Exception exception, object sourceObject = null)
         {
+            this.Connection = connection;
             this.Command = command;
-            this.Connection = command?.Connection;
             this.Exception = exception;
             this.SourceObject = sourceObject;
         }
