@@ -114,59 +114,6 @@ namespace Jerrycurl.Data.Sessions
             }
         }
 
-
-//        public async IAsyncEnumerable<DbDataReader> ExecuteAsync(IOperation operation, [EnumeratorCancellation]CancellationToken cancellationToken)
-//        {
-//            DbConnection connection = await this.GetOpenConnectionAsync(cancellationToken).ConfigureAwait(false);
-
-//            using DbCommand dbCommand = connection.CreateCommand();
-
-//            try
-//            {
-//                operation.Build(dbCommand);
-//            }
-//            catch (Exception ex)
-//            {
-//                await this.ApplyCommandFiltersAsync(h => h.OnException, h => h.OnExceptionAsync, dbCommand, ex, operation.Source).ConfigureAwait(false);
-
-//                throw;
-//            }
-
-//            if (this.filters.Length > 0)
-//                await this.ApplyFilters(h => h.OnCommandCreated, h => h.OnCommandCreatedAsync, dbCommand, source: operation.Source).ConfigureAwait(false);
-
-//            DbDataReader reader = null;
-
-//            try
-//            {
-//                reader = await dbCommand.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
-//            }
-//            catch (Exception ex)
-//            {
-//                await this.ApplyFilters(h => h.OnException, h => h.OnExceptionAsync, dbCommand: dbCommand, ex, operation.Source).ConfigureAwait(false);
-
-//                throw;
-//            }
-
-//            try
-//            {
-//                do yield return reader;
-//                while (await reader.NextResultAsync(cancellationToken).ConfigureAwait(false));
-//            }
-//            finally
-//            {
-//#if !NETSTANDARD2_0
-//                if (reader != null)
-//                    await reader.DisposeAsync();
-//#else
-//                reader?.Dispose();
-//#endif
-//            }
-
-//            if (this.filters.Length > 0)
-//                await this.ApplyFilters(h => h.OnCommandExecutedAsync, dbCommand: dbCommand, source: operation.Source).ConfigureAwait(false);
-//        }
-
         private async Task<DbConnection> GetOpenConnectionAsync(CancellationToken cancellationToken)
         {
             if (this.wasDisposed)
