@@ -14,7 +14,6 @@ namespace Jerrycurl.Data.Queries.Internal.Nodes
         public IList<MetadataNode> Properties { get; set; } = new List<MetadataNode>();
         public ColumnIdentity Column { get; set; }
         public KeyNode NullKey { get; set; }
-        //public int? HelperIndex { get; set; }
         public HelperNode Helper { get; set; }
         public IList<Type> KeyTypes { get; set; } = new List<Type>();
 
