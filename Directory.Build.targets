@@ -21,7 +21,6 @@
     <ItemGroup>
         <PackageReference Include="Nerdbank.GitVersioning" Version="3.0.25" PrivateAssets="all" />
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="$(AsyncInterfacesPackageVersion)" />
     </ItemGroup>
 
     <Target Name="CopyNuGetSource" Condition="'@(NuGetSource)' != ''">

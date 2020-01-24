@@ -1,12 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-    <TargetFrameworks>$(NetStandardMultiTargetMoniker)</TargetFrameworks>
-		<RootNamespace>Jerrycurl.Data</RootNamespace>
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>$(NetStandardMultiTargetMoniker)</TargetFrameworks>
+        <RootNamespace>Jerrycurl.Data</RootNamespace>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Jerrycurl.Relations.Abstractions\Jerrycurl.Relations.Abstractions.csproj"></ProjectReference>
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="$(AsyncInterfacesPackageVersion)" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\Jerrycurl.Relations.Abstractions\Jerrycurl.Relations.Abstractions.csproj"></ProjectReference>
+    </ItemGroup>
 
-	<Import Project="..\..\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems" Label="Shared" />
+    <Import Project="..\..\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems" Label="Shared" />
 </Project>
