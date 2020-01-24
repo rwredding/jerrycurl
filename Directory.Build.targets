@@ -5,7 +5,7 @@
 
     <PropertyGroup Condition="'$(IsPackable)' == 'true'">
         <DefaultItemExcludes>$(DefaultItemExcludes);.nusrc\**</DefaultItemExcludes>
-        <BuildDependsOn>$(BuildDependsOn);CleanNuGetSource;CopyNuGetSource</BuildDependsOn>
+        <BuildDependsOn>$(BuildDependsOn);CleanNuGetSource;CopyNuGetSource;CopyNuGetIcon</BuildDependsOn>
         <CleanDependsOn>$(CleanDependsOn);CleanNuGetSource</CleanDependsOn>
     </PropertyGroup>
 
@@ -23,9 +23,13 @@
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
         <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="$(AsyncInterfacesPackageVersion)" />
     </ItemGroup>
-
+    
     <Target Name="CopyNuGetSource" Condition="'@(NuGetSource)' != ''">
         <Copy SourceFiles="@(NuGetSource)" DestinationFolder="$(OutputPath).nusrc\%(RecursiveDir)" />
+    </Target>
+
+    <Target Name="CopyNuGetIcon">
+        <Copy SourceFiles="$(MSBuildThisFileDirectory)gfx\icon.png" DestinationFolder="$(OutputPath).nusrc" />
     </Target>
 
     <Target Name="CleanNuGetSource" Condition="'$(IsPackable)' == 'true'">
@@ -71,6 +75,8 @@
                 AsyncInterfacesPackageVersion=$(AsyncInterfacesPackageVersion);
                 RepositoryUrl=$(RepositoryUrl);
                 GitCommitId=$(GitCommitId);
+                PackageIconFile=$(PackageIconFile);
+                IconPath=$(MSBuildProjectDirectory)\$(OutputPath).nusrc\$(PackageIconFile);
             </NuspecProperties>
         </PropertyGroup>
     </Target>

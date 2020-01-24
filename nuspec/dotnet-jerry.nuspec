@@ -8,7 +8,8 @@
         <owners>$PackageOwners$</owners>
         <copyright>$PackageCopyright$</copyright>
         <license type="expression">$PackageLicense$</license>
-        <iconUrl>$PackageIconUrl$</iconUrl>
+        <icon>$PackageIconFile$</icon>
+        <!--<iconUrl>$PackageIconUrl$</iconUrl>-->
         <projectUrl>$PackageProjectUrl$</projectUrl>
         <tags>$PackageTags$</tags>
         <repository type="git" branch="master" url="$RepositoryUrl$" commit="$GitCommitId$" />
@@ -19,6 +20,7 @@
         </packageTypes>
     </metadata>
     <files>
+        <file src="$IconPath$" target="" />
         <file src="$FilesPath$DotnetToolSettings.xml" target="tools\$TargetFramework$\any" />
         <file src="$FilesPath$build.csproj" target="tools\$TargetFramework$\any\build" />
         <file src="$FilesPath$src\**\*" target="tools\$TargetFramework$\any\build" />
