@@ -8,10 +8,12 @@ namespace Jerrycurl.Reflection
         {
             string infoVersion = assembly?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
 
-            if (infoVersion != null && infoVersion.Contains("+"))
+            if (string.IsNullOrWhiteSpace(infoVersion))
+                return null;
+            else if (infoVersion.Contains("+"))
                 return infoVersion.Substring(0, infoVersion.IndexOf('+'));
-
-            return null;
+            else
+                return infoVersion;
         }
     }
 }
