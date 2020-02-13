@@ -30,6 +30,7 @@
         <PackageOwners>AC Dancode</PackageOwners>
         <PackageAuthors>R. W. Redding</PackageAuthors>
         <IncludeSymbols>true</IncludeSymbols>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <PackageProjectUrl>https://jerrycurl.net</PackageProjectUrl>
         <PackageIconUrl>https://jerrycurl.net/nuget/icon2.png</PackageIconUrl>

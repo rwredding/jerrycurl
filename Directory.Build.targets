@@ -14,6 +14,10 @@
         <NuGetSource Include=".nusrc\**" />
     </ItemGroup>
 
+    <ItemGroup Condition="'$(IsPackable)' == 'true'">
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+    </ItemGroup>
+
     <ItemGroup Condition="'$(UseCodeAnalysis)' == 'true'">
         <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.2" PrivateAssets="all" />
     </ItemGroup>
