@@ -19,7 +19,7 @@
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/rwredding/jerrycurl</RepositoryUrl>
         <DebugSymbols>true</DebugSymbols>
-        <DebugType>embedded</DebugType>
+        <DebugType>portable</DebugType>
         <DefaultLanguage>en-US</DefaultLanguage>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
@@ -29,7 +29,7 @@
         <PackageOutputPath>$(MSBuildThisFileDirectory)artifacts\packages</PackageOutputPath>
         <PackageOwners>AC Dancode</PackageOwners>
         <PackageAuthors>R. W. Redding</PackageAuthors>
-        <IncludeSymbols>false</IncludeSymbols>
+        <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <PackageProjectUrl>https://jerrycurl.net</PackageProjectUrl>
         <PackageIconUrl>https://jerrycurl.net/nuget/icon2.png</PackageIconUrl>
