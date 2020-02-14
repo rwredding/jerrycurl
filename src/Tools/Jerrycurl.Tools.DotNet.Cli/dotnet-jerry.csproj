@@ -15,7 +15,7 @@
         <ProjectReference Include="..\Jerrycurl.Tools.Common\Jerrycurl.Tools.Common.csproj" />
     </ItemGroup>
 
-    <Target Name="CopySourceFiles" BeforeTargets="PrepareForBuild">
-        <Copy SourceFiles="@(Compile)" DestinationFolder="$(OutputPath).nusrc\src\%(RecursiveDir)" />
+    <Target Name="PrepareSource" BeforeTargets="PrepareNuGet">
+        <Copy SourceFiles="@(Compile)" DestinationFolder="$(NuGetIntermediatePath)src\%(RecursiveDir)" />
     </Target>
 </Project>
