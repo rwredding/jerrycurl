@@ -8,6 +8,7 @@
         <owners>$PackageOwners$</owners>
         <copyright>$PackageCopyright$</copyright>
         <license type="expression">$PackageLicense$</license>
+        <icon>$PackageIconFile$</icon>
         <iconUrl>$PackageIconUrl$</iconUrl>
         <projectUrl>$PackageProjectUrl$</projectUrl>
         <tags>$PackageTags$</tags>
@@ -17,6 +18,6 @@
         <description>Package Manager Console integration for Jerrycurl CLI.</description>
     </metadata>
     <files>
-        <file src="$FilesPath$*\**" target="." />
+        <file src="$SourceFiles$" target="" />
     </files>
 </package>

@@ -8,8 +8,8 @@
         <owners>$PackageOwners$</owners>
         <copyright>$PackageCopyright$</copyright>
         <license type="expression">$PackageLicense$</license>
+        <icon>$PackageIconFile$</icon>
         <iconUrl>$PackageIconUrl$</iconUrl>
-        <projectUrl>$PackageProjectUrl$</projectUrl>
         <tags>$PackageTags$</tags>
         <repository type="git" branch="master" url="$RepositoryUrl$" commit="$GitCommitId$" />
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -29,6 +29,7 @@
         </frameworkAssemblies>
     </metadata>
     <files>
+        <file src="$IconPath$" target="" />
         <file src="$BinPath$**\Jerrycurl.Data.*" target="lib" />
     </files>
 </package>

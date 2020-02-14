@@ -8,6 +8,7 @@
         <owners>$PackageOwners$</owners>
         <copyright>$PackageCopyright$</copyright>
         <license type="expression">$PackageLicense$</license>
+        <icon>$PackageIconFile$</icon>
         <iconUrl>$PackageIconUrl$</iconUrl>
         <projectUrl>$PackageProjectUrl$</projectUrl>
         <tags>$PackageTags$</tags>
@@ -17,7 +18,7 @@
         <description>Compile-time engine for Jerrycurl.</description>
     </metadata>
     <files>
+        <file src="$SourceFiles$" target="" />
         <file src="$BinPath$*" target="tasks\$TargetFramework$" />
-        <file src="$FilesPath$**\*" target="." />
     </files>
 </package>

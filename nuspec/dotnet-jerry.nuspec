@@ -9,7 +9,7 @@
         <copyright>$PackageCopyright$</copyright>
         <license type="expression">$PackageLicense$</license>
         <icon>$PackageIconFile$</icon>
-        <!--<iconUrl>$PackageIconUrl$</iconUrl>-->
+        <iconUrl>$PackageIconUrl$</iconUrl>
         <projectUrl>$PackageProjectUrl$</projectUrl>
         <tags>$PackageTags$</tags>
         <repository type="git" branch="master" url="$RepositoryUrl$" commit="$GitCommitId$" />
@@ -21,9 +21,9 @@
     </metadata>
     <files>
         <file src="$IconPath$" target="" />
-        <file src="$FilesPath$DotnetToolSettings.xml" target="tools\$TargetFramework$\any" />
-        <file src="$FilesPath$build.csproj" target="tools\$TargetFramework$\any\build" />
-        <file src="$FilesPath$src\**\*" target="tools\$TargetFramework$\any\build" />
+        <file src="$SourcePath$DotnetToolSettings.xml" target="tools\$TargetFramework$\any" />
+        <file src="$SourcePath$build.csproj" target="tools\$TargetFramework$\any\build" />
+        <file src="$SourcePath$src\**\*" target="tools\$TargetFramework$\any\build" />
         <file src="$BinPath$Jerrycurl.Tools.*" target="tools\$TargetFramework$\any" />
     </files>
 </package>
