@@ -15,7 +15,6 @@
         <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)key.snk</AssemblyOriginatorKeyFile>
         <SignAssembly>false</SignAssembly>
         <UseCodeAnalysis>false</UseCodeAnalysis>
-
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/rwredding/jerrycurl</RepositoryUrl>
         <DebugSymbols>true</DebugSymbols>
