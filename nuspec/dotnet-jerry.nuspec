@@ -9,7 +9,7 @@
         <copyright>$PackageCopyright$</copyright>
         <license type="expression">$PackageLicense$</license>
         <icon>$PackageIconFile$</icon>
-        <iconUrl>$PackageIconUrl$</iconUrl>
+        <!--<iconUrl>$PackageIconUrl$</iconUrl>-->
         <projectUrl>$PackageProjectUrl$</projectUrl>
         <tags>$PackageTags$</tags>
         <repository type="git" url="$RepositoryUrl$" commit="$GitCommitId$" />
