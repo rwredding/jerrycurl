@@ -13,5 +13,7 @@ namespace Jerrycurl.Data.Commands
             this.ColumnName = columnName ?? throw new ArgumentNullException(nameof(columnName));
             this.Field = field ?? throw new ArgumentNullException(nameof(field));
         }
+
+        public override string ToString() => this.ColumnName;
     }
 }
