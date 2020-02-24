@@ -54,18 +54,11 @@ namespace Jerrycurl.Relations
 
             s.Append('(');
 
-            foreach (IField field in this)
-            {
-                string f = field.ToString();
-
-                if (f.Length > 10)
-                    f = f.Substring(0, 10);
-
-                s.Append(f.PadRight(10));
-                s.Append(',');
-            }
-
-            s.Length--;
+#if NETSTANDARD2_0
+            s.Append(string.Join(", ", this));
+#else
+            s.AppendJoin(", ", this);
+#endif
 
             s.Append(')');
 
