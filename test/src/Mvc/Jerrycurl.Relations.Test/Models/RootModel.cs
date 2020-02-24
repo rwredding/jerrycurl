@@ -2,7 +2,7 @@
 
 namespace Jerrycurl.Relations.Tests.Models
 {
-    public class Model
+    public class RootModel
     {
         public int IntValue { get; set; }
         public IEnumerable<int> IntEnumerable { get; set; }

@@ -10,7 +10,7 @@ namespace Jerrycurl.Relations.Tests
     {
         public void Test_Fields_HaveCorrectTypes()
         {
-            Model model = new Model() { Complex = new Model.SubModel() };
+            RootModel model = new RootModel() { Complex = new RootModel.SubModel() };
             Relation rel = DatabaseHelper.Default.Relation(model, "", "Complex", "Complex.Complex", "Complex.Complex.Value");
 
             ITuple tuple = rel.Row();
@@ -24,20 +24,20 @@ namespace Jerrycurl.Relations.Tests
 
         public void Test_Fields_EqualityImplementation()
         {
-            Model model1 = new Model()
+            RootModel model1 = new RootModel()
             {
-                ComplexList = new List<Model.SubModel>()
+                ComplexList = new List<RootModel.SubModel>()
                 {
-                    new Model.SubModel() { Value = 1 },
-                    new Model.SubModel() { Value = 2 },
+                    new RootModel.SubModel() { Value = 1 },
+                    new RootModel.SubModel() { Value = 2 },
                 }
             };
-            Model model2 = new Model()
+            RootModel model2 = new RootModel()
             {
-                ComplexList = new List<Model.SubModel>()
+                ComplexList = new List<RootModel.SubModel>()
                 {
-                    new Model.SubModel() { Value = 1 },
-                    new Model.SubModel() { Value = 2 },
+                    new RootModel.SubModel() { Value = 1 },
+                    new RootModel.SubModel() { Value = 2 },
                 }
             };
 
