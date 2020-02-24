@@ -139,5 +139,7 @@ namespace Jerrycurl.Relations
         }
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+        public static Relation Create<TModel>(ISchemaStore store, TModel value, params string[] heading) => new Relation(Relations.Model.Create(store, value), heading);
     }
 }

@@ -4,7 +4,7 @@ using System;
 
 namespace Jerrycurl.Relations
 {
-    internal class Model : IField
+    public class Model : IField
     {
         public FieldIdentity Identity { get; }
         public object Value { get; }
@@ -26,5 +26,13 @@ namespace Jerrycurl.Relations
         public bool Equals(IField other) => Equality.Combine(this, other, m => m.Identity, m => m.Value);
         public override bool Equals(object obj) => (obj is IField other && this.Equals(other));
         public override int GetHashCode() => this.Identity.GetHashCode();
+
+        public static Model Create<TModel>(ISchemaStore store, TModel value)
+        {
+            if (store == null)
+                throw new ArgumentNullException(nameof(store));
+
+            return new Model(store.GetSchema(typeof(TModel)), value);
+        }
     }
 }
