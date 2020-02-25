@@ -52,7 +52,7 @@ namespace Jerrycurl.Mvc.Sql
 
                 if (attribute.Metadata.HasFlag(ProjectionMetadataFlags.Output))
                 {
-                    ParameterBinding binding = new ParameterBinding(param.Name, value);
+                    ParameterBinding binding = new ParameterBinding(param);
 
                     result = result.Append(binding);
                 }
