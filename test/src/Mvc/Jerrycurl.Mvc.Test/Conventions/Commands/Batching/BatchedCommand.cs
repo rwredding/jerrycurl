@@ -17,7 +17,7 @@ namespace Jerrycurl.Mvc.Test.Conventions.Commands.Batching
                 this.WriteLiteral($"BATCH {i}\r\n");
                 this.Write($"Param {i}");
 
-                this.Context.Executing.Buffer.Mark();
+                this.Context.Execution.Buffer.Mark();
             }
         }
     }

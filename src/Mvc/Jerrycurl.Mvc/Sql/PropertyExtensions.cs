@@ -25,7 +25,7 @@ namespace Jerrycurl.Mvc.Sql
             if (attribute.Field != null)
             {
                 IField field = attribute.Field();
-
+                attribute.Context.Executing.
                 ColumnBinding binding = new ColumnBinding(field.Identity.Name, field);
 
                 propName = attribute.Context.Domain.Dialect.Identifier(binding.ColumnName);

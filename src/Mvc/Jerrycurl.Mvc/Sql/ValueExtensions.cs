@@ -27,7 +27,7 @@ namespace Jerrycurl.Mvc.Sql
 
                 yield return projection.With(attributes: newAttributes, field: field);
 
-                projection.Context.Executing.Buffer.Mark();
+                projection.Context.Execution.Buffer.Mark();
             }
         }
 
