@@ -29,7 +29,7 @@ namespace Jerrycurl.Mvc
         public void Write<T>(T value)
         {
             if (value is ISqlWritable w)
-                w.WriteTo(this.Context.Executing.Buffer);
+                w.WriteTo(this.Context.Execution.Buffer);
             else
             {
                 ISchema schema = this.Context.Domain.Schemas.GetSchema(typeof(T));
@@ -43,6 +43,6 @@ namespace Jerrycurl.Mvc
         }
 
         public void Write(object o) => this.Write<object>(o);
-        public void WriteLiteral(string s) => this.Context.Executing.Buffer.Append(s);
+        public void WriteLiteral(string s) => this.Context.Execution.Buffer.Append(s);
     }
 }

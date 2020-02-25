@@ -17,7 +17,7 @@ namespace Jerrycurl.Mvc
             if (this.Context.Stack.IsEmpty)
                 throw new ProcExecutionException("Execution stack is empty. Please only call Body() on template pages.");
 
-            this.Context.Executing.Body?.Invoke();
+            this.Context.Execution.Body?.Invoke();
 
             return SqlContent.Empty;
         }
@@ -33,7 +33,7 @@ namespace Jerrycurl.Mvc
             if (result == null)
                 throw new ArgumentNullException(nameof(result));
 
-            PageDescriptor descriptor = this.Context.Locator.FindPage(procName, model.Context.Executing.Page.PageType);
+            PageDescriptor descriptor = this.Context.Locator.FindPage(procName, model.Context.Execution.Page.PageType);
             PageFactory factory = this.Context.Domain.Engine.Page(descriptor.PageType);
 
             this.Context.Stack.Push(new PageExecutionContext() { Page = descriptor });

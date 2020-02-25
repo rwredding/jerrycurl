@@ -31,6 +31,6 @@ namespace Jerrycurl.Relations
         public override bool Equals(object obj) => (obj is IField field && this.Equals(field));
         public override int GetHashCode() => HashCode.Combine(this.Model, this.Identity);
 
-        public override string ToString() => this.Identity.Name + " = <missing>";
+        public override string ToString() => "<missing>";
     }
 }

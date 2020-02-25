@@ -59,9 +59,6 @@ namespace Jerrycurl.Relations
         public override bool Equals(object obj) => (obj is IField other && this.Equals(other));
         public override int GetHashCode() => HashCode.Combine(this.Model, this.Identity);
 
-        public override string ToString()
-        {
-            return this.Identity.Name + "=" + (this.Value?.ToString() ?? "<null>");
-        }
+        public override string ToString() => this.Value != null ? this.Value.ToString() : "<null>";
     }
 }

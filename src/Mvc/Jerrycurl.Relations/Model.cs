@@ -34,5 +34,7 @@ namespace Jerrycurl.Relations
 
             return new Model(store.GetSchema(typeof(TModel)), value);
         }
+
+        public override string ToString() => this.Value != null ? this.Value.ToString() : "<null>";
     }
 }

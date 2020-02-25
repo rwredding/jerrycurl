@@ -194,7 +194,7 @@ namespace Jerrycurl.Mvc
 
                 return new ProcResult()
                 {
-                    Buffer = context.Executing.Buffer,
+                    Buffer = context.Execution.Buffer,
                     Domain = options,
                 };
             }
