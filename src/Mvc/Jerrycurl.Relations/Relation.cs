@@ -12,12 +12,12 @@ namespace Jerrycurl.Relations
     public sealed class Relation : IRelation
     {
         public RelationIdentity Identity { get; }
-        public object Value => this.Source.Value;
         public IField Model { get; }
         public IField Source { get; }
 
         FieldType IField.Type => this.Source.Type;
         FieldIdentity IField.Identity => this.Source.Identity;
+        object IField.Value => this.Source.Value;
 
         public Relation(object model, RelationIdentity identity)
         {
@@ -64,7 +64,8 @@ namespace Jerrycurl.Relations
 
         }
 
-        public void Bind(object newValue) => this.Source.Bind(newValue);
+        void IField.Bind(object newValue) => this.Source.Bind(newValue);
+
         public bool Equals(IField other) => Equality.Combine(this.Source.Identity, this.Source.Model, other?.Identity, other?.Model);
         public override bool Equals(object obj) => (obj is IField other && this.Equals(other));
         public override int GetHashCode() => HashCode.Combine(this.Source.Identity, this.Source.Model);

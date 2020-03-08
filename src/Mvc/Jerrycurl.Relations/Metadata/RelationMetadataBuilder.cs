@@ -31,7 +31,7 @@ namespace Jerrycurl.Relations.Metadata
 
         private IRelationMetadata GetMetadata(IMetadataBuilderContext context, MetadataIdentity identity)
         {
-            MetadataIdentity parentIdentity = identity.Parent();
+            MetadataIdentity parentIdentity = identity.Pop();
             IRelationMetadata parent = context.GetMetadata<IRelationMetadata>(parentIdentity.Name) ?? this.GetMetadata(context, parentIdentity);
 
             if (parent == null)
@@ -139,7 +139,7 @@ namespace Jerrycurl.Relations.Metadata
             if (contract == null)
                 return null;
 
-            MetadataIdentity itemId = parent.Identity.Child(contract.ItemName ?? "Item");
+            MetadataIdentity itemId = parent.Identity.Push(contract.ItemName ?? "Item");
 
             RelationMetadata metadata = new RelationMetadata(itemId)
             {
@@ -174,7 +174,7 @@ namespace Jerrycurl.Relations.Metadata
 
         private RelationMetadata CreateProperty(IMetadataBuilderContext context, RelationMetadata parent, MemberInfo memberInfo)
         {
-            MetadataIdentity attributeId = parent.Identity.Child(memberInfo.Name);
+            MetadataIdentity attributeId = parent.Identity.Push(memberInfo.Name);
 
             RelationMetadata metadata = new RelationMetadata(attributeId)
             {

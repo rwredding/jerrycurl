@@ -31,7 +31,7 @@ namespace Jerrycurl.Data.Metadata
 
         private IBindingMetadata GetMetadata(IMetadataBuilderContext context, MetadataIdentity identity)
         {
-            MetadataIdentity parentIdentity = identity.Parent();
+            MetadataIdentity parentIdentity = identity.Pop();
             IBindingMetadata parent = context.GetMetadata<IBindingMetadata>(parentIdentity.Name) ?? this.GetMetadata(context, parentIdentity);
 
             if (parent == null)

@@ -14,7 +14,7 @@ namespace Jerrycurl.Data.Metadata
 
         private ITableMetadata GetMetadata(IMetadataBuilderContext context, MetadataIdentity identity)
         {
-            MetadataIdentity parentIdentity = identity.Parent();
+            MetadataIdentity parentIdentity = identity.Pop();
             ITableMetadata parent = context.GetMetadata<ITableMetadata>(parentIdentity.Name) ?? this.GetMetadata(context, parentIdentity);
 
             if (parent == null)

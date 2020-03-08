@@ -15,7 +15,7 @@ namespace Jerrycurl.Mvc.Metadata
 
         private IProjectionMetadata GetMetadata(IMetadataBuilderContext context, MetadataIdentity identity)
         {
-            MetadataIdentity parentIdentity = identity.Parent();
+            MetadataIdentity parentIdentity = identity.Pop();
             IProjectionMetadata parent = context.GetMetadata<IProjectionMetadata>(parentIdentity.Name) ?? this.GetMetadata(context, parentIdentity);
 
             if (parent == null)
