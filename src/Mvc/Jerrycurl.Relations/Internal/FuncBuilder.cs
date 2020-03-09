@@ -28,7 +28,7 @@ namespace Jerrycurl.Relations.Internal
         {
             Delegate[] binders = this.relationNode.Fields.Select(this.CreateBinder).ToArray();
             MetadataIdentity[] attributes = this.relationNode.Attributes;
-            IMetadataNotation notation = attributes[0].Schema.Notation;
+            IMetadataNotation notation = this.relationNode.Identity.Schema.Notation;
 
             Action<IField, IEnumerator[], IField[]>[] funcs = new Action<IField, IEnumerator[], IField[]>[this.relationNode.Items.Count];
             MetadataIdentity[] listIds = new MetadataIdentity[this.relationNode.Items.Count];
