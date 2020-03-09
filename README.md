@@ -5,43 +5,44 @@
 # Jerrycurl - Razor-powered ORM for .NET
 **Jerrycurl** is a free and lightweight **ORM for .NET** that focuses on elegant and type-safe **SQL** written with **Razor syntax**.
 ```sql
--- Queries/Customers/GetStats.cssql
-@result CustomerStatsView
-@model CustomerFilter
-@project Order o
+-- Queries/Movies/GetStats.cssql
+@result MovieDetailsView
+@model MovieFilter
+@project MovieCast c
 
 SELECT
     @R.Star(),
-    @R.Star(m => m.Address),
+    @R.Star(m => m.Details),
     (
         SELECT  COUNT(*)
-        FROM    @o.Tbl()
-        WHERE   @o.Col(m => m.CustomerId) = @R.Col(m => m.Id)
-    )   AS @R.Prop(m => m.NumberOfOrders)
+        FROM    @c.Tbl()
+        WHERE   @c.Col(m => m.MovieId) = @R.Col(m => m.Id)
+    )   AS @R.Prop(m => m.NumberOfRoles)
 FROM
     @R.Tbl()
 LEFT JOIN
-    @R.Tbl(m => m.Address) ON @R.Col(m => m.Address.Id) = @R.Col(m => m.AddressId)
+    @R.Tbl(m => m.Details) ON @R.Col(m => m.Details.MovieId) = @R.Col(m => m.Id)
 WHERE
-    @R.Col(m => m.CreatedDate) >= @M.Par(m => m.CreatedAfter)
+    @R.Col(m => m.Year) >= @M.Par(m => m.SinceYear)
 ORDER BY
-    @R.Col(m => m.CreatedDate) DESC
+    @R.Col(m => m.Year) ASC
 ```
 
+Combine this with an MVC structure similar to that of ASP.NET and you have the 
 It allows you to build robust data access layers around ASP.NET-like **MVC** and **CQS** conventions that organizes your code into models, queries, commands and **accessors**.
 
 ```csharp
-// Accessors/CustomersAccessor.cs
-public class CustomersAccessor : Accessor
+// Accessors/MoviesAccessor.cs
+public class MoviesAccessor : Accessor
 {
-    public IList<CustomerStatsView> GetStats(DateTime createdAfter)
+    public IList<MovieDetailsView> GetMovies(int sinceYear)
     {
-        var filter = new CustomerFilter
+        var filter = new MovieFilter
         {
-            CreatedAfter = createdAfter,
+            SinceYear = sinceYear,
         };
         
-        return this.Query<CustomerStatsView>(model: filter);
+        return this.Query<MovieDetailsView>(model: filter);
     }
 }
 ```
