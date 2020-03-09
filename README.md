@@ -2,10 +2,11 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/onendmfb6ywd33je/branch/master?svg=true)](https://ci.appveyor.com/project/rwredding/jerrycurl/branch/master)
 [![Test status](https://img.shields.io/appveyor/tests/rwredding/jerrycurl/master)](https://ci.appveyor.com/project/rwredding/jerrycurl/branch/master/tests)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/jerrycurl-mvc/community)
-# Jerrycurl - Razor-powered ORM for .NET
-**Jerrycurl** is a free and lightweight **ORM for .NET** that focuses on elegant and type-safe **SQL** written with **Razor syntax**.
+# Jerrycurl - MVC and Razor-powered ORM for .NET
+
+**Jerrycurl** is a free and lightweight object-relational mapper that focuses on building robust, MVC-based data access and with elegantly written and typesafe **SQL** with **Razor syntax**.
 ```sql
--- Queries/Movies/GetStats.cssql
+-- Queries/Movies/GetMovies.cssql
 @result MovieDetailsView
 @model MovieFilter
 @project MovieCast c
@@ -29,7 +30,7 @@ ORDER BY
 ```
 
 Combine this with an MVC structure similar to that of ASP.NET and you have the 
-It allows you to build robust data access layers around ASP.NET-like **MVC** and **CQS** conventions that organizes your code into models, queries, commands and **accessors**.
+It allows you to build robust data access layers around ASP.NET-like **MVC** and **CQS** conventions that organizes your code into models, queries, commands and accessors.
 
 ```csharp
 // Accessors/MoviesAccessor.cs
