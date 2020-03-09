@@ -47,8 +47,10 @@ class Movie
     public string Title { get; set; }
     public int Year { get; set; }
 }
-// Views/Movies/MovieDetailsView.cs
-class MovieDetailsView : Movie
+```
+```csharp
+// Views/Movies/MovieTaglineView.cs
+class MovieTaglineView : Movie
 {
     public string Tagline { get; set; }
 }
