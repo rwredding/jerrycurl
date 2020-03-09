@@ -10,7 +10,7 @@ It provides a custom MVC-based approach that separates your project into domains
 specialized **Razor SQL** syntax.
 
 ### Procedure (view) layer
-Procedures are written in `.cssql` files separated into **commands** that write data and **queries** that read data. Both are written with a combination of **SQL and Razor code** that generate SQL and parameters from typesafe projections of your object model.
+Procedures are written in `.cssql` files and separated into **commands** that write data and **queries** that read data. Both are written with a combination of **SQL and Razor code** that generate SQL and parameters from typesafe projections of your object model.
 ```
 -- Queries/Movies/GetMovies.cssql
 @result MovieTaglineView
@@ -57,13 +57,13 @@ class MovieTaglineView : Movie
 ```
 
 ### Accessor (controller) layer
-Accessor provide the bridge from your code to the consumer by exposing methods that each execute a Razor command or query and map its results accordingly.
+Accessor provide the bridge from your code to the consumer by exposing a collection of methods that each executes a Razor command or query and maps its resulting data sets accordingly.
 ```csharp
 // Accessors/MoviesAccessor.cs
 public class MoviesAccessor : Accessor
 {
-    public IList<MovieDetailsView> GetMovies(int sinceYear) // -> Queries/Movies/GetMovies.cssql
-        => this.Query<MovieDetailsView>(model: new MovieFilter { SinceYear = sinceYear });
+    public IList<MovieTaglineView> GetMovies(int sinceYear) // -> Queries/Movies/GetMovies.cssql
+        => this.Query<MovieTaglineView>(model: new MovieFilter { SinceYear = sinceYear });
     
     public void AddMovies(IList<Movie> newMovies) // -> Commands/Movies/AddMovies.cssql
         => this.Execute(model: newMovies);
