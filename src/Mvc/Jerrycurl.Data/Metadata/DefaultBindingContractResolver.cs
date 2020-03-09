@@ -57,17 +57,34 @@ namespace Jerrycurl.Data.Metadata
 
         private MethodInfo GetAddMethod(IBindingMetadata metadata)
         {
-            Type elementType = this.GetListElementType(metadata);
+            Type itemType = this.GetListElementType(metadata);
+            Type manyType = this.GetManyValueType(metadata);
 
-            if (elementType != null)
-                return typeof(ICollection<>).MakeGenericType(elementType).GetMethod("Add");
+            if (itemType != null)
+                return typeof(ICollection<>).MakeGenericType(itemType).GetMethod("Add");
+            else if (manyType != null)
+            {
+                PropertyInfo valueInfo = metadata.Type.GetProperty(nameof(Many<object>.Value), BindingFlags.Instance | BindingFlags.Public);
+
+                if (valueInfo == null || valueInfo.SetMethod == null)
+                    throw new InvalidOperationException("Invalid 'Value' property.");
+
+                return valueInfo.SetMethod;
+            }
 
             return null;
         }
 
-        private NewExpression GetConstructor(IBindingMetadata metadata)
+        private NewExpression GetConstructor(IBindingMetadata metadata) => this.GetListConstructor(metadata) ?? this.GetDefaultConstructor(metadata);
+
+        private Type GetManyValueType(IBindingMetadata metadata)
         {
-            return this.GetListConstructor(metadata) ?? this.GetDefaultConstructor(metadata);
+            Type openType = this.GetOpenType(metadata);
+
+            if (openType == typeof(Many<>))
+                return metadata.Type.GetGenericArguments()[0];
+
+            return null;
         }
 
         private Type GetListElementType(IBindingMetadata metadata)
@@ -80,7 +97,6 @@ namespace Jerrycurl.Data.Metadata
                 typeof(IReadOnlyCollection<>),
                 typeof(ICollection<>),
                 typeof(IEnumerable<>),
-                typeof(Many<>),
             };
 
             Type openType = this.GetOpenType(metadata);

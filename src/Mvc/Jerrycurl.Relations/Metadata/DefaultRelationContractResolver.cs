@@ -27,6 +27,13 @@ namespace Jerrycurl.Relations.Metadata.Contracts
                     WriteIndex = this.GetArrayIndexWriter(metadata),
                 };
             }
+            else if (this.IsManyType(metadata))
+            {
+                return new RelationListContract()
+                {
+                    ItemType = this.GetGenericItemType(metadata),
+                };
+            }
 
             return null;
         }
@@ -49,7 +56,6 @@ namespace Jerrycurl.Relations.Metadata.Contracts
                 typeof(ICollection<>),
                 typeof(IReadOnlyList<>),
                 typeof(IReadOnlyCollection<>),
-                typeof(Many<>),
             };
 
             Type openType = metadata.Type.GetGenericTypeDefinition();
@@ -60,6 +66,18 @@ namespace Jerrycurl.Relations.Metadata.Contracts
             return true;
         }
 
+        private bool IsManyType(IRelationMetadata metadata)
+        {
+            if (!metadata.Type.IsGenericType)
+                return false;
+
+            Type openType = metadata.Type.GetGenericTypeDefinition();
+
+            if (openType == typeof(Many<>))
+                return true;
+
+            return false;
+        }
 
         private bool IsOneDimensionalArray(IRelationMetadata metadata) => (metadata.Type.IsArray && metadata.Type.GetArrayRank() == 1);
 
