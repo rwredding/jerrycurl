@@ -10,13 +10,14 @@
 Procedures are written as either **commands** that write data or **queries** that read data. Both are written with a combination of SQL and Razor syntax which allows you to project typesafe mappings of any part of your object model.
 ```sql
 -- Queries/Movies/GetMovies.cssql
-@result MovieDetailsView
+@result MovieTaglineView
 @model MovieFilter
+@project MovieDetails d
 
 SELECT     @R.Star(),
-           @R.Star(m => m.Details)
+           @d.Col(m => m.Tagline) AS @R.Prop(m => m.Tagline)
 FROM       @R.Tbl()
-LEFT JOIN  @R.Tbl(m => m.Details) ON @R.Col(m => m.Details.MovieId) = @R.Col(m => m.Id)
+LEFT JOIN  @d.Tbl() ON @d.Col(m => m.MovieId) = @R.Col(m => m.Id)
 WHERE      @R.Col(m => m.Year) >= @M.Par(m => m.SinceYear)
     
 -- Commands/Movies/AddMovies.cssql
@@ -43,18 +44,10 @@ class Movie
     public string Title { get; set; }
     public int Year { get; set; }
 }
-[Table("dbo", "MovieDetails")]
-class MovieDetails
-{
-    [Key("PK_MovieDetails"), Ref("PK_Movie")]
-    public int MovieId { get; set; }
-    public string Tagline { get; set; }
-    public decimal Budget { get; set; }
-}
 // Views/Movies/MovieDetailsView.cs
 class MovieDetailsView : Movie
 {
-    public MovieDetails Details { get; set; }
+    public string Tagline { get; set; }
 }
 ```
 
