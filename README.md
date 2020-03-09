@@ -4,7 +4,10 @@
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/jerrycurl-mvc/community)
 # Jerrycurl - MVC and Razor-powered ORM for .NET
 
-**Jerrycurl** is an object-relational framework that helps developers design robust data access with **MVC and Razor SQL** in a process much similar to that of **ASP.NET**.
+**Jerrycurl** is an object-relational framework that allows developers to design and build **robust data access** in a way similar to how web application are built with **ASP.NET MVC**.
+
+It provides a custom MVC-based approach that separates your project into domains, models, accessors and procedures written with our
+specialized **Razor SQL** syntax.
 
 ### Procedure (view) layer
 Procedures are written as either **commands** that write data or **queries** that read data. Both are written with a combination of SQL and Razor code that projects SQL directly from your object model.
