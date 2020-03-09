@@ -36,6 +36,6 @@
         <PackageIconFile>icon.png</PackageIconFile>
         <PackageId>$(MSBuildProjectName)</PackageId>
         <PackageLicense>LGPL-3.0-or-later</PackageLicense>
-        <PackageTags>orm, sql, razor, mvc, cqs, database, dotnet</PackageTags>
+        <PackageTags>orm sql razor mvc cqs database</PackageTags>
     </PropertyGroup>
 </Project>
