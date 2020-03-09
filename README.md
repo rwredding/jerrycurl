@@ -36,7 +36,7 @@ WHERE      @R.Col(m => m.Year) >= @M.Par(m => m.SinceYear)
 ```
 
 ### Model layer
-**Models** are simple POCO-like classes that can be combined into complete object graphs that represents *all* data for a certain operation. Each model can be mapped at any depth with any type of data relationship: one-to-one, one-to-many, many-to-one and self-joins.
+Models are simple POCO-like classes that can be combined into complete object graphs that represents *all* data for a certain operation. Each model can be mapped at any depth with any type of data relationship: one-to-one, one-to-many, many-to-one and self-joins.
 ```csharp
 // Database.cs
 [Table("dbo", "Movie")]
@@ -57,7 +57,7 @@ class MovieTaglineView : Movie
 ```
 
 ### Accessor (controller) layer
-Accessor provide the bridge from your code to the consumer by exposing a collection of methods that each executes a Razor command or query and maps its resulting data sets accordingly.
+Accessors provide the bridge from your code to the consumer by exposing a collection of methods that each executes a Razor command or query and maps its resulting data sets to matching objects.
 ```csharp
 // Accessors/MoviesAccessor.cs
 public class MoviesAccessor : Accessor
