@@ -7,7 +7,7 @@
 **Jerrycurl** is an object-relational framework that helps developers design robust data access with **MVC and Razor SQL** in a process much similar to that of **ASP.NET**.
 
 ### Procedure (view) layer
-Procedures are written as either **commands** that write data or **queries** that read data. Both are written with a combination of SQL and Razor syntax which allows you to project typesafe mappings of any part of your object model.
+Procedures are written as either **commands** that write data or **queries** that read data. Both are written with a combination of plain SQL and Razor blocks that project and generate SQL directly from your object model.
 ```sql
 -- Queries/Movies/GetMovies.cssql
 @result MovieTaglineView
@@ -57,10 +57,10 @@ Accessors provide the bridge from your code to the consumer by exposing methods 
 // Accessors/MoviesAccessor.cs
 public class MoviesAccessor : Accessor
 {
-    public IList<MovieDetailsView> GetMovies(int sinceYear)
+    public IList<MovieDetailsView> GetMovies(int sinceYear) // -> Queries/Movies/GetMovies.cssql
         => this.Query<MovieDetailsView>(model: new MovieFilter { SinceYear = sinceYear });
     
-    public void AddMovies(IList<Movie> newMovies)
+    public void AddMovies(IList<Movie> newMovies) // -> Commands/Movies/AddMovies.cssql
         => this.Execute(model: newMovies);
 }
 ```
