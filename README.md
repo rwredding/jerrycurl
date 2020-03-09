@@ -4,7 +4,9 @@
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/jerrycurl-mvc/community)
 # Jerrycurl - MVC and Razor-powered ORM for .NET
 
-**Jerrycurl** is a free and lightweight object-relational mapper that focuses on building robust, MVC-based data access and with elegantly written and typesafe **SQL** with **Razor syntax**.
+**Jerrycurl** is an object-relational framework that helps developers build robust data access with **MVC and Razor SQL** in a process much similar to that of ASP.NET.
+
+### View
 ```sql
 -- Queries/Movies/GetMovies.cssql
 @result MovieDetailsView
@@ -29,9 +31,17 @@ ORDER BY
     @R.Col(m => m.Year) ASC
 ```
 
-Combine this with an MVC structure similar to that of ASP.NET and you have the 
-It allows you to build robust data access layers around ASP.NET-like **MVC** and **CQS** conventions that organizes your code into models, queries, commands and accessors.
+### Model
+```csharp
+// Views/Movies/MovieDetailsView.cs
+class MovieDetailsView : Movie
+{
+    public MovieDetails Details { get; set; }
+    public int NumberOfRoles { get; set; }
+}
+```
 
+### Controller
 ```csharp
 // Accessors/MoviesAccessor.cs
 public class MoviesAccessor : Accessor
