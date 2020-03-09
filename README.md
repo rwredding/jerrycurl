@@ -6,7 +6,7 @@
 
 **Jerrycurl** is an object-relational framework that helps developers build robust data access with **MVC and Razor SQL** in a process much similar to that of **ASP.NET**.
 
-### View
+#### View layer
 **Commands and queries** are written with a combination of SQL and Razor syntax that allows for a typesafe mappings to your object model and easy scaffolding of any boilerplate SQL.
 ```sql
 -- Queries/Movies/GetMovies.cssql
@@ -32,7 +32,7 @@ ORDER BY
     @R.Col(m => m.Year) ASC
 ```
 
-### Model
+#### Model layer
 **Models** are defined by simple POCO-like classes and supports graph-based mapping of multiple dimensions of data in a single SQL
 request.
 ```csharp
@@ -44,7 +44,7 @@ class MovieDetailsView : Movie
 }
 ```
 
-### Controller
+#### Controller layer
 **Accessors** provide the bridge from your code to the consumer by exposing methods that in turn generate, execute and map your Razor-based commands and queries to objects.
 ```csharp
 // Accessors/MoviesAccessor.cs
