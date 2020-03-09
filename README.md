@@ -6,58 +6,81 @@
 
 **Jerrycurl** is an object-relational framework that helps developers design robust data access with **MVC and Razor SQL** in a process much similar to that of **ASP.NET**.
 
-### View layer
-**Commands and queries** are written with a combination of SQL and Razor syntax that allows for a typesafe mappings to your object model and easy scaffolding of any boilerplate SQL code.
+### Procedure (view) layer
+Procedures are written as either **commands** that write data or **queries** that read data. Both are written with a combination of SQL and Razor syntax which allows you to project typesafe mappings of any part of your object model.
 ```sql
 -- Queries/Movies/GetMovies.cssql
 @result MovieDetailsView
 @model MovieFilter
-@project MovieCast c
 
-SELECT
-    @R.Star(),
-    @R.Star(m => m.Details),
-    (
-        SELECT  COUNT(*)
-        FROM    @c.Tbl()
-        WHERE   @c.Col(m => m.MovieId) = @R.Col(m => m.Id)
-    )   AS @R.Prop(m => m.NumberOfRoles)
-FROM
-    @R.Tbl()
-LEFT JOIN
-    @R.Tbl(m => m.Details) ON @R.Col(m => m.Details.MovieId) = @R.Col(m => m.Id)
-WHERE
-    @R.Col(m => m.Year) >= @M.Par(m => m.SinceYear)
-ORDER BY
-    @R.Col(m => m.Year) ASC
+SELECT     @R.Star(),
+           @R.Star(m => m.Details)
+FROM       @R.Tbl()
+LEFT JOIN  @R.Tbl(m => m.Details) ON @R.Col(m => m.Details.MovieId) = @R.Col(m => m.Id)
+WHERE      @R.Col(m => m.Year) >= @M.Par(m => m.SinceYear)
+    
+-- Commands/Movies/AddMovies.cssql
+@model Movie
+
+@foreach (var v in this.M.Vals())
+{
+    INSERT INTO @v.TblName() ( @v.In().ColNames() )
+    OUTPUT      @v.Out().Cols("INSERTED").As().Props()
+    VALUES                   ( @v.In().Pars() )
+}
 ```
 
 ### Model layer
 **Models** are defined by simple POCO-like classes and supports graph-based mapping of multiple dimensions of data in a single SQL
 request.
 ```csharp
+// Database.cs
+[Table("dbo", "Movie")]
+class Movie
+{
+    [Id, Key("PK_Movie")]
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public int Year { get; set; }
+}
+[Table("dbo", "MovieDetails")]
+class MovieDetails
+{
+    [Key("PK_MovieDetails"), Ref("PK_Movie")]
+    public int MovieId { get; set; }
+    public string Tagline { get; set; }
+    public decimal Budget { get; set; }
+}
 // Views/Movies/MovieDetailsView.cs
 class MovieDetailsView : Movie
 {
     public MovieDetails Details { get; set; }
-    public int NumberOfRoles { get; set; }
 }
 ```
 
-### Controller layer
-**Accessors** provide the bridge from your code to the consumer by exposing methods that in turn generate, execute and map your Razor-based commands and queries to objects.
+### Accessor (controller) layer
+Accessors provide the bridge from your code to the consumer by exposing methods that locate, generate, execute your Razor-based procedures and map their results appropriately.
 ```csharp
 // Accessors/MoviesAccessor.cs
 public class MoviesAccessor : Accessor
 {
     public IList<MovieDetailsView> GetMovies(int sinceYear)
+        => this.Query<MovieDetailsView>(model: new MovieFilter { SinceYear = sinceYear });
+    
+    public void AddMovies(IList<Movie> newMovies)
+        => this.Execute(model: newMovies);
+}
+```
+
+### Domain (application) layer
+Domains provide a central place for fetching configuration in your application.
+```csharp
+class MovieDomain : IDomain
+{
+    public void Configure(DomainOptions options)
     {
-        var filter = new MovieFilter
-        {
-            SinceYear = sinceYear,
-        };
-        
-        return this.Query<MovieDetailsView>(model: filter);
+        options.UseSqlServer("SERVER=.;DATABASE=moviedb;TRUSTED_CONNECTION=true");
+        options.UseJson();
     }
 }
 ```
