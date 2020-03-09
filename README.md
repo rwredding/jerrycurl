@@ -8,7 +8,7 @@
 
 ### Procedure (view) layer
 Procedures are written as either **commands** that write data or **queries** that read data. Both are written with a combination of SQL and Razor code that projects SQL directly from your object model.
-```sql
+```
 -- Queries/Movies/GetMovies.cssql
 @result MovieTaglineView
 @model MovieFilter
@@ -19,7 +19,8 @@ SELECT     @R.Star(),
 FROM       @R.Tbl()
 LEFT JOIN  @d.Tbl() ON @d.Col(m => m.MovieId) = @R.Col(m => m.Id)
 WHERE      @R.Col(m => m.Year) >= @M.Par(m => m.SinceYear)
-    
+```
+```
 -- Commands/Movies/AddMovies.cssql
 @model Movie
 
