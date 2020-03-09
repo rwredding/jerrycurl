@@ -326,7 +326,7 @@ namespace Jerrycurl.Data.Test
 
                 result[0].ManyType.HasValue.ShouldBeTrue();
                 result[0].ManyType.Value.ShouldNotBeNull();
-                result[0].ManyType.Value.Value.ShouldBe(3);
+                result[0].ManyType.Value.Value.ShouldBe(4);
 
                 result[1].ManyType.HasValue.ShouldBeTrue();
                 result[1].ManyType.Value.ShouldNotBeNull();
