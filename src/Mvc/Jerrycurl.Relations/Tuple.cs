@@ -2,10 +2,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using HashCode = Jerrycurl.Diagnostics.HashCode;
 
 namespace Jerrycurl.Relations
 {
+    [DebuggerDisplay("{ToString(),nq}")]
     internal class Tuple : ITuple
     {
         private readonly IField[] fields;
@@ -45,5 +49,22 @@ namespace Jerrycurl.Relations
         public override bool Equals(object obj) => (obj is ITuple tup && this.Equals(tup));
 
         public override int GetHashCode() => HashCode.CombineAll(this.fields);
+
+        public override string ToString()
+        {
+            StringBuilder s = new StringBuilder();
+
+            s.Append('(');
+
+#if NETSTANDARD2_0
+            s.Append(string.Join(", ", this));
+#else
+            s.AppendJoin(", ", this);
+#endif
+
+            s.Append(')');
+
+            return s.ToString();
+        }
     }
 }

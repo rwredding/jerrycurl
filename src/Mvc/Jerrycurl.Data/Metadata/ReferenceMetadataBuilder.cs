@@ -13,7 +13,7 @@ namespace Jerrycurl.Data.Metadata
 
         private IReferenceMetadata GetMetadata(IMetadataBuilderContext context, MetadataIdentity identity)
         {
-            MetadataIdentity parentIdentity = identity.Parent();
+            MetadataIdentity parentIdentity = identity.Pop();
             IReferenceMetadata parent = context.GetMetadata<IReferenceMetadata>(parentIdentity.Name) ?? this.GetMetadata(context, parentIdentity);
 
             if (parent == null)

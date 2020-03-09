@@ -6,6 +6,6 @@
         IDomainOptions Domain { get; }
         IProcRenderer Renderer { get; }
         IProcLookup Lookup { get; }
-        IPageExecutionContext Executing { get; }
+        IPageExecutionContext Execution { get; }
     }
 }

@@ -19,7 +19,8 @@ namespace Jerrycurl.Relations.Internal
 
         public RelationNode Build()
         {
-            ISchema schema = this.relation.Schema;
+            this.VerifyHeading();
+
             ItemBuilder itemBuilder = new ItemBuilder(this.relation, this.source);
 
             ItemNode[] itemNodes = itemBuilder.Build().ToArray();
@@ -33,12 +34,18 @@ namespace Jerrycurl.Relations.Internal
             return new RelationNode()
             {
                 Items = itemNodes.OrderBy(n => n.ItemIndex).ToList(),
-                Degree = fieldNodes.Max(n => n.FieldIndex.Value) + 1,
+                Degree = fieldNodes.Select(n => n.FieldIndex.Value).DefaultIfEmpty().Max() + 1,
                 VisibleDegree = this.relation.Heading.Count,
                 Attributes = fieldNodes.Select(n => n.Metadata.Identity).ToArray(),
                 Fields = fieldNodes,
                 Identity = this.relation,
             };
+        }
+
+        private void VerifyHeading()
+        {
+            if (this.relation.Heading.Count != this.relation.Heading.Distinct().Count())
+                throw RelationException.FromRelation(this.relation, $"Duplicate attribute found.");
         }
 
         private void AssignIndices(ItemNode sourceNode)

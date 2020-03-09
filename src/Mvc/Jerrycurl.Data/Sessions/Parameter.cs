@@ -1,5 +1,6 @@
 ﻿using Jerrycurl.Data.Metadata;
 using Jerrycurl.Relations;
+using Jerrycurl.Relations.Metadata;
 using System;
 using System.Data;
 
@@ -44,5 +45,7 @@ namespace Jerrycurl.Data.Sessions
         }
 
         public override string ToString() => this.Name;
+
+        public static Parameter Create<TValue>(ISchemaStore store, string parameterName, TValue value) => new Parameter(parameterName, Model.Create(store, value));
     }
 }

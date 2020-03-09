@@ -1,17 +1,21 @@
 <Project>
     <PropertyGroup>
         <NuspecFile>$(MSBuildThisFileDirectory)nuspec\$(PackageId).nuspec</NuspecFile>
+		<NuGetIntermediatePath>$(BaseIntermediateOutputPath).nusrc\</NuGetIntermediatePath>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(IsPackable)' == 'true'">
         <DefaultItemExcludes>$(DefaultItemExcludes);.nusrc\**</DefaultItemExcludes>
-        <BuildDependsOn>$(BuildDependsOn);CleanNuGetSource;CopyNuGetSource</BuildDependsOn>
-        <CleanDependsOn>$(CleanDependsOn);CleanNuGetSource</CleanDependsOn>
+        <CleanDependsOn>$(CleanDependsOn);CleanNuGet</CleanDependsOn>
     </PropertyGroup>
 
     <ItemGroup Condition="'$(IsPackable)' == 'true'">
         <None Include=".nusrc\**" />
         <NuGetSource Include=".nusrc\**" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(IsPackable)' == 'true'">
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
     </ItemGroup>
 
     <ItemGroup Condition="'$(UseCodeAnalysis)' == 'true'">
@@ -23,15 +27,14 @@
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
     </ItemGroup>
 
-    <Target Name="CopyNuGetSource" Condition="'@(NuGetSource)' != ''">
-        <Copy SourceFiles="@(NuGetSource)" DestinationFolder="$(OutputPath).nusrc\%(RecursiveDir)" />
+    <Target Name="CleanNuGet">
+        <RemoveDir Directories="$(NuGetIntermediatePath)" />
     </Target>
 
-    <Target Name="CleanNuGetSource" Condition="'$(IsPackable)' == 'true'">
-        <RemoveDir Directories="$(OutputPath).nusrc" ContinueOnError="true" />
-    </Target>
-
-    <Target Name="PopulateNuspec" BeforeTargets="GenerateNuspec">
+    <Target Name="PrepareNuGet" BeforeTargets="GenerateNuspec" DependsOnTargets="CleanNuGet" Condition="'$(IsPackable)' == 'true'">
+        <Copy SourceFiles="@(NuGetSource)" DestinationFolder="$(NuGetIntermediatePath)%(RecursiveDir)" />
+        <Copy SourceFiles="$(MSBuildThisFileDirectory)gfx\icon.png" DestinationFolder="$(NuGetIntermediatePath)" />
+        
         <PropertyGroup>
             <NuspecProperties>
                 PackageId=$(PackageId);
@@ -48,7 +51,6 @@
                 NetFrameworkMoniker=$(NetFrameworkMoniker);
                 AssemblyName=$(AssemblyName);
                 BinPath=$(MSBuildProjectDirectory)\$(OutputPath);
-                FilesPath=$(MSBuildProjectDirectory)\$(OutputPath).nusrc\;
                 SqlServerPackageId=$(SqlServerPackageId);
                 SqlServerPackageVersion=$(SqlServerPackageVersion);
                 SqlServerLegacyPackageId=$(SqlServerLegacyPackageId);
@@ -70,6 +72,10 @@
                 AsyncInterfacesPackageVersion=$(AsyncInterfacesPackageVersion);
                 RepositoryUrl=$(RepositoryUrl);
                 GitCommitId=$(GitCommitId);
+                PackageIconFile=$(PackageIconFile);
+                SourcePath=$(MSBuildProjectDirectory)\$(NuGetIntermediatePath);
+                SourceFiles=$(MSBuildProjectDirectory)\$(NuGetIntermediatePath)**\*;
+                IconPath=$(MSBuildProjectDirectory)\$(NuGetIntermediatePath)$(PackageIconFile)
             </NuspecProperties>
         </PropertyGroup>
     </Target>

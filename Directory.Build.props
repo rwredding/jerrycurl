@@ -7,7 +7,7 @@
         <NetStandardMultiTargetMoniker>netstandard2.0;netstandard2.1</NetStandardMultiTargetMoniker>
         <ToolingTargetMoniker>$(NetFrameworkMoniker);$(NetStandardMoniker)</ToolingTargetMoniker>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <NoWarn>1591;NU5105;NU5048</NoWarn>
+        <NoWarn>1591;NU5105</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -15,11 +15,10 @@
         <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)key.snk</AssemblyOriginatorKeyFile>
         <SignAssembly>false</SignAssembly>
         <UseCodeAnalysis>false</UseCodeAnalysis>
-
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/rwredding/jerrycurl</RepositoryUrl>
         <DebugSymbols>true</DebugSymbols>
-        <DebugType>embedded</DebugType>
+        <DebugType>portable</DebugType>
         <DefaultLanguage>en-US</DefaultLanguage>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
@@ -29,10 +28,12 @@
         <PackageOutputPath>$(MSBuildThisFileDirectory)artifacts\packages</PackageOutputPath>
         <PackageOwners>AC Dancode</PackageOwners>
         <PackageAuthors>R. W. Redding</PackageAuthors>
-        <IncludeSymbols>false</IncludeSymbols>
+        <IncludeSymbols>true</IncludeSymbols>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <PackageProjectUrl>https://jerrycurl.net</PackageProjectUrl>
         <PackageIconUrl>https://jerrycurl.net/nuget/icon2.png</PackageIconUrl>
+        <PackageIconFile>icon.png</PackageIconFile>
         <PackageId>$(MSBuildProjectName)</PackageId>
         <PackageLicense>LGPL-3.0-or-later</PackageLicense>
         <PackageTags>orm, sql, razor, mvc, cqs, database, dotnet</PackageTags>

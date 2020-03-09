@@ -14,7 +14,7 @@ namespace Jerrycurl.Mvc.Metadata
 
         private IJsonMetadata GetMetadata(IMetadataBuilderContext context, MetadataIdentity identity)
         {
-            MetadataIdentity parentIdentity = identity.Parent();
+            MetadataIdentity parentIdentity = identity.Pop();
             IJsonMetadata parent = context.GetMetadata<IJsonMetadata>(parentIdentity.Name) ?? this.GetMetadata(context, parentIdentity);
             IRelationMetadata relation = identity.GetMetadata<IRelationMetadata>();
 

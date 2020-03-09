@@ -2,10 +2,12 @@
 using Jerrycurl.Relations.Internal;
 using Jerrycurl.Relations.Metadata;
 using System;
+using System.Diagnostics;
 using HashCode = Jerrycurl.Diagnostics.HashCode;
 
 namespace Jerrycurl.Relations
 {
+    [DebuggerDisplay("{Identity.Name}: {ToString(),nq}")]
     internal class Field<TValue, TParent> : IField
     {
         public FieldIdentity Identity { get; }
@@ -59,9 +61,6 @@ namespace Jerrycurl.Relations
         public override bool Equals(object obj) => (obj is IField other && this.Equals(other));
         public override int GetHashCode() => HashCode.Combine(this.Model, this.Identity);
 
-        public override string ToString()
-        {
-            return this.Identity.Name + "=" + (this.Value?.ToString() ?? "<null>");
-        }
+        public override string ToString() => this.Value != null ? this.Value.ToString() : "<null>";
     }
 }

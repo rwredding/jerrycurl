@@ -35,5 +35,20 @@ namespace Jerrycurl.Relations
         public bool Equals(RelationIdentity other) => Equality.CombineAll(this.Heading, other?.Heading);
         public override bool Equals(object obj) => (obj is RelationIdentity other && this.Equals(other));
         public override int GetHashCode() => HashCode.CombineAll(this.Heading);
+
+        public RelationIdentity Push(params string[] heading)
+        {
+            IEnumerable<MetadataIdentity> concatWith = heading.Select(n => new MetadataIdentity(this.Schema, n));
+
+            return new RelationIdentity(this.Schema, this.Heading.Concat(concatWith));
+        }
+
+        public RelationIdentity Pop()
+        {
+            if (this.Heading.Count == 0)
+                return null;
+
+            return new RelationIdentity(this.Schema, this.Heading.Take(this.Heading.Count - 1));
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-    <TargetFrameworks>$(NetStandardMultiTargetMoniker)</TargetFrameworks>
+		<TargetFrameworks>$(NetStandardMultiTargetMoniker)</TargetFrameworks>
 		<RootNamespace>Jerrycurl.Relations</RootNamespace>
 	</PropertyGroup>
 

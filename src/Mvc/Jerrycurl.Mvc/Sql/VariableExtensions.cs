@@ -14,9 +14,6 @@ namespace Jerrycurl.Mvc.Sql
         /// <returns>A new attribute containing the appended buffer.</returns>
         public static IProjectionAttribute Var(this IProjectionAttribute attribute)
         {
-            if (attribute.Field == null)
-                throw ProjectionException.ValueNotFound(attribute);
-
             IField field = ProjectionHelper.GetFieldValue(attribute);
 
             string variableName = attribute.Context.Lookup.Variable(attribute.Identity, field);

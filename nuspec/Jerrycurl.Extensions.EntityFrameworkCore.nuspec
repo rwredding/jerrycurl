@@ -1,6 +1,6 @@
-<?xml version="1.0"?>
-<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+    <metadata>
         <id>$PackageId$</id>
         <title>$PackageId$</title>
         <version>$PackageVersion$</version>
@@ -8,10 +8,11 @@
         <owners>$PackageOwners$</owners>
         <copyright>$PackageCopyright$</copyright>
         <license type="expression">$PackageLicense$</license>
+        <icon>$PackageIconFile$</icon>
         <iconUrl>$PackageIconUrl$</iconUrl>
         <projectUrl>$PackageProjectUrl$</projectUrl>
         <tags>$PackageTags$</tags>
-        <repository type="git" branch="master" url="$RepositoryUrl$" commit="$GitCommitId$" />
+        <repository type="git" url="$RepositoryUrl$" commit="$GitCommitId$" />
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Entity Framework Core integration for Jerrycurl.</description>
         <dependencies>
@@ -26,6 +27,7 @@
         </dependencies>
     </metadata>
     <files>
+        <file src="$IconPath$" target="" />
         <file src="$BinPath$**\Jerrycurl.Extensions.EntityFrameworkCore.*" target="lib" />
     </files>
 </package>

@@ -29,7 +29,12 @@ namespace Jerrycurl.Mvc.Sql
                 newAttrs.Add(newAttr);
             }
 
-            return projection.With(attributes: newAttrs);
+            ProjectionOptions newOptions = new ProjectionOptions(projection.Options)
+            {
+                Separator = Environment.NewLine + "AND" + Environment.NewLine,
+            };
+
+            return projection.With(attributes: newAttrs, options: newOptions);
         }
 
         /// <summary>
@@ -52,7 +57,7 @@ namespace Jerrycurl.Mvc.Sql
 
                 if (attribute.Metadata.HasFlag(ProjectionMetadataFlags.Output))
                 {
-                    ParameterBinding binding = new ParameterBinding(param.Name, value);
+                    ParameterBinding binding = new ParameterBinding(param);
 
                     result = result.Append(binding);
                 }

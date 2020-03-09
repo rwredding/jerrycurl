@@ -6,7 +6,7 @@
         public IProcLocator Locator { get; }
         public IProcRenderer Renderer { get; }
         public IProcLookup Lookup { get; }
-        public IPageExecutionContext Executing => this.Stack.Current;
+        public IPageExecutionContext Execution => this.Stack.Current;
         public ProcExecutionStack Stack { get; }
 
         public ProcContext(PageDescriptor descriptor, IDomainOptions domain)

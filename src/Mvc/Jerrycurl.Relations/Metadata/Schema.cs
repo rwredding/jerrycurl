@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
+using Jerrycurl.Reflection;
 using Jerrycurl.Relations.Internal;
 
 namespace Jerrycurl.Relations.Metadata
@@ -107,5 +108,6 @@ namespace Jerrycurl.Relations.Metadata
         public bool Equals(ISchema other) => this.Model.Equals(other?.Model);
         public override bool Equals(object obj) => (obj is ISchema other && this.Equals(other));
         public override int GetHashCode() => this.Model.GetHashCode();
+        public override string ToString() => this.Model.GetSanitizedName();
     }
 }

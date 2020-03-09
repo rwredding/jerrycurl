@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFrameworks>$(NetStandardMultiTargetMoniker);netcoreapp3.0</TargetFrameworks>
-    <IsPackable>true</IsPackable>
-  </PropertyGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="$(JsonTargetVersion)" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFrameworks>$(NetStandardMultiTargetMoniker);netcoreapp3.0</TargetFrameworks>
+		<IsPackable>true</IsPackable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Mvc\Jerrycurl.Data\Jerrycurl.Data.csproj" />
-    <ProjectReference Include="..\..\Mvc\Jerrycurl.Mvc.Abstractions\Jerrycurl.Mvc.Abstractions.csproj" />
-    <ProjectReference Include="..\..\Mvc\Jerrycurl.Mvc\Jerrycurl.Mvc.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="System.Text.Json" Version="$(JsonTargetVersion)" />
+	</ItemGroup>
 
-  <Import Project="..\..\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems" Label="Shared" />
+	<ItemGroup>
+		<ProjectReference Include="..\..\Mvc\Jerrycurl.Data\Jerrycurl.Data.csproj" />
+		<ProjectReference Include="..\..\Mvc\Jerrycurl.Mvc.Abstractions\Jerrycurl.Mvc.Abstractions.csproj" />
+		<ProjectReference Include="..\..\Mvc\Jerrycurl.Mvc\Jerrycurl.Mvc.csproj" />
+	</ItemGroup>
+
+	<Import Project="..\..\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems" Label="Shared" />
 </Project>

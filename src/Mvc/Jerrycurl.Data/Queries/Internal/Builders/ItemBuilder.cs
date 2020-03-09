@@ -104,7 +104,7 @@ namespace Jerrycurl.Data.Queries.Internal.Builders
 
             MetadataNode thisNode = this.FindNode(itemNodes, identity);
 
-            MetadataIdentity parentIdentity = identity.Parent();
+            MetadataIdentity parentIdentity = identity.Pop();
 
             if (thisNode != null)
                 thisNode.Column ??= value;
@@ -179,7 +179,7 @@ namespace Jerrycurl.Data.Queries.Internal.Builders
         {
             IBindingMetadata metadata = identity.GetMetadata<IBindingMetadata>();
 
-            while (metadata == null && (identity = identity.Parent()) != null)
+            while (metadata == null && (identity = identity.Pop()) != null)
                 metadata = identity.GetMetadata<IBindingMetadata>();
 
             if (metadata != null && metadata.HasFlag(BindingMetadataFlags.Dynamic))

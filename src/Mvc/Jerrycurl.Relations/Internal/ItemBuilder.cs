@@ -57,6 +57,9 @@ namespace Jerrycurl.Relations.Internal
         {
             IRelationMetadata[] attributes = this.headingMetadata.SelectMany(this.Path).Distinct().ToArray();
 
+            if (attributes.Length == 0)
+                attributes = new[] { this.sourceMetadata };
+
             foreach (var g in attributes.GroupBy(a => a.MemberOf))
             {
                 ItemNode itemNode = new ItemNode()

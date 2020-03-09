@@ -27,3 +27,4 @@ build_script:
   
 artifacts:
   - path: .\artifacts\packages\*.nupkg
+  - path: .\artifacts\packages\*.snupkg

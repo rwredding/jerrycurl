@@ -28,7 +28,7 @@ namespace Jerrycurl.Relations.Internal
         {
             Delegate[] binders = this.relationNode.Fields.Select(this.CreateBinder).ToArray();
             MetadataIdentity[] attributes = this.relationNode.Attributes;
-            IMetadataNotation notation = attributes[0].Schema.Notation;
+            IMetadataNotation notation = this.relationNode.Identity.Schema.Notation;
 
             Action<IField, IEnumerator[], IField[]>[] funcs = new Action<IField, IEnumerator[], IField[]>[this.relationNode.Items.Count];
             MetadataIdentity[] listIds = new MetadataIdentity[this.relationNode.Items.Count];
@@ -94,7 +94,7 @@ namespace Jerrycurl.Relations.Internal
         private Expression GetAttributeExpression(MemberNode memberNode)
         {
             if (memberNode.HasFlag(NodeFlags.Source))
-                return Expression.Property(this.args.Source, "Attribute");
+                return Expression.Property(this.args.Source, nameof(IField.Identity));
 
             return Expression.ArrayAccess(this.args.Attributes, Expression.Constant(memberNode.FieldIndex.Value));
         }
@@ -209,7 +209,7 @@ namespace Jerrycurl.Relations.Internal
 
             Expression enumerator = this.GetEnumeratorExpression(listNode);
 
-            return Expression.Property(enumerator, "Index"); ;
+            return Expression.Property(enumerator, nameof(IndexedEnumerator<object>.Index));
         }
 
         private Expression GetEnumeratorExpression(ListNode listNode)
@@ -246,15 +246,15 @@ namespace Jerrycurl.Relations.Internal
             Expression nameExpression;
 
             if (itemNode.HasFlag(NodeFlags.Source))
-                nameExpression = Expression.Property(Expression.Property(this.args.Source, "Identity"), "Name");
+                nameExpression = Expression.Property(Expression.Property(this.args.Source, nameof(IField.Identity)), nameof(FieldIdentity.Name));
             else if (itemNode.List != null)
             {
                 Expression enumerator = this.GetEnumeratorExpression(itemNode.List);
                 Expression list = this.GetFieldExpression(itemNode.List);
-                Expression listName = Expression.Property(Expression.Property(list, "Identity"), "Name");
+                Expression listName = Expression.Property(Expression.Property(list, nameof(IField.Identity)), nameof(FieldIdentity.Name));
                 Expression itemName = Expression.Constant(itemNode.Metadata.Identity.Notation.Path(itemNode.List.Metadata.Identity.Name, itemNode.Metadata.Identity.Name));
                 Expression combined = this.GetNotationCombine(listName, itemName);
-                Expression index = Expression.Property(enumerator, "Index");
+                Expression index = Expression.Property(enumerator, nameof(IndexedEnumerator<object>.Index));
                 Expression indexed = this.GetNotationIndex(combined, index);
 
                 nameExpression = indexed;
@@ -286,7 +286,7 @@ namespace Jerrycurl.Relations.Internal
         private Expression GetNotationCombine(params Expression[] parts)
         {
             Type notationType = this.args.Notation.Type;
-            MethodInfo combineMethod = notationType.GetMethod("Combine", new[] { typeof(string), typeof(string) });
+            MethodInfo combineMethod = notationType.GetMethod(nameof(IMetadataNotation.Combine), new[] { typeof(string), typeof(string) });
 
             return Expression.Call(this.args.Notation, combineMethod, parts);
         }
@@ -294,7 +294,7 @@ namespace Jerrycurl.Relations.Internal
         private Expression GetNotationIndex(Expression name, Expression index)
         {
             Type notationType = this.args.Notation.Type;
-            MethodInfo indexMethod = notationType.GetMethod("Index");
+            MethodInfo indexMethod = notationType.GetMethod(nameof(IMetadataNotation.Index));
 
             return Expression.Call(this.args.Notation, indexMethod, name, index);
         }
@@ -307,11 +307,11 @@ namespace Jerrycurl.Relations.Internal
             {
                 Expression enumerator = this.GetEnumeratorExpression(itemNode.List);
 
-                value = Expression.Property(enumerator, "Current");
+                value = Expression.Property(enumerator, nameof(IEnumerator.Current));
             }
             else if (memberNode.HasFlag(NodeFlags.Source))
             {
-                Expression rawValue = Expression.Property(this.args.Source, "Value");
+                Expression rawValue = Expression.Property(this.args.Source, nameof(IField.Value));
 
                 value = Expression.Convert(rawValue, memberNode.Metadata.Type);
             }
@@ -320,7 +320,7 @@ namespace Jerrycurl.Relations.Internal
             else if (memberNode.FieldIndex != null)
             {
                 Expression field = this.GetFieldExpression(memberNode);
-                Expression rawValue = Expression.Property(field, "Value");
+                Expression rawValue = Expression.Property(field, nameof(IField.Value));
 
                 value = Expression.Convert(rawValue, memberNode.Metadata.Type);
             }
