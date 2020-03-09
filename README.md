@@ -10,7 +10,7 @@ It provides a custom MVC-based approach that separates your project into domains
 specialized **Razor SQL** syntax.
 
 ### Procedure (view) layer
-Procedures are written as either **commands** that write data or **queries** that read data. Both are written with a combination of SQL and Razor code that projects SQL directly from your object model.
+Procedures are written in `.cssql` files separated into **commands** that write data and **queries** that read data. Both are written with a combination of **SQL and Razor code** that generate SQL and parameters from typesafe projections of your object model.
 ```
 -- Queries/Movies/GetMovies.cssql
 @result MovieTaglineView
@@ -36,7 +36,7 @@ WHERE      @R.Col(m => m.Year) >= @M.Par(m => m.SinceYear)
 ```
 
 ### Model layer
-**Models** are simple POCO-like classes that can be combined into complete object graphs that represents *all* data for a certain operation. Each model can be mapped with any type of data relationship: one-to-one, one-to-many, many-to-one and self-joins.
+**Models** are simple POCO-like classes that can be combined into complete object graphs that represents *all* data for a certain operation. Each model can be mapped at any depth with any type of data relationship: one-to-one, one-to-many, many-to-one and self-joins.
 ```csharp
 // Database.cs
 [Table("dbo", "Movie")]
@@ -57,7 +57,7 @@ class MovieTaglineView : Movie
 ```
 
 ### Accessor (controller) layer
-Accessor provide the bridge from your code to the consumer by exposing methods that execute an associated Razor command or query and map their results appropriately.
+Accessor provide the bridge from your code to the consumer by exposing methods that each execute a Razor command or query and map its results accordingly.
 ```csharp
 // Accessors/MoviesAccessor.cs
 public class MoviesAccessor : Accessor
@@ -86,9 +86,10 @@ class MovieDomain : IDomain
 ## Features
 * [Official support](https://nuget.org/packages/?q=Jerrycurl.Vendors) for SQL Server, PostgreSQL, MySQL, Oracle and SQLite
 * [CLI tool](https://nuget.org/packages/dotnet-jerry) to easily generate classes from your database schema
-* Extensive collection of type-safe Razor extensions for all boilerplate SQL
+* Extensive collection of typesafe Razor extensions for all boilerplate SQL
 * Single **queries** that map complete object graphs of any [cardinality](https://en.wikipedia.org/wiki/Cardinality_(data_modeling))
 * Batchable **commands** through simple `@foreach` expressions
+* Easy integration with any dependency injection container
 * [High performance](https://github.com/rhodosaur/RawDataAccessBencher/blob/master/Results/20191115_jerrycurl.txt) and support for all operations synchronously or asynchronously
 * Organized, ASP.NET-like project conventions with [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)
 * Native [command-query separation](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation) suitable for [ACID](https://en.wikipedia.org/wiki/ACID) or [BASE](https://en.wikipedia.org/wiki/Eventual_consistency)/[CQRS](https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs) scenarios
@@ -97,7 +98,7 @@ class MovieDomain : IDomain
 * Modern language features with .NET Standard 2.1 and C# 8
 * Free and [available via NuGet](https://www.nuget.org/packages?q=Jerrycurl)
 
-To learn more about Jerrycurl and how to get started, read [our official docs](https://jerrycurl.net/documentation) or check our [samples repo](https://github.com/rwredding/jerrycurl-samples).
+To learn more about Jerrycurl and how to get started, visit [our official site](https://jerrycurl.net/) or check our [samples repo](https://github.com/rwredding/jerrycurl-samples).
 
 ## Building from source
 Jerrycurl can be built on [any OS supported by .NET Core](https://docs.microsoft.com/en-us/dotnet/core/install/dependencies) and included in this repository is a [script](build.ps1) that performs all build-related tasks.
@@ -119,7 +120,7 @@ PS> .\build.ps1 [-NoTest] [-NoPack]
 
 This runs the `Restore`, `Clean`, `Build`, `[Test]` and `[Pack]` targets on `jerrycurl.sln` and places any packaged `.nupkg` in the `/artifacts/packages` folder. Each target can also be run manually in Visual Studio if preferred.
 
-By default, the `Test` target skips any test that requires live running database server. To help you to include these, you can use our [`docker compose` script](test/tools/boot-dbs.ps1) to boot up instances of our supported databases.
+By default, the `Test` target skips any unit test that requires live running database server. To help you to include these, you can run our [`docker compose` script](test/tools/boot-dbs.ps1) to boot up instances of our supported databases.
 
 ```powershell
 PS> .\test\tools\boot-dbs.ps1 up sqlserver,mysql,postgres,oracle
@@ -134,8 +135,6 @@ PS> .\test\tools\boot-dbs.ps1 down sqlserver,mysql,postgres,oracle
 > If you already have an empty database running that can be used for testing, you can manually specify its connection string in the environment variable `JERRY_SQLSERVER_CONN`, `JERRY_MYSQL_CONN`, `JERRY_POSTGRES_CONN` or `JERRY_ORACLE_CONN`.
 
 > Pulling the Oracle Database image requires that you are logged into Docker and have accepted their [terms of service](https://hub.docker.com/_/oracle-database-enterprise-edition).
-
-
 
 ## License
 Copyright © 2019 AC Dancode
