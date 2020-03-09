@@ -11,7 +11,7 @@
         <icon>$PackageIconFile$</icon>
         <iconUrl>$PackageIconUrl$</iconUrl>
         <projectUrl>$PackageProjectUrl$</projectUrl>
-        <tags>$PackageTags$</tags>
+        <tags>oracle $PackageTags$</tags>
         <repository type="git" url="$RepositoryUrl$" commit="$GitCommitId$" />
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>MySQL support for Jerrycurl.</description>
