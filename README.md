@@ -7,7 +7,7 @@
 **Jerrycurl** is an object-relational framework that helps developers design robust data access with **MVC and Razor SQL** in a process much similar to that of **ASP.NET**.
 
 ### Procedure (view) layer
-Procedures are written as either **commands** that write data or **queries** that read data. Both are written with a combination of plain SQL and Razor blocks that project and generate SQL directly from your object model.
+Procedures are written as either **commands** that write data or **queries** that read data. Both are written with a combination of SQL and Razor code that projects SQL directly from your object model.
 ```sql
 -- Queries/Movies/GetMovies.cssql
 @result MovieTaglineView
@@ -32,8 +32,7 @@ WHERE      @R.Col(m => m.Year) >= @M.Par(m => m.SinceYear)
 ```
 
 ### Model layer
-**Models** are defined by simple POCO-like classes and supports graph-based mapping of multiple dimensions of data in a single SQL
-request.
+**Models** are simple POCO-like classes that can be combined into complete object graphs that represents *all* data for a certain operation. Each model can be mapped with any type of data relationship: one-to-one, one-to-many, many-to-one and self-joins.
 ```csharp
 // Database.cs
 [Table("dbo", "Movie")]
@@ -52,7 +51,7 @@ class MovieDetailsView : Movie
 ```
 
 ### Accessor (controller) layer
-Accessors provide the bridge from your code to the consumer by exposing methods that locate, generate, execute your Razor-based procedures and map their results appropriately.
+Accessor provide the bridge from your code to the consumer by exposing methods that execute an associated Razor command or query and map their results appropriately.
 ```csharp
 // Accessors/MoviesAccessor.cs
 public class MoviesAccessor : Accessor
@@ -66,7 +65,7 @@ public class MoviesAccessor : Accessor
 ```
 
 ### Domain (application) layer
-Domains provide a central place for fetching configuration in your application.
+Domains provide a central place for fetching configuration for any (or a subset of) your database operations.
 ```csharp
 class MovieDomain : IDomain
 {
