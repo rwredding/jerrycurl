@@ -73,6 +73,7 @@ public class MoviesAccessor : Accessor
 ### Domain (application) layer
 Domains provide a central place for fetching configuration for any (or a subset of) your database operations.
 ```csharp
+// MovieDomain.cs
 class MovieDomain : IDomain
 {
     public void Configure(DomainOptions options)
