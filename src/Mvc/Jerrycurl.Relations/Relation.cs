@@ -66,9 +66,11 @@ namespace Jerrycurl.Relations
 
         void IField.Bind(object newValue) => this.Source.Bind(newValue);
 
-        public bool Equals(IField other) => Equality.Combine(this.Source.Identity, this.Source.Model, other?.Identity, other?.Model);
+        public bool Equals(IField other) => Equality.Combine(this.Source, other, m => m.Identity, m => m.Model);
         public override bool Equals(object obj) => (obj is IField other && this.Equals(other));
         public override int GetHashCode() => HashCode.Combine(this.Source.Identity, this.Source.Model);
+
+        public override string ToString() => this.Identity.Schema + "(" + string.Join(", ", this.Identity.Heading) + ")";
 
         public IEnumerator<ITuple> GetEnumerator()
         {

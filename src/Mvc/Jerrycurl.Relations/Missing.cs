@@ -1,10 +1,12 @@
 ﻿using Jerrycurl.Diagnostics;
 using Jerrycurl.Relations.Metadata;
 using System;
+using System.Diagnostics;
 using HashCode = Jerrycurl.Diagnostics.HashCode;
 
 namespace Jerrycurl.Relations
 {
+    [DebuggerDisplay("{Identity.Name}: {ToString(),nq}")]
     internal class Missing<TValue> : IField
     {
         public FieldIdentity Identity { get; }

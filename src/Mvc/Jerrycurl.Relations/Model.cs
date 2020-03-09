@@ -1,9 +1,11 @@
 ﻿using Jerrycurl.Diagnostics;
 using Jerrycurl.Relations.Metadata;
 using System;
+using System.Diagnostics;
 
 namespace Jerrycurl.Relations
 {
+    [DebuggerDisplay("{Identity.Name}: {ToString(),nq}")]
     public class Model : IField
     {
         public FieldIdentity Identity { get; }

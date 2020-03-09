@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using Jerrycurl.Diagnostics;
 using Jerrycurl.Reflection;
 using HashCode = Jerrycurl.Diagnostics.HashCode;
 
 namespace Jerrycurl.Relations.Metadata
 {
+    [DebuggerDisplay("{Schema.ToString(),nq}({Name})")]
     public sealed class MetadataIdentity : IEquatable<MetadataIdentity>
     {
         public string Name { get; }
