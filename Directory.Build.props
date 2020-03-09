@@ -32,7 +32,7 @@
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <PackageProjectUrl>https://jerrycurl.net</PackageProjectUrl>
-        <PackageIconUrl>https://jerrycurl.net/nuget/icon2.png</PackageIconUrl>
+        <PackageIconUrl>https://raw.githubusercontent.com/rwredding/jerrycurl/master/gfx/icon.png</PackageIconUrl>
         <PackageIconFile>icon.png</PackageIconFile>
         <PackageId>$(MSBuildProjectName)</PackageId>
         <PackageLicense>LGPL-3.0-or-later</PackageLicense>
