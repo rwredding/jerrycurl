@@ -6,7 +6,7 @@
 
 **Jerrycurl** is an object-relational framework that allows developers to build **robust data access** in a way similar to how web applications are built with **ASP.NET MVC**.
 
-It provides a custom MVC-based approach that separates your project into domains, models, accessors and procedures written with our
+It provides a **customized MVC structure** that separates your project into domains, models, accessors and procedures written with our
 specialized **Razor SQL** syntax.
 
 ### Procedure (view) layer
