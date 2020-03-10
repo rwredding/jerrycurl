@@ -8,11 +8,11 @@
 
 ### Installation
 Jerrycurl can be installed into any [SDK-style](https://docs.microsoft.com/en-us/nuget/resources/check-project-format) C# project from NuGet. This package contains support for compiling `.cssql` files into your project and executing them via the built-in MVC engine.
-```
+```shell
 dotnet add package Jerrycurl
 ```
 After this you can install support for your favorite database vendor.
-```
+```shell
 dotnet add package Jerrycurl.Vendors.SqlServer
 ```
 
