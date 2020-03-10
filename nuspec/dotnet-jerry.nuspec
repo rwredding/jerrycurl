@@ -24,6 +24,7 @@
         <file src="$SourcePath$DotnetToolSettings.xml" target="tools\$TargetFramework$\any" />
         <file src="$SourcePath$build.csproj" target="tools\$TargetFramework$\any\build" />
         <file src="$SourcePath$src\**\*" target="tools\$TargetFramework$\any\build" />
-        <file src="$BinPath$Jerrycurl.Tools.*" target="tools\$TargetFramework$\any" />
+        <file src="$BinPath$Jerrycurl.Tools.Common.*" target="tools\$TargetFramework$\any" />
+		<file src="$BinPath$dotnet-jerry.*" target="tools\$TargetFramework$\any" />
     </files>
 </package>
