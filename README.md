@@ -7,12 +7,10 @@
 **Jerrycurl** is an object-relational framework that allows developers to build **robust data access** in a way similar to how web applications are built with **ASP.NET MVC**.
 
 ### Installation
-Jerrycurl can be installed into any [SDK-style](https://docs.microsoft.com/en-us/nuget/resources/check-project-format) C# project from NuGet. This package contains support for compiling `.cssql` files into your project and executing them via the built-in MVC engine.
+Jerrycurl can be installed into any [SDK-style](https://docs.microsoft.com/en-us/nuget/resources/check-project-format) C# project from NuGet. This package contains support for compiling `.cssql` files into your project and executing them via the built-in MVC engine. Additionally you should install support for [one of our supported databases](https://nuget.org/packages?q=Jerrycurl.Vendors).
+
 ```shell
 dotnet add package Jerrycurl
-```
-After this you can install support for your favorite database vendor.
-```shell
 dotnet add package Jerrycurl.Vendors.SqlServer
 ```
 
