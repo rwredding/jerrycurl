@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Jerrycurl.CodeAnalysis;
 using Jerrycurl.CodeAnalysis.Projection;
 using Jerrycurl.CodeAnalysis.Razor.Generation;
@@ -42,15 +43,13 @@ namespace Jerrycurl.Build.Razor
 
             foreach (RazorPage razorPage in parser.Parse(project))
             {
-                string tempFile = this.GetTempFile(tempDir, razorPage);
+                string tempFile = this.GetTempFile(tempDir, razorPage, tempFiles);
 
-                using (StreamWriter writer = this.GetStreamWriter(tempFile))
-                {
-                    RazorGenerator generator = new RazorGenerator(this.GetGeneratorOptions());
-                    ProjectionResult result = generator.Generate(razorPage.Data);
+                RazorGenerator generator = new RazorGenerator(this.GetGeneratorOptions());
+                ProjectionResult result = generator.Generate(razorPage.Data);
 
-                    writer.Write(result.Content);
-                }
+                Directory.CreateDirectory(Path.GetDirectoryName(tempFile));
+                File.WriteAllText(tempFile, result.Content, Encoding.UTF8);
 
                 this.PrintPageData(razorPage, tempFile);
 
@@ -81,25 +80,22 @@ namespace Jerrycurl.Build.Razor
 
         private string NormalizePath(string path) => path?.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
-        private StreamWriter GetStreamWriter(string filePath)
-        {
-            if (!Directory.Exists(Path.GetDirectoryName(filePath)))
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-            return new StreamWriter(filePath);
-        }
-
-        private string GetTempFile(string tempDir, RazorPage razorFile)
+        private string GetTempFile(string tempDir, RazorPage razorFile, IList<string> tempFiles)
         {
             string baseName = Path.GetFileNameWithoutExtension(razorFile.ProjectPath ?? razorFile.Path);
-            string fileName;
+            string fileName = $"{baseName}.{razorFile.Path.GetHashCode():x2}.g.cssql.cs";
+            string fullName = Path.Combine(tempDir, this.NormalizePath(fileName));
 
-            if (razorFile.ProjectPath != null)
-                fileName = Path.Combine(Path.GetDirectoryName(razorFile.ProjectPath), $"{baseName}.g.cssql.cs");
-            else
-                fileName = $"{baseName}.{razorFile.Path.GetHashCode():x2}.g.cssql.cs";
+            int n = 0;
 
-            return Path.Combine(tempDir, this.NormalizePath(fileName));
+            while (tempFiles.Contains(fullName, StringComparer.OrdinalIgnoreCase))
+            {
+                fileName = $"{baseName}.{razorFile.Path.GetHashCode():x2}.g{n++}.cssql.cs";
+
+                fullName = Path.Combine(tempDir, this.NormalizePath(fileName));
+            }
+
+            return fullName;
         }
 
         private string CreateTempDirectory()
