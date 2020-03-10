@@ -6,11 +6,34 @@
 
 **Jerrycurl** is an object-relational framework that allows developers to build **robust data access** in a way similar to how web applications are built with **ASP.NET MVC**.
 
-It provides a **customized MVC structure** that separates your project into domains, models, accessors and procedures written with our
-specialized **Razor SQL** syntax.
+### Installation
+Jerrycurl can be installed into any [SDK-style](https://docs.microsoft.com/en-us/nuget/resources/check-project-format) C# project from NuGet. This package contains support for compiling `.cssql` files into your project and executing them via the built-in MVC engine.
+```
+dotnet add package Jerrycurl
+```
+After this you can install support for your favorite database vendor.
+```
+dotnet add package Jerrycurl.Vendors.SqlServer
+```
 
-### Procedure (view) layer
-Procedures are written in `.cssql` files and separated into **commands** that write data and **queries** that read data. Both are written with a combination of **SQL and Razor code** that generate SQL and parameters from typesafe projections of your object model.
+#### Tooling
+If you want to generate a ready-to-go object model from an exsisting database, you can install and use our `dotnet-jerry` global tool.
+```
+dotnet tool install --global dotnet-jerry
+```
+This gives the ability to call `jerry scaffold -v [vendor] -c [connection] -ns [namespace]` from anywhere on your machine.
+```
+jerry scaffold -v sqlserver -c "SERVER=.;DATABASE=moviedb;TRUSTED_CONNECTION=true" -ns "MovieDb.Database"
+Connecting to database 'moviedb'...
+Generating...
+Generated 7 tables and 21 columns in Database.cs.
+```
+
+### MVC design
+By installing Jerrycurl you are getting a **customized MVC engine** that separates your project into domains, models, accessors and procedures written with our specialized **Razor SQL** syntax.
+
+#### Procedure (view) layer
+Procedures are written in `.cssql` files and separated into **commands** that write data and **queries** that read data. Both are written with a combination of **SQL and Razor code** that generate SQL and parameters from projections of your object model.
 ```
 -- Queries/Movies/GetMovies.cssql
 @result MovieTaglineView
@@ -57,7 +80,7 @@ class MovieTaglineView : Movie
 ```
 
 ### Accessor (controller) layer
-Accessors provide the bridge from your code to the consumer by exposing a collection of methods that each executes a Razor command or query and maps its resulting data sets to matching objects.
+Accessors provide the bridge from your code to the consumer by exposing a collection of methods executes Razor commands and queries and maps their resulting data sets to matching objects.
 ```csharp
 // Accessors/MoviesAccessor.cs
 public class MoviesAccessor : Accessor
