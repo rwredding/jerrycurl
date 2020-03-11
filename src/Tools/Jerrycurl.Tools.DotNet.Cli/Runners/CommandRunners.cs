@@ -125,19 +125,26 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             }
 
             string sourcePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+            string outputDir = args.Options["-o", "--output"]?.Value ?? Path.Combine(Environment.CurrentDirectory, "obj", "Jerrycurl");
 
             GeneratorOptions options = new GeneratorOptions()
             {
                 TemplateCode = File.ReadAllText(Path.Combine(sourcePath, "skeleton.jerry")),
             };
 
+            if (args.Options["--no-clean"] == null && Directory.Exists(outputDir))
+            {
+                Program.WriteLine("Cleaning...", ConsoleColor.Yellow);
+
+                foreach (string oldFile in Directory.GetFiles(outputDir, "*.g.cssql.cs"))
+                    File.Delete(oldFile);
+            }
+
             if (args.Options["-i", "--import"] != null)
             {
                 foreach (string import in args.Options["-i", "--import"].Values)
                     options.Imports.Add(new RazorFragment() { Text = import });
             }
-
-            string outputDir = args.Options["-o", "--output"]?.Value ?? Path.Combine(Environment.CurrentDirectory, "obj", "Jerrycurl");
 
             Directory.CreateDirectory(outputDir);
 
@@ -163,7 +170,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
             Console.ForegroundColor = ConsoleColor.Green;
 
-            Program.WriteLine($"Transpiled {filesMoniker} into '{outputDir}'");
+            Program.WriteLine($"Transpiled {filesMoniker} files into '{outputDir}'");
 
             Console.ResetColor();
         }
