@@ -87,5 +87,6 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
         }
 
         public static string GetNuGetPackageVersion() => typeof(Program).Assembly.GetNuGetPackageVersion();
+        public static string GetNuGetPackageHash() => typeof(Program).Assembly.GetNuGetPackageHash();
     }
 }

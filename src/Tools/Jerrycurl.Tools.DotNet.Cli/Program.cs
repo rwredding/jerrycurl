@@ -40,9 +40,15 @@ namespace Jerrycurl.Tools.DotNet.Cli
 
         public static void WriteHeader()
         {
-            string packageVersion = RunnerArgs.GetNuGetPackageVersion();
+            string nugetVersion = RunnerArgs.GetNuGetPackageVersion();
+            string nugetHash = RunnerArgs.GetNuGetPackageHash();
 
-            Console.WriteLine($"Jerrycurl CLI v{packageVersion}");
+            if (nugetVersion != null && nugetHash != null)
+                Console.WriteLine($"Jerrycurl CLI v{nugetVersion} ({nugetHash})");
+            else if (nugetVersion != null)
+                Console.WriteLine($"Jerrycurl CLI v{nugetVersion}");
+            else
+                Console.WriteLine($"Jerrycurl CLI");
         }
 
         public static void WriteLine() => Console.WriteLine();
