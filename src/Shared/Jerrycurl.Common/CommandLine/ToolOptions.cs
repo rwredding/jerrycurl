@@ -21,6 +21,7 @@ namespace Jerrycurl.CommandLine
 
             return argument;
         }
+
         public static string Escape(IEnumerable<string> args) => string.Join(" ", args.Select(Escape));
 
         public string[] ToArgumentList()
@@ -30,20 +31,35 @@ namespace Jerrycurl.CommandLine
 
         public string Escape() => Escape(this.ToArgumentList());
 
-        public ToolOption this[string option] => this.options.FirstOrDefault(opt => "--" + opt.Name == option || "-" + opt.ShortName == option);
         public ToolOption this[params string[] options]
         {
             get
             {
-                foreach (string option in options)
-                {
-                    ToolOption found = this[option];
+                List<ToolOption> all = new List<ToolOption>();
 
-                    if (found != null)
-                        return found;
+                foreach (ToolOption opt in this.options)
+                {
+                    foreach (string option in options)
+                    {
+                        if ("--" + opt.Name == option || "-" + opt.ShortName == option)
+                            all.Add(opt);
+
+                            ToolOption found = this[option];
+
+                        if (found != null)
+                            return found;
+                    }
                 }
 
-                return null;
+                if (all.Count == 0)
+                    return null;
+
+                return new ToolOption()
+                {
+                    ShortName = all[0].ShortName,
+                    Name = all[0].Name,
+                    Values = all.SelectMany(o => o.Values).ToArray(),
+                };
             }
         }
 
