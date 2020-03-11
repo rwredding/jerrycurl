@@ -24,7 +24,6 @@ namespace Jerrycurl.Relations
 
             this.Identity = new FieldIdentity(metadata, name);
             this.Model = model ?? throw new ArgumentNullException(nameof(model));
-            this.Value = default(TValue);
         }
 
         public void Bind(object newValue) => throw BindingException.FromField(this, "Missing fields are not bindable due to a null container.");
