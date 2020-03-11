@@ -102,20 +102,20 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
         {
             RazorProject project = new RazorProject()
             {
-                RootNamespace = args.Options["-ns"]?.Value ?? "Jerrycurl.Procedures",
+                RootNamespace = args.Options["-ns", "--namespace"]?.Value ?? "Jerrycurl.Procedures",
                 Items = new List<RazorProjectItem>(),
                 ProjectDirectory = args.Options["-cwd"]?.Value ?? Environment.CurrentDirectory,
             };
 
-            if (args.Options["-f"] != null)
+            if (args.Options["-f", "--file"] != null)
             {
-                foreach (string file in args.Options["-f"].Values)
+                foreach (string file in args.Options["-f", "--file"].Values)
                     project.Items.Add(new RazorProjectItem() { ProjectPath = file });
             }
 
-            if (args.Options["-d"] != null)
+            if (args.Options["-d", "--directory"] != null)
             {
-                foreach (string dir in args.Options["-d"].Values)
+                foreach (string dir in args.Options["-d", "--directory"].Values)
                 {
                     RazorProject fromDir = RazorProject.FromDirectory(dir);
 
@@ -131,20 +131,24 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 TemplateCode = File.ReadAllText(Path.Combine(sourcePath, "skeleton.jerry")),
             };
 
-            if (args.Options["-i"] != null)
+            if (args.Options["-i", "--import"] != null)
             {
-                foreach (string import in args.Options["-i"].Values)
+                foreach (string import in args.Options["-i", "--import"].Values)
                     options.Imports.Add(new RazorFragment() { Text = import });
             }
 
-            string outputDir = args.Options["-o"]?.Value ?? Path.Combine(Environment.CurrentDirectory, "obj", "Jerrycurl");
+            string outputDir = args.Options["-o", "--output"]?.Value ?? Path.Combine(Environment.CurrentDirectory, "obj", "Jerrycurl");
 
             Directory.CreateDirectory(outputDir);
 
             RazorParser parser = new RazorParser();
             RazorGenerator generator = new RazorGenerator(options);
 
-            foreach (RazorPage razorPage in parser.Parse(project))
+            Program.WriteLine("Parsing...", ConsoleColor.Yellow);
+            IList<RazorPage> parserResult = parser.Parse(project).ToList();
+
+            Program.WriteLine("Transpiling...", ConsoleColor.Yellow);
+            foreach (RazorPage razorPage in parserResult)
             {
                 ProjectionResult result = generator.Generate(razorPage.Data);
 
@@ -159,7 +163,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
             Console.ForegroundColor = ConsoleColor.Green;
 
-            Program.WriteLine($"Generated {filesMoniker} in '{outputDir}'");
+            Program.WriteLine($"Transpiled {filesMoniker} into '{outputDir}'");
 
             Console.ResetColor();
         }
