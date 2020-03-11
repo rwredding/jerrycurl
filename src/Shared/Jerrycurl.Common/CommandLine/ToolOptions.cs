@@ -119,7 +119,7 @@ namespace Jerrycurl.CommandLine
             if (filePaths == null)
                 throw new ArgumentNullException(nameof(filePaths));
 
-            pathResolver = pathResolver ?? (s => s);
+            pathResolver = pathResolver ?? (s => s != null && s.StartsWith("@") ? s.Substring(1) : s);
 
             Stack<string> stack = new Stack<string>(filePaths);
             HashSet<string> fileList = new HashSet<string>();
