@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Jerrycurl.CodeAnalysis.Razor.Parsing;
 using Jerrycurl.CodeAnalysis.Razor.Parsing.Directives;
 using Jerrycurl.IO;
 
-namespace Jerrycurl.CodeAnalysis.Razor.Parsing.Conventions
+namespace Jerrycurl.CodeAnalysis.Razor.ProjectSystem.Conventions
 {
     public class RazorImportConvention : IRazorProjectConvention
     {

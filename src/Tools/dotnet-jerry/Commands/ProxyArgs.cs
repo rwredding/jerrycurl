@@ -6,6 +6,7 @@
         public string PackageVersion { get; set; }
 
         public string BinPath { get; set; }
+        public string IntermediatePath { get; set; }
         public string ProjectPath { get; set; }
         public string DllPath { get; set; }
         public string DllName { get; set; }

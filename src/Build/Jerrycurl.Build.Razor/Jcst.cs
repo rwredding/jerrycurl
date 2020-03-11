@@ -8,6 +8,7 @@ using Jerrycurl.CodeAnalysis;
 using Jerrycurl.CodeAnalysis.Projection;
 using Jerrycurl.CodeAnalysis.Razor.Generation;
 using Jerrycurl.CodeAnalysis.Razor.Parsing;
+using Jerrycurl.CodeAnalysis.Razor.ProjectSystem;
 using Jerrycurl.Reflection;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -179,16 +180,15 @@ namespace Jerrycurl.Build.Razor
         }
         private void PrintProjectData(RazorProject project)
         {
-            string nugetVersion = typeof(Jcst).Assembly.GetNuGetPackageVersion();
-            string nugetHash = typeof(Jcst).Assembly.GetNuGetPackageHash();
+            NuGetVersion version = typeof(Jcst).Assembly.GetNuGetPackageVersion();
 
             this.PrintMessage("Jerrycurl Build Engine");
-            if (nugetVersion != null && nugetHash != null)
-                this.PrintMessage($"\tVersion: {nugetVersion} ({nugetHash})");
-            else if (nugetVersion != null)
-                this.PrintMessage($"\tVersion: {nugetVersion}");
-            else
+            if (version == null)
                 this.PrintMessage("\tVersion: <unknown>");
+            else if (version.CommitHash != null)
+                this.PrintMessage($"\tVersion: {version.PublicVersion} ({version.CommitHash})");
+            else
+                this.PrintMessage($"\tVersion: {version.PublicVersion}");
             this.PrintMessage($"\tProjectName: {this.ProjectName}");
             this.PrintMessage($"\tProjectDirectory: {project.ProjectDirectory}");
             this.PrintMessage($"\tRootNamespace: {this.RootNamespace}");

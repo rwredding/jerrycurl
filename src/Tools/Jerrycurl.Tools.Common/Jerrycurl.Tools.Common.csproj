@@ -4,4 +4,9 @@
 		<RootNamespace>Jerrycurl.Tools</RootNamespace>
 		<IsPackable>true</IsPackable>
 	</PropertyGroup>
+  
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Build\Jerrycurl.CodeAnalysis.Razor\Jerrycurl.CodeAnalysis.Razor.csproj" />
+	  <ProjectReference Include="..\..\Build\Jerrycurl.CodeAnalysis\Jerrycurl.CodeAnalysis.csproj" />
+	</ItemGroup>
 </Project>

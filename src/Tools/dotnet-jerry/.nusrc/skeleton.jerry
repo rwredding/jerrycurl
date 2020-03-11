@@ -1,0 +1,26 @@
+$pragmachecksum$
+#pragma warning disable IDE0009
+$globalimports$
+
+$beginnamespace$
+	#line hidden
+	$localimports$
+	$template$
+	internal class $class$ : global::Jerrycurl.Mvc.ProcPage<$model$,$result$>
+	{
+		#pragma warning disable IDE1006
+		$injectiondefs$
+		#pragma warning restore IDE1006
+    
+		public $class$(global::Jerrycurl.Mvc.Projections.IProjection model, global::Jerrycurl.Mvc.Projections.IProjection result)
+			: base(model, result)
+		{
+			
+		}
+		public override void Execute()
+		{
+			$execute$
+		}
+	}
+$endnamespace$
+#pragma warning restore IDE0009

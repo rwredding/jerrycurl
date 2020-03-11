@@ -19,7 +19,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Collections\EnumerableExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolOption.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolOptions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Diagnostics\Equality.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Diagnostics\HashCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\PathHelper.cs" />
@@ -30,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Linq\Expressions\ExpressionOptimizerState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Reflection\AssemblyExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Reflection\NuGetExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Reflection\NuGetVersion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Reflection\TypeExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolRunner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolException.cs" />

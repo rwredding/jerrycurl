@@ -1,12 +1,14 @@
 ﻿using Jerrycurl.CommandLine;
+using Jerrycurl.Reflection;
 using Jerrycurl.Tools.DotNet.Cli.Commands;
+using Jerrycurl.Tools.DotNet.Cli.ComponentModel;
 using Jerrycurl.Tools.DotNet.Cli.Runners;
 using System;
 using System.Threading.Tasks;
 
 namespace Jerrycurl.Tools.DotNet.Cli
 {
-    public class Program
+    public class DotNetJerryHost
     {
         public async static Task<int> Main(string[] args2)
         {
@@ -40,15 +42,14 @@ namespace Jerrycurl.Tools.DotNet.Cli
 
         public static void WriteHeader()
         {
-            string nugetVersion = RunnerArgs.GetNuGetPackageVersion();
-            string nugetHash = RunnerArgs.GetNuGetPackageHash();
+            NuGetVersion version = RunnerArgs.GetNuGetPackageVersion();
 
-            if (nugetVersion != null && nugetHash != null)
-                Console.WriteLine($"Jerrycurl CLI v{nugetVersion} ({nugetHash})");
-            else if (nugetVersion != null)
-                Console.WriteLine($"Jerrycurl CLI v{nugetVersion}");
-            else
+            if (version == null)
                 Console.WriteLine($"Jerrycurl CLI");
+            else if (version.CommitHash != null)
+                Console.WriteLine($"Jerrycurl CLI v{version.PublicVersion} ({version.CommitHash})");
+            else
+                Console.WriteLine($"Jerrycurl CLI v{version.PublicVersion}");
         }
 
         public static void WriteLine() => Console.WriteLine();

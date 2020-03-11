@@ -1,11 +1,15 @@
 ﻿using System.IO;
+using System.Reflection;
 using Jerrycurl.CommandLine;
 using Jerrycurl.Reflection;
+using Jerrycurl.Tools.DotNet.Cli.ComponentModel;
 
 namespace Jerrycurl.Tools.DotNet.Cli.Commands
 {
     internal class RunnerArgs
     {
+        private const string ProxyAssemblyName = "dotnet-jerry-proxy";
+
         public string Command { get; private set; }
         public string Connection { get; private set; }
         public string Namespace { get; private set; }
@@ -18,8 +22,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
 
         public static RunnerArgs FromCommandLine(string[] args)
         {
-            ToolParser parser = new ToolParser();
-            ToolOptions options = parser.Parse(args);
+            ToolOptions options = ToolOptions.Parse(args);
 
             return new RunnerArgs()
             {
@@ -29,7 +32,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
                 Namespace = options["-ns", "--namespace"]?.Value,
                 Output = options["-o", "--output"]?.Value,
                 Verbose = (options["--verbose"] != null),
-                IsProxy = (typeof(RunnerArgs).Assembly.GetName().Name == "jerry-proxy"),
+                IsProxy = IsProxyRunner(),
                 Proxy = GetProxyArgs(options),
             };
         }
@@ -37,33 +40,33 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
         private static ProxyArgs GetProxyArgs(ToolOptions options)
         {
             string packageName = GetNuGetPackageName(options);
+            NuGetVersion version = GetNuGetPackageVersion();
 
-            if (packageName == null)
+            if (packageName == null || version == null)
                 return null;
 
-            string packageVersion = GetNuGetPackageVersion();
-            string sourcePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
-            string projectPath = null;
-            string binPath = null;
-            string dllPath = null;
+            string sourcePath = Path.GetDirectoryName(typeof(DotNetJerryHost).Assembly.Location);
+            string projectPath = Path.Combine(sourcePath, $"{ProxyAssemblyName}.csproj");
+            string binPath = Path.Combine(sourcePath, "built", packageName.ToLower(), "bin");
+            string intermediatePath = Path.Combine(sourcePath, "built", packageName.ToLower(), "obj");
+            string dllPath = Path.Combine(binPath, $"{ProxyAssemblyName}.dll");
 
-            if (packageName != null)
-            {
-                projectPath = Path.Combine(sourcePath, "build", "build.csproj");
-                binPath = Path.Combine(sourcePath, "build", "bin", packageName.ToLower());
-                dllPath = Path.Combine(binPath, $"jerry-proxy.dll");
-            }
+            binPath = binPath.TrimEnd('\\', '/') + '\\';
+            intermediatePath = intermediatePath.TrimEnd('\\', '/') + '\\';
 
             return new ProxyArgs()
             {
                 PackageName = packageName,
-                PackageVersion = packageVersion,
+                PackageVersion = version.IsPrerelease ? version.Version : version.PublicVersion,
                 DllPath = dllPath,
-                DllName = "jerry-proxy",
+                DllName = ProxyAssemblyName,
                 ProjectPath = projectPath,
                 BinPath = binPath,
+                IntermediatePath = intermediatePath,
             };
         }
+
+        private static bool IsProxyRunner() => (Assembly.GetEntryAssembly().GetCustomAttribute<ProxyHostAttribute>() != null);
 
         private static string GetNuGetPackageName(ToolOptions options)
         {
@@ -86,7 +89,6 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
             }
         }
 
-        public static string GetNuGetPackageVersion() => typeof(Program).Assembly.GetNuGetPackageVersion();
-        public static string GetNuGetPackageHash() => typeof(Program).Assembly.GetNuGetPackageHash();
+        public static NuGetVersion GetNuGetPackageVersion() => typeof(DotNetJerryHost).Assembly.GetNuGetPackageVersion();
     }
 }
