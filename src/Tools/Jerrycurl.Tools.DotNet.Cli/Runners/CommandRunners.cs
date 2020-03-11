@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Jerrycurl.CodeAnalysis.Projection;
+using Jerrycurl.CodeAnalysis.Razor.Generation;
+using Jerrycurl.CodeAnalysis.Razor.Parsing;
 using Jerrycurl.Tools.DotNet.Cli.Commands;
 using Jerrycurl.Tools.DotNet.Cli.Scaffolding;
 using Jerrycurl.Tools.Info;
@@ -11,7 +15,7 @@ using Jerrycurl.Tools.Scaffolding.Model;
 
 namespace Jerrycurl.Tools.DotNet.Cli.Runners
 {
-    internal static class CommandRunners
+    internal static partial class CommandRunners
     {
         public static async Task ScaffoldAsync(RunnerArgs info, ScaffoldCommand command)
         {
@@ -92,6 +96,72 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             Program.WriteLine(@"   | o_o |");
             Program.WriteLine(@"    \_^_/ ");
             Program.WriteLine();
+        }
+
+        public static void Transpile(RunnerArgs args)
+        {
+            RazorProject project = new RazorProject()
+            {
+                RootNamespace = args.Options["-ns"]?.Value ?? "Jerrycurl.Procedures",
+                Items = new List<RazorProjectItem>(),
+                ProjectDirectory = args.Options["-cwd"]?.Value ?? Environment.CurrentDirectory,
+            };
+
+            if (args.Options["-f"] != null)
+            {
+                foreach (string file in args.Options["-f"].Values)
+                    project.Items.Add(new RazorProjectItem() { ProjectPath = file });
+            }
+
+            if (args.Options["-d"] != null)
+            {
+                foreach (string dir in args.Options["-d"].Values)
+                {
+                    RazorProject fromDir = RazorProject.FromDirectory(dir);
+
+                    foreach (RazorProjectItem item in fromDir.Items)
+                        project.Items.Add(item);
+                }
+            }
+
+            string sourcePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+
+            GeneratorOptions options = new GeneratorOptions()
+            {
+                TemplateCode = File.ReadAllText(Path.Combine(sourcePath, "skeleton.jerry")),
+            };
+
+            if (args.Options["-i"] != null)
+            {
+                foreach (string import in args.Options["-i"].Values)
+                    options.Imports.Add(new RazorFragment() { Text = import });
+            }
+
+            string outputDir = args.Options["-o"]?.Value ?? Path.Combine(Environment.CurrentDirectory, "obj", "Jerrycurl");
+
+            Directory.CreateDirectory(outputDir);
+
+            RazorParser parser = new RazorParser();
+            RazorGenerator generator = new RazorGenerator(options);
+
+            foreach (RazorPage razorPage in parser.Parse(project))
+            {
+                ProjectionResult result = generator.Generate(razorPage.Data);
+
+                string baseName = Path.GetFileNameWithoutExtension(razorPage.ProjectPath ?? razorPage.Path);
+                string fileName = $"{baseName}.{razorPage.Path.GetHashCode():x2}.g.cssql.cs";
+                string fullName = Path.Combine(outputDir, fileName);
+
+                File.WriteAllText(fullName, result.Content);
+            }
+
+            string filesMoniker = project.Items.Count + " " + (project.Items.Count == 1 ? "file" : "files");
+
+            Console.ForegroundColor = ConsoleColor.Green;
+
+            Program.WriteLine($"Generated {filesMoniker} in '{outputDir}'");
+
+            Console.ResetColor();
         }
 
         public static void Help(RunnerArgs args)

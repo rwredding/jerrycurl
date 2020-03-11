@@ -23,5 +23,6 @@
     <files>
         <file src="$IconPath$" target="" />
         <file src="$BinPath$**\Jerrycurl.Tools.Common.*" target="lib" />
+		<file src="$BinPath$**\Jerrycurl.CodeAnalysis.*" target="lib" />
     </files>
 </package>

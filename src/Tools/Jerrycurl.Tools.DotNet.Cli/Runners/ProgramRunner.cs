@@ -44,6 +44,9 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                     case "info":
                         await builder.ExecuteAsync();
                         break;
+                    case "tp":
+                        CommandRunners.Transpile(this.Args);
+                        break;
                     case "meow":
                         CommandRunners.Meow();
                         break;

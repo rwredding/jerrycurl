@@ -15,6 +15,9 @@
         <repository type="git" url="$RepositoryUrl$" commit="$GitCommitId$" />
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Jerrycurl CLI. Install as .NET Core Global Tool.</description>
+		<dependencies>
+			<dependency id="Jerrycurl.Tools.Common" version="$PackageVersion$" />
+		</dependencies>
         <packageTypes>
             <packageType name="DotnetTool" />
         </packageTypes>
@@ -22,9 +25,11 @@
     <files>
         <file src="$IconPath$" target="" />
         <file src="$SourcePath$DotnetToolSettings.xml" target="tools\$TargetFramework$\any" />
+		<file src="$SourcePath$skeleton.jerry" target="tools\$TargetFramework$\any" />
         <file src="$SourcePath$build.csproj" target="tools\$TargetFramework$\any\build" />
         <file src="$SourcePath$src\**\*" target="tools\$TargetFramework$\any\build" />
-        <file src="$BinPath$Jerrycurl.Tools.Common.*" target="tools\$TargetFramework$\any" />
+        <!--<file src="$BinPath$Jerrycurl.Tools.Common.*" target="tools\$TargetFramework$\any" />
+		<file src="$BinPath$Jerrycurl.CodeAnalysis.*" target="tools\$TargetFramework$\any" />-->
 		<file src="$BinPath$dotnet-jerry.*" target="tools\$TargetFramework$\any" />
     </files>
 </package>

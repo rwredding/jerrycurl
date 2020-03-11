@@ -5,6 +5,7 @@
 		<IsPackable>true</IsPackable>
 		<PackageId>dotnet-jerry</PackageId>
 		<LangVersion>7.1</LangVersion>
+    <RootNamespace>Jerrycurl.Tools.DotNet.Cli</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
