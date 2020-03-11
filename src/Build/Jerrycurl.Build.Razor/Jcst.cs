@@ -179,8 +179,16 @@ namespace Jerrycurl.Build.Razor
         }
         private void PrintProjectData(RazorProject project)
         {
+            string nugetVersion = typeof(Jcst).Assembly.GetNuGetPackageVersion();
+            string nugetHash = typeof(Jcst).Assembly.GetNuGetPackageHash();
+
             this.PrintMessage("Jerrycurl Build Engine");
-            this.PrintMessage($"\tVersion: " + typeof(Jcst).Assembly.GetNuGetPackageVersion() ?? "<unknown>");
+            if (nugetVersion != null && nugetHash != null)
+                this.PrintMessage($"\tVersion: {nugetVersion} ({nugetHash})");
+            else if (nugetVersion != null)
+                this.PrintMessage($"\tVersion: {nugetVersion}");
+            else
+                this.PrintMessage("\tVersion: <unknown>");
             this.PrintMessage($"\tProjectName: {this.ProjectName}");
             this.PrintMessage($"\tProjectDirectory: {project.ProjectDirectory}");
             this.PrintMessage($"\tRootNamespace: {this.RootNamespace}");
