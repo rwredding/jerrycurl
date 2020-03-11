@@ -43,11 +43,6 @@ namespace Jerrycurl.CommandLine
                     {
                         if ("--" + opt.Name == option || "-" + opt.ShortName == option)
                             all.Add(opt);
-
-                            ToolOption found = this[option];
-
-                        if (found != null)
-                            return found;
                     }
                 }
 
