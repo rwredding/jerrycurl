@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Jerrycurl.CodeAnalysis.Projection;
 using Jerrycurl.CodeAnalysis.Razor.Generation;
 using Jerrycurl.CodeAnalysis.Razor.Parsing;
+using Jerrycurl.CommandLine;
+using Jerrycurl.IO;
 using Jerrycurl.Tools.DotNet.Cli.Commands;
 using Jerrycurl.Tools.DotNet.Cli.Scaffolding;
 using Jerrycurl.Tools.Info;
@@ -109,8 +111,11 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
             if (args.Options["-f", "--file"] != null)
             {
+                string PathResolver(string s) => PathHelper.MakeAbsolutePath(project.ProjectDirectory, s);
+
                 foreach (string file in args.Options["-f", "--file"].Values)
-                    project.Items.Add(new RazorProjectItem() { ProjectPath = file });
+                    foreach (string file2 in ToolOptions.GetResponseFiles(file, PathResolver))
+                        project.Items.Add(new RazorProjectItem() { ProjectPath = file2 });
             }
 
             if (args.Options["-d", "--directory"] != null)

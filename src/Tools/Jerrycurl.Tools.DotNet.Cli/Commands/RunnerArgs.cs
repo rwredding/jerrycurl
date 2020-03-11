@@ -18,8 +18,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
 
         public static RunnerArgs FromCommandLine(string[] args)
         {
-            ToolParser parser = new ToolParser();
-            ToolOptions options = parser.Parse(args);
+            ToolOptions options = ToolOptions.Parse(args);
 
             return new RunnerArgs()
             {
