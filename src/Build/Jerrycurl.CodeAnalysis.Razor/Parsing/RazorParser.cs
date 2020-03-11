@@ -66,7 +66,7 @@ namespace Jerrycurl.CodeAnalysis.Razor.Parsing
                 if (projectPath != null && Path.IsPathRooted(projectPath))
                     projectPath = null;
                 else if (projectPath == null)
-                    this.MakeProjectPaths(project.ProjectDirectory, item.FullPath, out string fullPath, out projectPath);
+                    this.MakeProjectPaths(project.ProjectDirectory, item.FullPath, out _, out projectPath);
                 else if (string.IsNullOrWhiteSpace(projectPath))
                     projectPath = null;
 
