@@ -129,7 +129,7 @@ namespace Jerrycurl.CommandLine
                 string fileName = stack.Pop();
                 string resolvedPath = pathResolver(fileName);
 
-                if (fileName == null || resolvedPath == null)
+                if (string.IsNullOrWhiteSpace(fileName) || string.IsNullOrWhiteSpace(resolvedPath))
                     continue;
                 else if (!fileList.Contains(fileName))
                 {
