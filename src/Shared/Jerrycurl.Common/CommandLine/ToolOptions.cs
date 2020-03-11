@@ -119,7 +119,7 @@ namespace Jerrycurl.CommandLine
             if (filePaths == null)
                 throw new ArgumentNullException(nameof(filePaths));
 
-            pathResolver = pathResolver ?? (s => s != null && s.StartsWith("@") ? s.Substring(1) : s);
+            pathResolver = pathResolver ?? (s => s);
 
             Stack<string> stack = new Stack<string>(filePaths);
             HashSet<string> fileList = new HashSet<string>();
@@ -127,18 +127,24 @@ namespace Jerrycurl.CommandLine
             while (stack.Count > 0)
             {
                 string fileName = stack.Pop();
-                string resolvedPath = pathResolver(fileName);
 
-                if (string.IsNullOrWhiteSpace(fileName) || string.IsNullOrWhiteSpace(resolvedPath))
+                if (string.IsNullOrWhiteSpace(fileName))
                     continue;
                 else if (!fileList.Contains(fileName))
                 {
                     fileList.Add(fileName);
                     
-                    if (fileName.StartsWith("@") && File.Exists(resolvedPath))
+                    if (fileName.StartsWith("@"))
                     {
-                        foreach (string subFileName in File.ReadAllLines(resolvedPath))
-                            stack.Push(subFileName);
+                        string resolvedPath = pathResolver(fileName.Substring(1));
+
+                        if (string.IsNullOrWhiteSpace(resolvedPath))
+                            continue;
+                        else if (File.Exists(resolvedPath))
+                        {
+                            foreach (string subFileName in File.ReadAllLines(resolvedPath))
+                                stack.Push(subFileName);
+                        }
                     }
                     else
                         yield return fileName;

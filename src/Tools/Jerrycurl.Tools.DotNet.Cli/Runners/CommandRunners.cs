@@ -115,7 +115,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
                 foreach (string file in args.Options["-f", "--file"].Values)
                     foreach (string file2 in ToolOptions.GetResponseFiles(file, PathResolver))
-                        project.Items.Add(new RazorProjectItem() { ProjectPath = file2 });
+                        project.AddItem(file2);
             }
 
             if (args.Options["-d", "--directory"] != null)
