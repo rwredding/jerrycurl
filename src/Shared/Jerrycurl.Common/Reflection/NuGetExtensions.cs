@@ -15,5 +15,15 @@ namespace Jerrycurl.Reflection
             else
                 return infoVersion;
         }
+
+        public static string GetNuGetPackageHash(this Assembly assembly)
+        {
+            string infoVersion = assembly?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+
+            if (infoVersion != null && infoVersion.Contains("+"))
+                return infoVersion.Remove(0, infoVersion.IndexOf('+') + 1);
+
+            return null;
+        }
     }
 }
