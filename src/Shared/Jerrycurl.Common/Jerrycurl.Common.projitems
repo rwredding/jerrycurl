@@ -19,7 +19,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Collections\EnumerableExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolOption.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolOptions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Diagnostics\Equality.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Diagnostics\HashCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\PathHelper.cs" />
