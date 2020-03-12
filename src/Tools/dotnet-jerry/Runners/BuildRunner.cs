@@ -43,6 +43,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 $"-p:VendorPackage={this.Args.Proxy.PackageName}",
                 $"-p:VendorVersion={this.Args.Proxy.PackageVersion}",
                 $"-p:AssemblyName={this.Args.Proxy.DllName}",
+                $"-p:IntermediateOutputPath={this.Args.Proxy.IntermediatePath}"
             };
 
             await ToolRunner.RunAsync("dotnet", arguments);

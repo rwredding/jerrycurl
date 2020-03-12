@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Tools.Common", "s
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Vendors", "Vendors", "{2EBC641A-BFC9-4CB7-933D-BCE379FA1AF2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotnet-jerry", "src\Tools\Jerrycurl.Tools.DotNet.Cli\dotnet-jerry.csproj", "{195AF90B-B4F3-441A-BD6F-333858A84FC5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotnet-jerry", "src\Tools\dotnet-jerry\dotnet-jerry.csproj", "{195AF90B-B4F3-441A-BD6F-333858A84FC5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Tools.Vendors.Sqlite", "src\Tools\Jerrycurl.Tools.Vendors.Sqlite\Jerrycurl.Tools.Vendors.Sqlite.csproj", "{60B71F02-51E5-4486-82D2-A9D5535D6381}"
 EndProject

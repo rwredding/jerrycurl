@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Linq\Expressions\ExpressionOptimizerState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Reflection\AssemblyExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Reflection\NuGetExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Reflection\NuGetVersion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Reflection\TypeExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolRunner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolException.cs" />
