@@ -13,7 +13,7 @@
 		<JerrycurlUseLinks Condition=" '$(JerrycurlUseLinks)' == '' ">true</JerrycurlUseLinks>
 		<JerrycurlUseGlobalTool Condition=" '$(JerrycurlUseGlobalTool)' == '' ">false</JerrycurlUseGlobalTool>
 		<JerrycurlAbsoluteFileList>$(IntermediateOutputPath)Jerrycurl.AbsoluteFileList.txt</JerrycurlAbsoluteFileList>
-		<JerrycurlGlobalToolOutput Condition=" '$(JerrycurlVerbose)' != 'false' ">low</JerrycurlGlobalToolOutput>
+		<JerrycurlGlobalToolOutput Condition=" '$(JerrycurlVerbose)' == 'false' ">low</JerrycurlGlobalToolOutput>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -77,7 +77,8 @@
 		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="@(_JerryFile)" Overwrite="true" />
 		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="%(_JerryLink.FullPath)|%(_JerryLink.Link)" />
 
-		<Exec Command="jerry transpile --file &quot;@$(JerrycurlAbsoluteFileList)&quot; --output &quot;$(JerrycurlIntermediatePath)&quot; --namespace &quot;$(JerrycurlRootNamespace)" StandardOutputImportance="$(JerrycurlGlobalToolOutput)" />
+		<Exec Command="jerry transpile --file &quot;@$(JerrycurlAbsoluteFileList)&quot; --output &quot;$(JerrycurlIntermediatePath)&quot; --namespace &quot;$(JerrycurlRootNamespace)"
+		      StandardOutputImportance="$(JerrycurlGlobalToolOutput)" />
 
 		<ItemGroup>
 			<Compile Include="$(JerrycurlIntermediatePath)\*.cssql.cs" Condition=" Exists('$(JerrycurlIntermediatePath)') " />
