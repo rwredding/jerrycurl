@@ -47,11 +47,16 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
             if (args.Options["-f", "--file"] != null)
             {
-                string PathResolver(string s) => PathHelper.MakeAbsolutePath(project.ProjectDirectory, s);
-
                 foreach (string file in args.Options["-f", "--file"].Values)
-                    foreach (string expandedFile in ToolOptions.ExpandResponseFiles(file, PathResolver))
-                        project.AddItem(expandedFile);
+                {
+                    foreach (string expandedFile in ToolOptions.ExpandResponseFiles(file, MakeAbsolutePath))
+                    {
+                        if (HasColonFormat(expandedFile, out var fullPath, out var projectPath))
+                            project.Items.Add(new RazorProjectItem() { FullPath = MakeAbsolutePath(fullPath), ProjectPath = projectPath });
+                        else
+                            project.AddItem(expandedFile);
+                    }
+                }
             }
 
             if (args.Options["-d", "--directory"] != null)
@@ -115,6 +120,25 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 DotNetJerryHost.WriteLine($"No files found.", ConsoleColor.Yellow);
 
             Console.ResetColor();
+
+            string MakeAbsolutePath(string path) => PathHelper.MakeAbsolutePath(project.ProjectDirectory, path);
+
+            bool HasColonFormat(string input, out string fullPath, out string projectPath)
+            {
+                string[] parts = input.Split(new[] { ':' }, 2);
+
+                if (parts.Length == 2)
+                {
+                    fullPath = parts[0];
+                    projectPath = parts[1];
+
+                    return true;
+                }
+
+                fullPath = projectPath = null;
+
+                return false;
+            }
         }
     }
 }

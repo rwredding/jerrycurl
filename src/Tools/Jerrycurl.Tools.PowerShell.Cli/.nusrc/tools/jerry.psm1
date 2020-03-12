@@ -1,15 +1,78 @@
-function Invoke-Jerry {
+function Invoke-Jerry
+{
 	param(
         [Parameter(Mandatory=$false)] $Command,
-		[Parameter(Mandatory=$false)] [switch]$Reinstall,
 		[Parameter(Mandatory=$false, ValueFromRemainingArguments=$true)] $Args
 	)
-	
+
+    if (-not (Prepare-Jerry))
+    {
+        return;
+    }
+
+    if (-not $Command -and (Has-Database-Rsp))
+    {
+        Push-Project-Dir
+
+        jerry rsp --command scaffold --file "Database.rsp"
+      
+        Pop-Location
+    }
+    elseif (-not $Command)
+    {
+        jerry
+    }
+	elseif (Is-Project-Missing)
+	{
+        jerry $Command -- $Args
+	}
+	else
+	{
+        Push-Project-Dir
+
+        jerry $Command -- $Args
+      
+        Pop-Location
+	}
+}
+
+function Install-Jerry
+{
+    if (Is-Jerry-Missing)
+    {
+        Write-Host "Installing latest Jerrycurl CLI version..."
+      
+        dotnet tool install -g "dotnet-jerry"
+    }
+    else
+    {
+        Write-Host "Upgrading to latest Jerrycurl CLI version..."
+      
+        dotnet tool update -g "dotnet-jerry"
+    }
+}
+
+function Has-Database-Rsp
+{
+    $project = Get-Project
+
+    Test-Path (Join-Path (Split-Path $project.FileName) "Database.rsp") -PathType Leaf
+}
+
+function Push-Project-Dir
+{
+    $project = Get-Project
+    
+    Push-Location (Split-Path $project.FileName)
+}
+
+function Prepare-Jerry
+{
 	if (Is-DotNet-Missing)
 	{
-        Write-Host ".NET Core CLI not found. Make sure .NET Core SDK >= 2.0 is installed and in your PATH."
+        Write-Host ".NET Core CLI not found. Make sure .NET Core SDK >= 2.2 is installed and in your PATH."
       
-        return;
+        return $false
 	}
 	
 	if (Is-Jerry-Missing)
@@ -17,31 +80,11 @@ function Invoke-Jerry {
         Write-Host "Jerrycurl CLI not found. Installing latest version..."
       
         dotnet tool install -g "dotnet-jerry"
+
+        return $false
 	}
-	elseif ($Reinstall)
-	{
-		Write-Host "Reinstalling Jerrycurl CLI..."
-		
-		dotnet tool uninstall -g "dotnet-jerry"
-		dotnet tool install -g "dotnet-jerry"
-	}
-	
-	if (Is-Project-Missing)
-	{
-        jerry $Command -- $Args
-	}
-	else
-	{
-        $proj = Get-Project
-        $projectDir = Split-Path $proj.FileName
-        $rootNamespace = $proj.Properties.Item("RootNamespace").Value
-      
-        Push-Location $projectDir
-      
-        jerry $Command -- $Args --namespace $rootNamespace
-      
-        Pop-Location
-	}
+
+    return $true
 }
 
 function Is-DotNet-Missing
@@ -65,4 +108,4 @@ function Is-Jerry-Missing
     ($cmd -eq $null)
 }
 
-Export-ModuleMember Invoke-Jerry
+Export-ModuleMember -Function Invoke-Jerry, Install-Jerry

@@ -34,8 +34,9 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 DotNetJerryHost.WriteLine("Commands:");
                 DotNetJerryHost.WriteLine("  scaffold                    Generate a C# object model from an existing database.");
                 DotNetJerryHost.WriteLine("  transpile                   Transpile a project of .cssql files into C# classes.");
+                DotNetJerryHost.WriteLine("  rsp                         Execute CLI command from a collection of response files (.rsp).");
                 DotNetJerryHost.WriteLine("  info                        Show information about a database connector.");
-                DotNetJerryHost.WriteLine("  help [command]              Show help information about one of the above.");
+                DotNetJerryHost.WriteLine("  help [command]              Show help information the commands above.");
                 DotNetJerryHost.WriteLine();
             }
             else
@@ -49,6 +50,9 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                     case "transpile":
                     case "tp":
                         HelpForTranspile();
+                        break;
+                    case "rsp":
+                        HelpForResponseFile();
                         break;
                     case "info":
                         HelpForInfo();
@@ -81,6 +85,27 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             DotNetJerryHost.WriteLine("  jerry scaffold -v sqlserver -c \"SERVER=...\" -ns MovieDb.Data.Database");
             DotNetJerryHost.WriteLine("  jerry scaffold -v sqlserver -c \"SERVER=...\" -o MyModel.cs");
             DotNetJerryHost.WriteLine("  jerry scaffold -v sqlserver -c \"SERVER=...\" -o Database");
+            DotNetJerryHost.WriteLine();
+        }
+
+        private static void HelpForResponseFile()
+        {
+            DotNetJerryHost.WriteHeader();
+
+            DotNetJerryHost.WriteLine("Usage: jerry rsp [options]");
+            DotNetJerryHost.WriteLine();
+            DotNetJerryHost.WriteLine("Execute CLI command from a collection of response files (.rsp).");
+            DotNetJerryHost.WriteLine();
+            DotNetJerryHost.WriteLine("Options:");
+            DotNetJerryHost.WriteLine("  -f, --file               Add a file to read command-line arguments from.");
+            DotNetJerryHost.WriteLine("                               supports @-prefixes .rsp syntax. Defaults to");
+            DotNetJerryHost.WriteLine("                               'jerry.rsp' in the current directory.");
+            DotNetJerryHost.WriteLine("  -c, --command <cmd>      Command to prefix parsed arguments with.");
+            DotNetJerryHost.WriteLine();
+            DotNetJerryHost.WriteLine("Examples:");
+            DotNetJerryHost.WriteLine("  jerry rsp");
+            DotNetJerryHost.WriteLine("  jerry rsp -f MyFile.rsp");
+            DotNetJerryHost.WriteLine("  jerry rsp -c scaffold -f Database.rsp");
             DotNetJerryHost.WriteLine();
         }
 

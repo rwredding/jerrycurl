@@ -25,7 +25,7 @@ namespace Jerrycurl.CodeAnalysis.Razor.ProjectSystem.Conventions
         {
             return new RazorFragment()
             {
-                Text = CSharp.Identifier(Path.GetFileName(razorPage.Path)),
+                Text = CSharp.Identifier(Path.GetFileName(razorPage.ProjectPath ?? razorPage.Path)),
             };
         }
 
