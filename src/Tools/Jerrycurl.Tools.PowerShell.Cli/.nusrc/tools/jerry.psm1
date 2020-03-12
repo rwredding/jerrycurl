@@ -1,36 +1,10 @@
-function Invoke-Jerry {
+function Jerry-Scaffold
+{
 	param(
         [Parameter(Mandatory=$false)] $Command,
 		[Parameter(Mandatory=$false, ValueFromRemainingArguments=$true)] $Args
 	)
 
-    Write-Host "Hello World! :)"
-	
-    Prepare-Jerry
-	
-	if (Is-Project-Missing)
-	{
-        jerry $Command -- $Args
-	}
-	else
-	{
-        Push-Project-Dir
-      
-        jerry $Command -- $Args
-      
-        Pop-Location
-	}
-}
-
-function Push-Project-Dir
-{
-    $project = Get-Project
-    
-    Push-Location (Split-Path $project.FileName)
-}
-
-function Jerry-Scaffold
-{
     Prepare-Jerry
 
 	if (Is-Project-Missing)
@@ -43,10 +17,17 @@ function Jerry-Scaffold
       
         Push-Project-Dir
       
-        jerry $Command -- $Args @projectArgs
+        jerry scaffold -- $Args @projectArgs
       
         Pop-Location
 	}
+}
+
+function Push-Project-Dir
+{
+    $project = Get-Project
+    
+    Push-Location (Split-Path $project.FileName)
 }
 
 function Get-Project-Arguments
@@ -126,4 +107,4 @@ function Is-Jerry-Missing
     ($cmd -eq $null)
 }
 
-Export-ModuleMember -Function Invoke-Jerry, Jerry-Scaffold
+Export-ModuleMember -Function Jerry-Scaffold
