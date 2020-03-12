@@ -31,7 +31,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
         private async Task BuildAsync()
         {
-            Program.WriteLine($"Fetching {this.Args.Proxy.PackageName} v{this.Args.Proxy.PackageVersion}...", ConsoleColor.Yellow);
+            DotNetJerryHost.WriteLine($"Fetching {this.Args.Proxy.PackageName} v{this.Args.Proxy.PackageVersion}...", ConsoleColor.Yellow);
 
             string[] arguments = new[]
             {

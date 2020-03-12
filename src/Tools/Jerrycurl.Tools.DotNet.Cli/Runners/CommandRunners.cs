@@ -24,18 +24,18 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             if (command == null)
                 throw new RunnerException("Invalid command object.");
 
-            Program.WriteHeader();
-            Program.WriteLine($"Package: {info.Proxy.PackageName}");
-            Program.WriteLine($"Connector: {command.Connector} v{command.ConnectorVersion}");
+            DotNetJerryHost.WriteHeader();
+            DotNetJerryHost.WriteLine($"Package: {info.Proxy.PackageName}");
+            DotNetJerryHost.WriteLine($"Connector: {command.Connector} v{command.ConnectorVersion}");
         }
 
         public static void Meow()
         {
-            Program.WriteLine();
-            Program.WriteLine(@"   |\---/|");
-            Program.WriteLine(@"   | o_o |");
-            Program.WriteLine(@"    \_^_/ ");
-            Program.WriteLine();
+            DotNetJerryHost.WriteLine();
+            DotNetJerryHost.WriteLine(@"   |\---/|");
+            DotNetJerryHost.WriteLine(@"   | o_o |");
+            DotNetJerryHost.WriteLine(@"    \_^_/ ");
+            DotNetJerryHost.WriteLine();
         }
     }
 }

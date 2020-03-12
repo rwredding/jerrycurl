@@ -41,7 +41,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
                 return null;
 
             string packageVersion = GetNuGetPackageVersion();
-            string sourcePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+            string sourcePath = Path.GetDirectoryName(typeof(DotNetJerryHost).Assembly.Location);
             string projectPath = null;
             string binPath = null;
             string dllPath = null;
@@ -85,7 +85,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
             }
         }
 
-        public static string GetNuGetPackageVersion() => typeof(Program).Assembly.GetNuGetPackageVersion();
-        public static string GetNuGetPackageHash() => typeof(Program).Assembly.GetNuGetPackageHash();
+        public static string GetNuGetPackageVersion() => typeof(DotNetJerryHost).Assembly.GetNuGetPackageVersion();
+        public static string GetNuGetPackageHash() => typeof(DotNetJerryHost).Assembly.GetNuGetPackageHash();
     }
 }

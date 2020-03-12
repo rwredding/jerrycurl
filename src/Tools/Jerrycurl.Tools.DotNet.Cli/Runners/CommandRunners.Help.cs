@@ -21,27 +21,29 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
     {
         public static void Help(RunnerArgs args)
         {
-            if (args.Options.Default.Length == 1 || args.Options.Default[1] == "help")
+            if (args.Options.Default.Length == 0)
+                HelpForInvalid(args);
+            else if (args.Options.Default.Length == 1 || args.Options.Default[1] == "help")
             {
-                Program.WriteHeader();
+                DotNetJerryHost.WriteHeader();
 
-                Program.WriteLine("Usage: jerry [command] [options]");
-                Program.WriteLine();
-                Program.WriteLine("Execute a command with the Jerrycurl CLI.");
-                Program.WriteLine();
-                Program.WriteLine("Commands:");
-                Program.WriteLine("  scaffold                    Generate a C# object model from an existing database.");
-                Program.WriteLine("  tp                          Transpile .cssql files into C# classes.");
-                Program.WriteLine("  info                        Show information about a database connector.");
-                Program.WriteLine("  help [command]              Show help information about one of the above.");
-                Program.WriteLine();
+                DotNetJerryHost.WriteLine("Usage: jerry [command] [options]");
+                DotNetJerryHost.WriteLine();
+                DotNetJerryHost.WriteLine("Execute a command with the Jerrycurl CLI.");
+                DotNetJerryHost.WriteLine();
+                DotNetJerryHost.WriteLine("Commands:");
+                DotNetJerryHost.WriteLine("  scaffold                    Generate a C# object model from an existing database.");
+                DotNetJerryHost.WriteLine("  tp                          Transpile .cssql files into C# classes.");
+                DotNetJerryHost.WriteLine("  info                        Show information about a database connector.");
+                DotNetJerryHost.WriteLine("  help [command]              Show help information about one of the above.");
+                DotNetJerryHost.WriteLine();
             }
             else
             {
                 switch (args.Options.Default[1])
                 {
                     case "scaffold":
-                        HelpForScaffold(); 
+                        HelpForScaffold();
                         break;
                     case "tp":
                         HelpForTranspile();
@@ -57,71 +59,71 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
         private static void HelpForScaffold()
         {
-            Program.WriteHeader();
+            DotNetJerryHost.WriteHeader();
 
-            Program.WriteLine("Usage: jerry scaffold --v <moniker> --c <connection> [options]");
-            Program.WriteLine();
-            Program.WriteLine("Generate a C# object model from an existing database.");
-            Program.WriteLine();
-            Program.WriteLine("Options:");
-            Program.WriteLine("  -v, --vendor <moniker>      Vendor used to connect to database. Moniker can");
-            Program.WriteLine("                                be 'sqlserver', 'sqlite', 'oracle', 'postgres'");
-            Program.WriteLine("                                or 'mysql'.");
-            Program.WriteLine("  -c, --connection <cs>       Connection string used to connect to database.");
-            Program.WriteLine("  -ns, --namespace <ns>       Namespace to place scaffolded C# classes in.");
-            Program.WriteLine("  -o, --output <file>         Path to scaffold .cs files into. Writes one");
-            Program.WriteLine("                                file per class unless specified with .cs");
-            Program.WriteLine("                                extension. Defaults to Database.cs."); Program.WriteLine();
-            Program.WriteLine("Examples:");
-            Program.WriteLine("  jerry scaffold -v sqlserver -c \"SERVER=.;DATABASE=moviedb\" -ns MovieDb.Data.Database");
-            Program.WriteLine();
+            DotNetJerryHost.WriteLine("Usage: jerry scaffold [options]");
+            DotNetJerryHost.WriteLine();
+            DotNetJerryHost.WriteLine("Generate a C# object model from an existing database.");
+            DotNetJerryHost.WriteLine();
+            DotNetJerryHost.WriteLine("Options:");
+            DotNetJerryHost.WriteLine("  -v, --vendor <moniker>      Vendor used to connect to database. Moniker can");
+            DotNetJerryHost.WriteLine("                                be 'sqlserver', 'sqlite', 'oracle', 'postgres'");
+            DotNetJerryHost.WriteLine("                                or 'mysql'.");
+            DotNetJerryHost.WriteLine("  -c, --connection <cs>       Connection string used to connect to database.");
+            DotNetJerryHost.WriteLine("  -ns, --namespace <ns>       Namespace to place scaffolded C# classes in.");
+            DotNetJerryHost.WriteLine("  -o, --output <file>         Path to scaffold .cs files into. Writes one");
+            DotNetJerryHost.WriteLine("                                file per class unless specified with .cs");
+            DotNetJerryHost.WriteLine("                                extension. Defaults to Database.cs."); DotNetJerryHost.WriteLine();
+            DotNetJerryHost.WriteLine("Examples:");
+            DotNetJerryHost.WriteLine("  jerry scaffold -v sqlserver -c \"SERVER=.;DATABASE=moviedb\" -ns MovieDb.Data.Database");
+            DotNetJerryHost.WriteLine();
         }
 
         private static void HelpForTranspile()
         {
-            Program.WriteHeader();
+            DotNetJerryHost.WriteHeader();
 
-            Program.WriteLine("Usage: jerry tp [options]");
-            Program.WriteLine();
-            Program.WriteLine("Transpile .cssql files into C# classes.");
-            Program.WriteLine();
-            Program.WriteLine("Options:");
-            Program.WriteLine("  -pd, --project-dir     Lorem ipsum dolor sit amet.");
-            Program.WriteLine("  -f, --file             Lorem ipsum dolor sit amet.");
-            Program.WriteLine("  -d, --directory        Lorem ipsum dolor sit amet.");
-            Program.WriteLine("  -ns, --namespace       Lorem ipsum dolor sit amet.");
-            Program.WriteLine("  -i, --import           Lorem ipsum dolor sit amet.");
-            Program.WriteLine("  -o, --output           Lorem ipsum dolor sit amet.");
-            Program.WriteLine("  --no-clean             Lorem ipsum dolor sit amet.");
-            Program.WriteLine();
-            Program.WriteLine("Examples:");
-            Program.WriteLine("  jerry tp -d . -ns MovieDb.Data");
-            Program.WriteLine();
+            DotNetJerryHost.WriteLine("Usage: jerry tp [options]");
+            DotNetJerryHost.WriteLine();
+            DotNetJerryHost.WriteLine("Transpile .cssql files into C# classes.");
+            DotNetJerryHost.WriteLine();
+            DotNetJerryHost.WriteLine("Options:");
+            DotNetJerryHost.WriteLine("  -p, --project          Lorem ipsum dolor sit amet.");
+            DotNetJerryHost.WriteLine("  -f, --file             Lorem ipsum dolor sit amet.");
+            DotNetJerryHost.WriteLine("  -d, --directory        Lorem ipsum dolor sit amet.");
+            DotNetJerryHost.WriteLine("  -ns, --namespace       Lorem ipsum dolor sit amet.");
+            DotNetJerryHost.WriteLine("  -i, --import           Lorem ipsum dolor sit amet.");
+            DotNetJerryHost.WriteLine("  -o, --output           Lorem ipsum dolor sit amet.");
+            DotNetJerryHost.WriteLine("  --no-clean             Lorem ipsum dolor sit amet.");
+            DotNetJerryHost.WriteLine();
+            DotNetJerryHost.WriteLine("Examples:");
+            DotNetJerryHost.WriteLine("  jerry tp -d . -ns MovieDb.Data");
+            DotNetJerryHost.WriteLine();
         }
 
         private static void HelpForInfo()
         {
-            Program.WriteHeader();
+            DotNetJerryHost.WriteHeader();
 
-            Program.WriteLine("Usage: jerry info --v <moniker>");
-            Program.WriteLine();
-            Program.WriteLine("Show information about a specific database connector.");
-            Program.WriteLine();
-            Program.WriteLine("Options:");
-            Program.WriteLine("  -v, --vendor <moniker>      Vendor used to connect to database. Moniker can");
-            Program.WriteLine("                                be 'sqlserver', 'sqlite', 'oracle', 'postgres'");
-            Program.WriteLine("                                or 'mysql'.");
-            Program.WriteLine();
-            Program.WriteLine("Examples:");
-            Program.WriteLine("  jerry info -v sqlserver");
-            Program.WriteLine();
+            DotNetJerryHost.WriteLine("Usage: jerry info --v <moniker>");
+            DotNetJerryHost.WriteLine();
+            DotNetJerryHost.WriteLine("Show information about a specific database connector.");
+            DotNetJerryHost.WriteLine();
+            DotNetJerryHost.WriteLine("Options:");
+            DotNetJerryHost.WriteLine("  -v, --vendor <moniker>      Vendor used to connect to database. Moniker can");
+            DotNetJerryHost.WriteLine("                                be 'sqlserver', 'sqlite', 'oracle', 'postgres'");
+            DotNetJerryHost.WriteLine("                                or 'mysql'.");
+            DotNetJerryHost.WriteLine();
+            DotNetJerryHost.WriteLine("Examples:");
+            DotNetJerryHost.WriteLine("  jerry info -v sqlserver");
+            DotNetJerryHost.WriteLine();
         }
 
-        public static void Invalid(RunnerArgs args)
+        public static void HelpForInvalid(RunnerArgs args)
         {
-            Program.WriteHeader();
-            Program.WriteLine("Usage: jerry [command] [options]");
-            Program.WriteLine("Use 'jerry help [command]' to show options.");
+            DotNetJerryHost.WriteHeader();
+            DotNetJerryHost.WriteLine("Usage: jerry [command] [options]");
+            DotNetJerryHost.WriteLine("Use 'jerry help' to show commands and options.");
 
             if (string.IsNullOrEmpty(args.Command))
                 throw new RunnerException("No command specified.");

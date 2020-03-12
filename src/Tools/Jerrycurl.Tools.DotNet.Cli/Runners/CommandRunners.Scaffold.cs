@@ -42,9 +42,9 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 }
 
                 if (!string.IsNullOrEmpty(connection.Database))
-                    Program.WriteLine($"Connecting to database '{connection.Database}'...", ConsoleColor.Yellow);
+                    DotNetJerryHost.WriteLine($"Connecting to database '{connection.Database}'...", ConsoleColor.Yellow);
                 else
-                    Program.WriteLine("Connecting to database...", ConsoleColor.Yellow);
+                    DotNetJerryHost.WriteLine("Connecting to database...", ConsoleColor.Yellow);
 
                 try
                 {
@@ -55,7 +55,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                     throw new RunnerException("Unable to open connection: " + ex.Message, ex);
                 }
 
-                Program.WriteLine("Generating...", ConsoleColor.Yellow);
+                DotNetJerryHost.WriteLine("Generating...", ConsoleColor.Yellow);
 
                 databaseModel = await command.GetDatabaseModelAsync(connection);
                 typeMappings = command.GetTypeMappings().ToList();
@@ -74,9 +74,9 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             Console.ForegroundColor = ConsoleColor.Green;
 
             if (project.Files.Count == 1)
-                Program.WriteLine($"Generated {tablesMoniker} and {columnsMoniker} in {project.Files[0].FileName}.", ConsoleColor.Green);
+                DotNetJerryHost.WriteLine($"Generated {tablesMoniker} and {columnsMoniker} in {project.Files[0].FileName}.", ConsoleColor.Green);
             else
-                Program.WriteLine($"Generated {tablesMoniker} and {columnsMoniker} in {project.Files.Count} files.", ConsoleColor.Green);
+                DotNetJerryHost.WriteLine($"Generated {tablesMoniker} and {columnsMoniker} in {project.Files.Count} files.", ConsoleColor.Green);
 
             Console.ResetColor();
         }

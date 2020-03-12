@@ -48,7 +48,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 }
             }
 
-            string sourcePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+            string sourcePath = Path.GetDirectoryName(typeof(DotNetJerryHost).Assembly.Location);
             string outputDir = args.Options["-o", "--output"]?.Value ?? Path.Combine(Environment.CurrentDirectory, "obj", "Jerrycurl");
 
             GeneratorOptions options = new GeneratorOptions()
@@ -58,7 +58,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
             if (args.Options["--no-clean"] == null && Directory.Exists(outputDir))
             {
-                Program.WriteLine("Cleaning...", ConsoleColor.Yellow);
+                DotNetJerryHost.WriteLine("Cleaning...", ConsoleColor.Yellow);
 
                 foreach (string oldFile in Directory.GetFiles(outputDir, "*.g.cssql.cs"))
                     File.Delete(oldFile);
@@ -75,10 +75,10 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             RazorParser parser = new RazorParser();
             RazorGenerator generator = new RazorGenerator(options);
 
-            Program.WriteLine("Parsing...", ConsoleColor.Yellow);
+            DotNetJerryHost.WriteLine("Parsing...", ConsoleColor.Yellow);
             IList<RazorPage> parserResult = parser.Parse(project).ToList();
 
-            Program.WriteLine("Transpiling...", ConsoleColor.Yellow);
+            DotNetJerryHost.WriteLine("Transpiling...", ConsoleColor.Yellow);
             foreach (RazorPage razorPage in parserResult)
             {
                 ProjectionResult result = generator.Generate(razorPage.Data);
@@ -95,7 +95,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
             Console.ForegroundColor = ConsoleColor.Green;
 
-            Program.WriteLine($"Transpiled {filesString} files into '{outputString}'");
+            DotNetJerryHost.WriteLine($"Transpiled {filesString} files into '{outputString}'");
 
             Console.ResetColor();
         }
