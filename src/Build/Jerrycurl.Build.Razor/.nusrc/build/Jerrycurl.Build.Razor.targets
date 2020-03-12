@@ -74,7 +74,7 @@
 		</ItemGroup>
 
 		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="@(_JerryFile)" Overwrite="true" />
-		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="%(_JerryLink.FullPath):%(_JerryLink.Link)" />
+		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="%(_JerryLink.FullPath)|%(_JerryLink.Link)" />
 	</Target>
 
 	<Target Name="JerryNonSdkWarning">

@@ -51,7 +51,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 {
                     foreach (string expandedFile in ToolOptions.ExpandResponseFiles(file, MakeAbsolutePath))
                     {
-                        if (HasColonFormat(expandedFile, out var fullPath, out var projectPath))
+                        if (HasPipeFormat(expandedFile, out var fullPath, out var projectPath))
                             project.Items.Add(new RazorProjectItem() { FullPath = MakeAbsolutePath(fullPath), ProjectPath = projectPath });
                         else
                             project.AddItem(expandedFile);
@@ -119,9 +119,9 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
             string MakeAbsolutePath(string path) => PathHelper.MakeAbsolutePath(project.ProjectDirectory, path);
 
-            bool HasColonFormat(string input, out string fullPath, out string projectPath)
+            bool HasPipeFormat(string input, out string fullPath, out string projectPath)
             {
-                string[] parts = input.Split(new[] { ':' }, 2);
+                string[] parts = input.Split(new[] { '|' }, 2);
 
                 if (parts.Length == 2)
                 {
