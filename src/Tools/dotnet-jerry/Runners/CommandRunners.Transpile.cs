@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Jerrycurl.CodeAnalysis.Projection;
 using Jerrycurl.CodeAnalysis.Razor.Generation;
 using Jerrycurl.CodeAnalysis.Razor.Parsing;
+using Jerrycurl.CodeAnalysis.Razor.ProjectSystem;
 using Jerrycurl.CommandLine;
 using Jerrycurl.IO;
 using Jerrycurl.Tools.DotNet.Cli.Commands;
@@ -21,11 +22,27 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
     {
         public static void Transpile(RunnerArgs args)
         {
+            string projectDirectory = args.Options["-p"]?.Value ?? Environment.CurrentDirectory;
+            string rootNamespace = args.Options["-ns", "--namespace"]?.Value;
+            string sourcePath = Path.GetDirectoryName(typeof(DotNetJerryHost).Assembly.Location);
+            string skeletonPath = Path.Combine(sourcePath, "skeleton.jerry");
+            string outputDirectory = args.Options["-o", "--output"]?.Value;
+
+            if (!Directory.Exists(projectDirectory))
+                throw new RunnerException($"Project directory '{projectDirectory}' does not exist.");
+
+            if (!File.Exists(skeletonPath))
+                throw new RunnerException("Skeleton file not found.");
+
+            projectDirectory = PathHelper.MakeAbsolutePath(Environment.CurrentDirectory, projectDirectory);
+            outputDirectory = outputDirectory ?? Path.Combine(projectDirectory, "obj", "Jerrycurl");
+            outputDirectory = PathHelper.MakeAbsolutePath(projectDirectory, outputDirectory);
+
             RazorProject project = new RazorProject()
             {
-                RootNamespace = args.Options["-ns", "--namespace"]?.Value ?? "Jerrycurl.Procedures",
+                ProjectDirectory = projectDirectory,
+                RootNamespace = rootNamespace,
                 Items = new List<RazorProjectItem>(),
-                ProjectDirectory = args.Options["-cwd"]?.Value ?? Environment.CurrentDirectory,
             };
 
             if (args.Options["-f", "--file"] != null)
@@ -33,8 +50,8 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 string PathResolver(string s) => PathHelper.MakeAbsolutePath(project.ProjectDirectory, s);
 
                 foreach (string file in args.Options["-f", "--file"].Values)
-                    foreach (string file2 in ToolOptions.GetResponseFiles(file, PathResolver))
-                        project.AddItem(file2);
+                    foreach (string expandedFile in ToolOptions.ExpandResponseFiles(file, PathResolver))
+                        project.AddItem(expandedFile);
             }
 
             if (args.Options["-d", "--directory"] != null)
@@ -48,19 +65,16 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 }
             }
 
-            string sourcePath = Path.GetDirectoryName(typeof(DotNetJerryHost).Assembly.Location);
-            string outputDir = args.Options["-o", "--output"]?.Value ?? Path.Combine(Environment.CurrentDirectory, "obj", "Jerrycurl");
-
             GeneratorOptions options = new GeneratorOptions()
             {
-                TemplateCode = File.ReadAllText(Path.Combine(sourcePath, "skeleton.jerry")),
+                TemplateCode = File.ReadAllText(skeletonPath),
             };
 
-            if (args.Options["--no-clean"] == null && Directory.Exists(outputDir))
+            if (args.Options["--no-clean"] == null && Directory.Exists(outputDirectory))
             {
                 DotNetJerryHost.WriteLine("Cleaning...", ConsoleColor.Yellow);
 
-                foreach (string oldFile in Directory.GetFiles(outputDir, "*.g.cssql.cs"))
+                foreach (string oldFile in Directory.GetFiles(outputDirectory, "*.g.cssql.cs"))
                     File.Delete(oldFile);
             }
 
@@ -70,32 +84,35 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                     options.Imports.Add(new RazorFragment() { Text = import });
             }
 
-            Directory.CreateDirectory(outputDir);
-
-            RazorParser parser = new RazorParser();
-            RazorGenerator generator = new RazorGenerator(options);
-
-            DotNetJerryHost.WriteLine("Parsing...", ConsoleColor.Yellow);
-            IList<RazorPage> parserResult = parser.Parse(project).ToList();
-
-            DotNetJerryHost.WriteLine("Transpiling...", ConsoleColor.Yellow);
-            foreach (RazorPage razorPage in parserResult)
+            if (project.Items.Any())
             {
-                ProjectionResult result = generator.Generate(razorPage.Data);
+                Directory.CreateDirectory(outputDirectory);
 
-                string baseName = Path.GetFileNameWithoutExtension(razorPage.ProjectPath ?? razorPage.Path);
-                string fileName = $"{baseName}.{razorPage.Path.GetHashCode():x2}.g.cssql.cs";
-                string fullName = Path.Combine(outputDir, fileName);
+                RazorParser parser = new RazorParser();
+                RazorGenerator generator = new RazorGenerator(options);
 
-                File.WriteAllText(fullName, result.Content);
+                DotNetJerryHost.WriteLine("Parsing...", ConsoleColor.Yellow);
+                IList<RazorPage> parserResult = parser.Parse(project).ToList();
+
+                DotNetJerryHost.WriteLine("Transpiling...", ConsoleColor.Yellow);
+                foreach (RazorPage razorPage in parserResult)
+                {
+                    ProjectionResult result = generator.Generate(razorPage.Data);
+
+                    string baseName = Path.GetFileNameWithoutExtension(razorPage.ProjectPath ?? razorPage.Path);
+                    string fileName = $"{baseName}.{razorPage.Path.GetHashCode():x2}.g.cssql.cs";
+                    string fullName = Path.Combine(outputDirectory, fileName);
+
+                    File.WriteAllText(fullName, result.Content);
+                }
+
+                string filesString = project.Items.Count + " " + (project.Items.Count == 1 ? "file" : "files");
+                string outputString = PathHelper.MakeRelativeOrAbsolutePath(project.ProjectDirectory, outputDirectory);
+
+                DotNetJerryHost.WriteLine($"Transpiled {filesString} files into '{outputString}'", ConsoleColor.Green);
             }
-
-            string filesString = project.Items.Count + " " + (project.Items.Count == 1 ? "file" : "files");
-            string outputString = PathHelper.MakeRelativeOrAbsolutePath(project.ProjectDirectory, outputDir);
-
-            Console.ForegroundColor = ConsoleColor.Green;
-
-            DotNetJerryHost.WriteLine($"Transpiled {filesString} files into '{outputString}'");
+            else
+                DotNetJerryHost.WriteLine($"No files found.", ConsoleColor.Yellow);
 
             Console.ResetColor();
         }

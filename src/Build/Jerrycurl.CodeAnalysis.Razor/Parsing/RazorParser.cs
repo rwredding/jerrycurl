@@ -7,33 +7,20 @@ using Jerrycurl.CodeAnalysis.Lexing;
 using Jerrycurl.CodeAnalysis.Razor.Lexing;
 using Jerrycurl.CodeAnalysis.Razor.Parsing.Fragments;
 using Jerrycurl.CodeAnalysis.Razor.Parsing.Directives;
-using Jerrycurl.CodeAnalysis.Razor.Parsing.Conventions;
 using Jerrycurl.CodeAnalysis.Razor.Lexing.CSharp;
 using Jerrycurl.CodeAnalysis.Razor.Lexing.Razor;
 using Jerrycurl.CodeAnalysis.Razor.Lexing.Sql;
 using Jerrycurl.IO;
 using Jerrycurl.Collections;
 using System.Security.Cryptography;
+using Jerrycurl.CodeAnalysis.Razor.ProjectSystem;
+using Jerrycurl.CodeAnalysis.Razor.ProjectSystem.Conventions;
 
 namespace Jerrycurl.CodeAnalysis.Razor.Parsing
 {
     public class RazorParser
     {
-        public IEnumerable<RazorPage> Parse(RazorProject project)
-        {
-            if (project == null)
-                throw new ArgumentNullException(nameof(project));
-
-            IRazorProjectConvention[] conventions = new IRazorProjectConvention[]
-            {
-                new RazorNamingConvention(),
-                new RazorImportConvention(),
-            };
-
-            return this.Parse(project, conventions);
-        }
-
-        public IList<RazorPage> Parse(RazorProject project, IEnumerable<IRazorProjectConvention> conventions)
+        public IList<RazorPage> Parse(RazorProject project)
         {
             if (project == null)
                 throw new ArgumentNullException(nameof(project));
@@ -43,7 +30,7 @@ namespace Jerrycurl.CodeAnalysis.Razor.Parsing
 
             List<RazorPage> pages = this.ParsePages(project).ToList();
 
-            foreach (IRazorProjectConvention convention in conventions ?? new IRazorProjectConvention[0])
+            foreach (IRazorProjectConvention convention in project.Conventions ?? Array.Empty<IRazorProjectConvention>())
                 convention.Apply(project, pages);
 
             return pages;

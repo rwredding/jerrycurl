@@ -8,6 +8,7 @@ using Jerrycurl.CodeAnalysis;
 using Jerrycurl.CodeAnalysis.Projection;
 using Jerrycurl.CodeAnalysis.Razor.Generation;
 using Jerrycurl.CodeAnalysis.Razor.Parsing;
+using Jerrycurl.CodeAnalysis.Razor.ProjectSystem;
 using Jerrycurl.Reflection;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;

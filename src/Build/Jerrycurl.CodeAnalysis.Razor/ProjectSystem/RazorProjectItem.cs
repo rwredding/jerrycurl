@@ -1,6 +1,6 @@
 ﻿using Jerrycurl.IO;
 
-namespace Jerrycurl.CodeAnalysis.Razor.Parsing
+namespace Jerrycurl.CodeAnalysis.Razor.ProjectSystem
 {
     public class RazorProjectItem
     {

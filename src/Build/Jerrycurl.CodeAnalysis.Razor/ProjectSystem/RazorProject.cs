@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using Jerrycurl.CodeAnalysis.Razor.ProjectSystem.Conventions;
 using Jerrycurl.IO;
 
-namespace Jerrycurl.CodeAnalysis.Razor.Parsing
+namespace Jerrycurl.CodeAnalysis.Razor.ProjectSystem
 {
     public class RazorProject
     {
         public string RootNamespace { get; set; }
         public string ProjectDirectory { get; set; }
         public IList<RazorProjectItem> Items { get; set; } = new List<RazorProjectItem>();
+        public IEnumerable<IRazorProjectConvention> Conventions { get; set; } = RazorProjectConventions.Default;
 
         public void AddItem(string path)
         {

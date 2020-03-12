@@ -85,6 +85,8 @@ namespace Jerrycurl.CommandLine
                         option.Values = args.Skip(i + 1).TakeWhile(s => !IsOption(s)).ToArray();
 
                         i += option.Values.Length;
+
+                        option.Values = option.Values.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
                     }
 
                     isDefault = false;
@@ -101,6 +103,8 @@ namespace Jerrycurl.CommandLine
                     };
 
                     i += option.Values.Length - 1;
+
+                    option.Values = option.Values.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
 
                     isDefault = false;
 
@@ -127,15 +131,15 @@ namespace Jerrycurl.CommandLine
         #endregion
 
         #region " Response files (.rsp) "
-        public static IEnumerable<string> GetResponseFiles(string filePath, Func<string, string> pathResolver = null)
+        public static IEnumerable<string> ExpandResponseFiles(string filePath, Func<string, string> pathResolver = null)
         {
             if (filePath == null)
                 throw new ArgumentNullException(filePath);
 
-            return GetResponseFiles(new[] { filePath }, pathResolver);
+            return ExpandResponseFiles(new[] { filePath }, pathResolver);
         }
 
-        public static IEnumerable<string> GetResponseFiles(IEnumerable<string> filePaths, Func<string, string> pathResolver = null)
+        public static IEnumerable<string> ExpandResponseFiles(IEnumerable<string> filePaths, Func<string, string> pathResolver = null)
         {
             if (filePaths == null)
                 throw new ArgumentNullException(nameof(filePaths));

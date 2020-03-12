@@ -1,15 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk"> 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework> <!-- this should match original project-->
+    <TargetFramework>netcoreapp2.2</TargetFramework> <!-- this should match original project-->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	  <InformationalVersion>$(VendorVersion)</InformationalVersion>
 	  <OutputType>Exe</OutputType>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <AssemblyName></AssemblyName>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    
   </PropertyGroup>
 
   <ItemGroup>

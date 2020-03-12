@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using Jerrycurl.CodeAnalysis.Razor.Parsing;
 
-namespace Jerrycurl.CodeAnalysis.Razor.Parsing.Conventions
+namespace Jerrycurl.CodeAnalysis.Razor.ProjectSystem.Conventions
 {
     public class RazorNamingConvention : IRazorProjectConvention
     {
