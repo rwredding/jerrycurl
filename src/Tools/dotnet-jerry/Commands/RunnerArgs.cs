@@ -50,6 +50,9 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
             string dllPath = Path.Combine(sourcePath, "built", packageName.ToLower(), "obj");
             string intermediatePath = Path.Combine(binPath, $"{ProxyAssemblyName}.dll");
 
+            binPath = binPath.TrimEnd('\\', '/') + '\\';
+            intermediatePath = intermediatePath.TrimEnd('\\', '/') + '\\';
+
             return new ProxyArgs()
             {
                 PackageName = packageName,
