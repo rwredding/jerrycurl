@@ -28,7 +28,7 @@
     </ItemGroup>
 
     <Target Name="CleanNuGet">
-        <RemoveDir Directories="$(NuGetIntermediatePath)" />
+        <RemoveDir Directories="$(NuGetIntermediatePath)" Condition="Exists($(NuGetIntermediatePath))" />
     </Target>
 
     <Target Name="PrepareNuGet" BeforeTargets="GenerateNuspec" DependsOnTargets="CleanNuGet" Condition="'$(IsPackable)' == 'true'">

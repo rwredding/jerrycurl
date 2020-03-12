@@ -30,7 +30,7 @@ namespace Jerrycurl.CommandLine
             return this.options.SelectMany(opt => new[] { opt.Name != null ? "--" + opt.Name : "-" + opt.ShortName }.Concat(opt.Values)).ToArray();
         }
 
-        public string[] Commands => this[""]?.Values ?? Array.Empty<string>();
+        public string[] Default => this.options.Where(opt => opt.Name == "").SelectMany(opt => opt.Values).ToArray();
 
         public string Escape() => Escape(this.ToArgumentList());
 
