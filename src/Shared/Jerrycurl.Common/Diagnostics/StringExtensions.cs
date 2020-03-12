@@ -11,6 +11,7 @@ namespace Jerrycurl.Diagnostics
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
 
+            // courtesy of @andrewlock, thanks! https://andrewlock.net/why-is-string-gethashcode-different-each-time-i-run-my-program-in-net-core/
             unchecked
             {
                 int hash1 = (5381 << 16) + 5381;
