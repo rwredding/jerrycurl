@@ -108,17 +108,16 @@ namespace Jerrycurl.Build.Razor
 
             intermediatePath = this.NormalizePath(intermediatePath);
 
-            if (Directory.Exists(intermediatePath))
-            {
-                try
-                {
-                    Directory.Delete(intermediatePath, true);
-                }
-                catch { }
-            }
+            //if (Directory.Exists(intermediatePath))
+            //{
+            //    try
+            //    {
+            //        Directory.Delete(intermediatePath, true);
+            //    }
+            //    catch { }
+            //}
 
-            if (!Directory.Exists(intermediatePath))
-                Directory.CreateDirectory(intermediatePath);
+            Directory.CreateDirectory(intermediatePath);
 
             return intermediatePath;
         }

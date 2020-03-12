@@ -61,6 +61,6 @@
 	</Target>
 
 	<Target Name="JerryClean">
-		<RemoveDir Directories="$(JerrycurlIntermediatePath)" ContinueOnError="true"  />
+		<RemoveDir Directories="$(JerrycurlIntermediatePath)" />
 	</Target>
 </Project>
