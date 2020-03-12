@@ -40,13 +40,13 @@ function Install-Jerry
 {
     if (Is-Jerry-Missing)
     {
-        Write-Host "Installing latest version..."
+        Write-Host "Installing latest Jerrycurl CLI version..."
       
         dotnet tool install -g "dotnet-jerry"
     }
     else
     {
-        Write-Host "Upgrading to latest version..."
+        Write-Host "Upgrading to latest Jerrycurl CLI version..."
       
         dotnet tool update -g "dotnet-jerry"
     }
