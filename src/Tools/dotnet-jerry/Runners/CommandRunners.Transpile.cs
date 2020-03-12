@@ -22,7 +22,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
     {
         public static void Transpile(RunnerArgs args)
         {
-            string projectDirectory = args.Options["-p"]?.Value ?? Environment.CurrentDirectory;
+            string projectDirectory = args.Options["-p", "--project"]?.Value ?? Environment.CurrentDirectory;
             string rootNamespace = args.Options["-ns", "--namespace"]?.Value;
             string sourcePath = Path.GetDirectoryName(typeof(DotNetJerryHost).Assembly.Location);
             string skeletonPath = Path.Combine(sourcePath, "skeleton.jerry");
@@ -70,18 +70,18 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 TemplateCode = File.ReadAllText(skeletonPath),
             };
 
+            if (args.Options["-i", "--import"] != null)
+            {
+                foreach (string import in args.Options["-i", "--import"].Values)
+                    options.Imports.Add(new RazorFragment() { Text = import });
+            }
+
             if (args.Options["--no-clean"] == null && Directory.Exists(outputDirectory))
             {
                 DotNetJerryHost.WriteLine("Cleaning...", ConsoleColor.Yellow);
 
                 foreach (string oldFile in Directory.GetFiles(outputDirectory, "*.g.cssql.cs"))
                     File.Delete(oldFile);
-            }
-
-            if (args.Options["-i", "--import"] != null)
-            {
-                foreach (string import in args.Options["-i", "--import"].Values)
-                    options.Imports.Add(new RazorFragment() { Text = import });
             }
 
             if (project.Items.Any())

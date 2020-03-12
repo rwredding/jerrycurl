@@ -33,7 +33,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 DotNetJerryHost.WriteLine();
                 DotNetJerryHost.WriteLine("Commands:");
                 DotNetJerryHost.WriteLine("  scaffold                    Generate a C# object model from an existing database.");
-                DotNetJerryHost.WriteLine("  tp                          Transpile .cssql files into C# classes.");
+                DotNetJerryHost.WriteLine("  transpile                   Transpile a project of .cssql files into C# classes.");
                 DotNetJerryHost.WriteLine("  info                        Show information about a database connector.");
                 DotNetJerryHost.WriteLine("  help [command]              Show help information about one of the above.");
                 DotNetJerryHost.WriteLine();
@@ -73,9 +73,12 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             DotNetJerryHost.WriteLine("  -ns, --namespace <ns>       Namespace to place scaffolded C# classes in.");
             DotNetJerryHost.WriteLine("  -o, --output <file>         Path to scaffold .cs files into. Writes one");
             DotNetJerryHost.WriteLine("                                file per class unless specified with .cs");
-            DotNetJerryHost.WriteLine("                                extension. Defaults to Database.cs."); DotNetJerryHost.WriteLine();
+            DotNetJerryHost.WriteLine("                                extension. Defaults to Database.cs.");
+            DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Examples:");
-            DotNetJerryHost.WriteLine("  jerry scaffold -v sqlserver -c \"SERVER=.;DATABASE=moviedb\" -ns MovieDb.Data.Database");
+            DotNetJerryHost.WriteLine("  jerry scaffold -v sqlserver -c \"SERVER=...\" -ns MovieDb.Data.Database");
+            DotNetJerryHost.WriteLine("  jerry scaffold -v sqlserver -c \"SERVER=...\" -o MyModel.cs");
+            DotNetJerryHost.WriteLine("  jerry scaffold -v sqlserver -c \"SERVER=...\" -o Database");
             DotNetJerryHost.WriteLine();
         }
 
@@ -83,21 +86,31 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
         {
             DotNetJerryHost.WriteHeader();
 
-            DotNetJerryHost.WriteLine("Usage: jerry tp [options]");
+            DotNetJerryHost.WriteLine("Usage: jerry transpile [options]");
             DotNetJerryHost.WriteLine();
-            DotNetJerryHost.WriteLine("Transpile .cssql files into C# classes.");
+            DotNetJerryHost.WriteLine("Transpile a project of .cssql files into C# classes.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Options:");
-            DotNetJerryHost.WriteLine("  -p, --project          Lorem ipsum dolor sit amet.");
-            DotNetJerryHost.WriteLine("  -f, --file             Lorem ipsum dolor sit amet.");
-            DotNetJerryHost.WriteLine("  -d, --directory        Lorem ipsum dolor sit amet.");
-            DotNetJerryHost.WriteLine("  -ns, --namespace       Lorem ipsum dolor sit amet.");
-            DotNetJerryHost.WriteLine("  -i, --import           Lorem ipsum dolor sit amet.");
-            DotNetJerryHost.WriteLine("  -o, --output           Lorem ipsum dolor sit amet.");
-            DotNetJerryHost.WriteLine("  --no-clean             Lorem ipsum dolor sit amet.");
+            DotNetJerryHost.WriteLine("  -p, --project          Project directory to resolve relative paths and namespaces from.");
+            DotNetJerryHost.WriteLine("                           Defaults to the current directory.");
+            DotNetJerryHost.WriteLine("  -f, --file             Add a file to the project. Supports .rsp @-syntax for expanding");
+            DotNetJerryHost.WriteLine("                           files from a file list.");
+            DotNetJerryHost.WriteLine("  -d, --directory        Add all .cssql files from a directory (and its subdirectories)");
+            DotNetJerryHost.WriteLine("                           to the project.");
+            DotNetJerryHost.WriteLine("  -ns, --namespace       Root namespace to resolve final namespace for each resulting C#");
+            DotNetJerryHost.WriteLine("                           class.");
+            DotNetJerryHost.WriteLine("  -i, --import           Add a default namespace import to the resulting C# classes.");
+            DotNetJerryHost.WriteLine("  -o, --output           Specify the output directory for generated '.g.cssql.cs'");
+            DotNetJerryHost.WriteLine("                           files. Defaults to 'obj\\Jerrycurl'");
+            DotNetJerryHost.WriteLine("  --no-clean             Do not clean the output directory from existing '.g.cssql.cs'");
+            DotNetJerryHost.WriteLine("                           files before transpiling.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Examples:");
-            DotNetJerryHost.WriteLine("  jerry tp -d . -ns MovieDb.Data");
+            DotNetJerryHost.WriteLine("  jerry transpile -d . -ns MovieDb.Data -o MovieDb\\obj");
+            DotNetJerryHost.WriteLine("  jerry transpile -f Query1.cssql Query2.cssql");
+            DotNetJerryHost.WriteLine("  jerry transpile -f @FileList.txt");
+            DotNetJerryHost.WriteLine("  jerry transpile -p MovieDb -d MovieDb");
+            DotNetJerryHost.WriteLine("  jerry transpile -d . -i MovieDb.Model");
             DotNetJerryHost.WriteLine();
         }
 
