@@ -75,6 +75,8 @@
 
 		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="@(_JerryFile)" Overwrite="true" />
 		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="%(_JerryLink.FullPath)|%(_JerryLink.Link)" />
+
+		<Exec Command="jerry transpile --file &quot;@$(JerrycurlAbsoluteFileList)&quot; --output &quot;$(JerrycurlIntermediatePath)&quot;" ConsoleToMsBuild="true" />
 	</Target>
 
 	<Target Name="JerryNonSdkWarning">
