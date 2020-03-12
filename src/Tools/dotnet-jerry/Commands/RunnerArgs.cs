@@ -39,29 +39,21 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
         private static ProxyArgs GetProxyArgs(ToolOptions options)
         {
             string packageName = GetNuGetPackageName(options);
+            NuGetVersion version = GetNuGetPackageVersion();
 
-            if (packageName == null)
+            if (packageName == null || version == null)
                 return null;
 
-            NuGetVersion version = GetNuGetPackageVersion();
             string sourcePath = Path.GetDirectoryName(typeof(DotNetJerryHost).Assembly.Location);
-            string projectPath = null;
-            string binPath = null;
-            string dllPath = null;
-            string intermediatePath = null;
-
-            if (packageName != null)
-            {
-                projectPath = Path.Combine(sourcePath, $"{ProxyAssemblyName}.csproj");
-                binPath = Path.Combine(sourcePath, "built", packageName.ToLower(), "bin");
-                intermediatePath = Path.Combine(sourcePath, "built", packageName.ToLower(), "obj");
-                dllPath = Path.Combine(binPath, $"{ProxyAssemblyName}.dll");
-            }
+            string projectPath = Path.Combine(sourcePath, $"{ProxyAssemblyName}.csproj");
+            string binPath = Path.Combine(sourcePath, "built", packageName.ToLower(), "bin");
+            string dllPath = Path.Combine(sourcePath, "built", packageName.ToLower(), "obj");
+            string intermediatePath = Path.Combine(binPath, $"{ProxyAssemblyName}.dll");
 
             return new ProxyArgs()
             {
                 PackageName = packageName,
-                PackageVersion = version.Version,
+                PackageVersion = version.IsPrerelease ? version.Version : version.PublicVersion,
                 DllPath = dllPath,
                 DllName = ProxyAssemblyName,
                 ProjectPath = projectPath,

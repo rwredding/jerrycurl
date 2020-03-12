@@ -16,7 +16,7 @@ namespace Jerrycurl.Reflection
 
             return new NuGetVersion()
             {
-                Version = infoVersion.Replace("+", "."),
+                Version = infoVersion.Replace("+", ".g"),
                 IsPrerelease = (dashIndex > -1),
                 CommitHash = plusIndex > -1 ? infoVersion.Substring(plusIndex + 1) : null,
                 PublicVersion = plusIndex > -1 ? infoVersion.Remove(plusIndex) : infoVersion,
