@@ -9,7 +9,6 @@
 		<JerrycurlIntermediatePath Condition=" '$(JerrycurlIntermediatePath)' == '' ">$(IntermediateOutputPath)Jerrycurl</JerrycurlIntermediatePath>
 		<JerrycurlRootNamespace Condition=" '$(JerrycurlRootNamespace)' == '' ">$(RootNamespace)</JerrycurlRootNamespace>
 		<JerrycurlVerbose Condition=" '$(JerrycurlVerbose)' == '' ">false</JerrycurlVerbose>
-		<JerrycurlGlobalToolOutput Condition=" '$(JerrycurlVerbose)' != 'false' ">true</JerrycurlGlobalToolOutput>
 		<JerrycurlProjectName Condition=" '$(JerrycurlRootNamespace)' == '' ">$(MSBuildProjectName)</JerrycurlProjectName>
 		<JerrycurlUseLinks Condition=" '$(JerrycurlUseLinks)' == '' ">true</JerrycurlUseLinks>
 		<JerrycurlUseGlobalTool Condition=" '$(JerrycurlUseGlobalTool)' == '' ">false</JerrycurlUseGlobalTool>
@@ -77,7 +76,7 @@
 		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="@(_JerryFile)" Overwrite="true" />
 		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="%(_JerryLink.FullPath)|%(_JerryLink.Link)" />
 
-		<Exec Command="jerry transpile --file &quot;@$(JerrycurlAbsoluteFileList)&quot; --output &quot;$(JerrycurlIntermediatePath)&quot; --namespace &quot;$(JerrycurlRootNamespace)" ConsoleToMsBuild="$(JerrycurlGlobalToolOutput)" />
+		<Exec Command="jerry transpile --file &quot;@$(JerrycurlAbsoluteFileList)&quot; --output &quot;$(JerrycurlIntermediatePath)&quot; --namespace &quot;$(JerrycurlRootNamespace)" ConsoleToMsBuild="$(JerrycurlVerbose)" />
 
 		<ItemGroup>
 			<Compile Include="$(JerrycurlIntermediatePath)\*.cssql.cs" Condition=" Exists('$(JerrycurlIntermediatePath)') " />
