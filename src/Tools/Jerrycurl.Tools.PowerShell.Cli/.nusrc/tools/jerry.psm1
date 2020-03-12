@@ -36,6 +36,22 @@ function Invoke-Jerry
 	}
 }
 
+function Install-Jerry
+{
+    if (Is-Jerry-Missing)
+    {
+        Write-Host "Installing latest version..."
+      
+        dotnet tool install -g "dotnet-jerry"
+    }
+    else
+    {
+        Write-Host "Upgrading to latest version..."
+      
+        dotnet tool install -g "dotnet-jerry"
+    }
+}
+
 function Has-Database-Rsp
 {
     $project = Get-Project
@@ -48,45 +64,6 @@ function Push-Project-Dir
     $project = Get-Project
     
     Push-Location (Split-Path $project.FileName)
-}
-
-function Get-Project-Arguments
-{
-    $project = Get-Project
-
-    $namespace1 = $project.Properties.Item("JerrycurlCliNamespace").Value
-    $namespace2 = $project.Properties.Item("RootNamespace").Value
-    $vendor = $project.Properties.Item("JerrycurlCliVendor").Value
-    $connection = $project.Properties.Item("JerrycurlCliConnection").Value
-    $output = $project.Properties.Item("JerrycurlCliOutput").Value
-
-    $args = @()
-
-    if ($namespace1 -ne "")
-    {
-        $args += "--namespace", $namespace1
-    }
-    elseif ($namespace2 -ne "")
-    {
-        $args += "--namespace", $namespace2
-    }
-
-    if ($vendor -ne "")
-    {
-        $args += "--vendor", $vendor
-    }
-
-    if ($connection -ne "")
-    {
-        $args += "--connection", $connection
-    }
-
-    if ($output -ne "")
-    {
-        $args += "--output", $output
-    }
-
-    $args
 }
 
 function Prepare-Jerry
@@ -131,4 +108,4 @@ function Is-Jerry-Missing
     ($cmd -eq $null)
 }
 
-Export-ModuleMember -Function Invoke-Jerry
+Export-ModuleMember -Function Invoke-Jerry, Install-Jerry
