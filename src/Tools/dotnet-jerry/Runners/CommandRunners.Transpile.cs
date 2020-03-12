@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Jerrycurl.CodeAnalysis;
 using Jerrycurl.CodeAnalysis.Projection;
 using Jerrycurl.CodeAnalysis.Razor.Generation;
 using Jerrycurl.CodeAnalysis.Razor.Parsing;
@@ -73,6 +74,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             GeneratorOptions options = new GeneratorOptions()
             {
                 TemplateCode = File.ReadAllText(skeletonPath),
+                Imports = RazorFacts.GetDefaultNamespaces().Select(ns => new RazorFragment() { Text = ns }).ToList(),
             };
 
             if (args.Options["-i", "--import"] != null)
