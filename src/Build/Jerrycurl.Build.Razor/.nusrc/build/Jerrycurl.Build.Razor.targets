@@ -63,7 +63,7 @@
 	</Target>
 
 	<Target Name="JerryCompileForGlobalTool">
-		<ItemGroup Condition=" '$(JerrycurlUseLinks)' == 'true' ">
+		<!--<ItemGroup Condition=" '$(JerrycurlUseLinks)' == 'true' ">
 			<_JerryLink Include="@(None)" Condition=" '%(None.Link)' != '' and @(None->Metadata('Link')->EndsWith('.cssql'))" />
 		</ItemGroup>
 
@@ -78,7 +78,7 @@
 		<WriteLinesToFile File="$(JerrycurlIntermediatePath)\Jerrycurl.FileList.txt" Lines="@(_JerryFile)" Overwrite="true" />
 		<WriteLinesToFile File="$(JerrycurlIntermediatePath)\Jerrycurl.FileList.txt" Lines="@(_JerryLink)" />
 		
-		<Message Importance="high" Text="Done!" />
+		<Message Importance="high" Text="Done!" />-->
 	</Target>
 
 	<Target Name="JerryNonSdkWarning">
