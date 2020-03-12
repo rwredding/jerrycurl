@@ -77,6 +77,10 @@
 		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="%(_JerryLink.FullPath)|%(_JerryLink.Link)" />
 
 		<Exec Command="jerry transpile --file &quot;@$(JerrycurlAbsoluteFileList)&quot; --output &quot;$(JerrycurlIntermediatePath)&quot;" ConsoleToMsBuild="true" />
+
+		<ItemGroup>
+			<Compile Include="$(JerrycurlIntermediatePath)\*.cssql.cs" Condition=" Exists('$(JerrycurlIntermediatePath)') " />
+		</ItemGroup>
 	</Target>
 
 	<Target Name="JerryNonSdkWarning">
@@ -84,6 +88,6 @@
 	</Target>
 
 	<Target Name="JerryClean">
-		<RemoveDir Directories="$(JerrycurlIntermediatePath)" />
+		<RemoveDir Directories="$(JerrycurlIntermediatePath)" Condition=" Exists('$(JerrycurlIntermediatePath)') " />
 	</Target>
 </Project>
