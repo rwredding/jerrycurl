@@ -11,6 +11,7 @@
 		<JerrycurlVerbose Condition=" '$(JerrycurlVerbose)' == '' ">false</JerrycurlVerbose>
 		<JerrycurlProjectName Condition=" '$(JerrycurlRootNamespace)' == '' ">$(MSBuildProjectName)</JerrycurlProjectName>
 		<JerrycurlUseLinks Condition=" '$(JerrycurlUseLinks)' == '' ">true</JerrycurlUseLinks>
+		<JerrycurlUseGlobalTool Condition=" '$(JerrycurlUseGlobalTool)' == '' ">true</JerrycurlUseGlobalTool>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -21,8 +22,13 @@
 		<JerryFile Remove="$(BaseOutputPath)/**/*.cssql;$(BaseIntermediateOutputPath)/**/*.cssql" />
 	</ItemGroup>
 
-	<PropertyGroup Condition=" '$(UsingMicrosoftNETSdk)' == 'true' ">
+	<PropertyGroup Condition=" '$(UsingMicrosoftNETSdk)' == 'true' and '$(JerrycurlUseGlobalTool)' != 'true'">
 		<CoreCompileDependsOn>$(CoreCompileDependsOn);JerryCompile</CoreCompileDependsOn>
+		<CoreCleanDependsOn>$(CoreCleanDependsOn);JerryClean</CoreCleanDependsOn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(UsingMicrosoftNETSdk)' == 'true' and '$(JerrycurlUseGlobalTool)' == 'true'">
+		<CoreCompileDependsOn>$(CoreCompileDependsOn);JerryCompileForGlobalTool</CoreCompileDependsOn>
 		<CoreCleanDependsOn>$(CoreCleanDependsOn);JerryClean</CoreCleanDependsOn>
 	</PropertyGroup>
 
@@ -54,6 +60,25 @@
                   ProjectName="$(JerrycurlProjectName)">
 			<Output TaskParameter="Compile" ItemName="Compile" />
 		</Jcst>
+	</Target>
+
+	<Target Name="JerryCompileForGlobalTool">
+		<ItemGroup Condition=" '$(JerrycurlUseLinks)' == 'true' ">
+			<_JerryLink Include="@(None)" Condition=" '%(None.Link)' != '' and @(None->Metadata('Link')->EndsWith('.cssql'))" />
+		</ItemGroup>
+
+		<RemoveDuplicates Inputs="@(JerryFile)">
+			<Output TaskParameter="Filtered" ItemName="_JerryFile"/>
+		</RemoveDuplicates>
+
+		<ItemGroup>
+			<_JerryLink>@(_JerryLink):%(_JerryLink.Link)</_JerryLink>
+		</ItemGroup>
+
+		<WriteLinesToFile File="$(JerrycurlIntermediatePath)\Jerrycurl.FileList.txt" Lines="@(_JerryFile)" Overwrite="true" />
+		<WriteLinesToFile File="$(JerrycurlIntermediatePath)\Jerrycurl.FileList.txt" Lines="@(_JerryLink)" />
+		
+		<Message Importance="high" Text="Done!" />
 	</Target>
 
 	<Target Name="JerryNonSdkWarning">
