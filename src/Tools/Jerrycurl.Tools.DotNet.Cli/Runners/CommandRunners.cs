@@ -171,11 +171,12 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 File.WriteAllText(fullName, result.Content);
             }
 
-            string filesMoniker = project.Items.Count + " " + (project.Items.Count == 1 ? "file" : "files");
+            string filesString = project.Items.Count + " " + (project.Items.Count == 1 ? "file" : "files");
+            string outputString = PathHelper.MakeRelativeOrAbsolutePath(project.ProjectDirectory, outputDir);
 
             Console.ForegroundColor = ConsoleColor.Green;
 
-            Program.WriteLine($"Transpiled {filesMoniker} files into '{outputDir}'");
+            Program.WriteLine($"Transpiled {filesString} files into '{outputString}'");
 
             Console.ResetColor();
         }
