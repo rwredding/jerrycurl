@@ -23,6 +23,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
         {
             string[] responseFiles = args.Options["-f", "--file"]?.Values ?? Array.Empty<string>();
             string defaultFile = Path.Combine(Environment.CurrentDirectory, "jerry.rsp");
+            string command = args.Options["-c", "--command"]?.Value;
 
             if (responseFiles.Length == 0 && File.Exists(defaultFile))
                 responseFiles = new[] { defaultFile };
@@ -31,6 +32,9 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
             string[] prefixedFiles = responseFiles.Select(f => f.StartsWith('@') ? f : '@' + f).ToArray();
             string[] argumentList = ToolOptions.ExpandResponseFiles(prefixedFiles).SelectMany(ToolOptions.ToArgumentList).SkipWhile(s => s == "rsp").ToArray();
+
+            if (command != null)
+                argumentList = new[] { command }.Concat(argumentList).ToArray();
 
             if (argumentList.Length == 0)
                 throw new RunnerException("No input arguments found.");
