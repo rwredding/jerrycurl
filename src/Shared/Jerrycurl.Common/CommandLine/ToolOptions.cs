@@ -100,7 +100,7 @@ namespace Jerrycurl.CommandLine
                         Values = args.Skip(i).TakeWhile(s => !IsOption(s)).ToArray()
                     };
 
-                    i += option.Value.Length;
+                    i += option.Values.Length - 1;
 
                     isDefault = false;
 
