@@ -75,15 +75,16 @@ namespace Jerrycurl.CodeAnalysis.Razor.Parsing
             if (string.IsNullOrWhiteSpace(project.IntermediateDirectory))
                 return null;
 
-            string baseName = Path.GetFileNameWithoutExtension(projectPath ?? fullPath);
-            string fileName = $"{baseName}.{fullPath.GetStableHashCode():x2}.g.cssql.cs";
+            int hashCode = fullPath.GetStableHashCode();
+            string baseFileName = Path.GetFileNameWithoutExtension(projectPath ?? fullPath);
+            string fileName = $"{baseFileName}.{hashCode:x2}.g.cssql.cs";
             string fullName = Path.Combine(project.IntermediateDirectory, fileName);
 
             int n = 0;
 
             while (currentPaths.Contains(fullName, StringComparer.OrdinalIgnoreCase))
             {
-                fileName = $"{baseName}.{fullPath.GetStableHashCode():x2}.g{n++}.cssql.cs";
+                fileName = $"{baseFileName}.{hashCode:x2}.g{n++}.cssql.cs";
 
                 fullName = Path.Combine(project.IntermediateDirectory, fileName);
             }
