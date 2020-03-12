@@ -12,12 +12,16 @@ namespace Jerrycurl.CodeAnalysis.Razor.ProjectSystem
         public IList<RazorProjectItem> Items { get; set; } = new List<RazorProjectItem>();
         public IEnumerable<IRazorProjectConvention> Conventions { get; set; } = RazorProjectConventions.Default;
 
-        public void AddItem(string path)
+        public RazorProjectItem AddItem(string path)
         {
             if (this.Items == null)
                 this.Items = new List<RazorProjectItem>();
 
-            this.Items.Add(RazorProjectItem.Create(path, this.ProjectDirectory));
+            RazorProjectItem newItem = RazorProjectItem.Create(path, this.ProjectDirectory);
+
+            this.Items.Add(newItem);
+
+            return newItem;
         }
 
         public static RazorProject FromDirectory(string projectDirectory, string rootNamespace = null, string filePattern = "*.cssql")
