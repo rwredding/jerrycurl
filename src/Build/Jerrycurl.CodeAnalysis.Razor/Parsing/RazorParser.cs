@@ -41,12 +41,14 @@ namespace Jerrycurl.CodeAnalysis.Razor.Parsing
             if (project.Items == null || project.Items.Count == 0)
                 yield break;
 
+            HashSet<string> intermediatePaths = new HashSet<string>();
+
             foreach (RazorProjectItem item in project.Items.NotNull())
             {
                 if (string.IsNullOrEmpty(item.FullPath))
                     throw new InvalidOperationException($"Cannot parse file at index {project.Items.IndexOf(item)}. Path cannot be empty.");
                 else if (!File.Exists(item.FullPath))
-                    throw new FileNotFoundException($"Cannot parse file at '{item.FullPath}'. File not found.");
+                    throw new FileNotFoundException($"Cannot parse file from path '{item.FullPath}'. File not found.");
 
                 string projectPath = item.ProjectPath;
 
@@ -62,8 +64,32 @@ namespace Jerrycurl.CodeAnalysis.Razor.Parsing
                     Data = this.Parse(item.FullPath),
                     Path = item.FullPath,
                     ProjectPath = projectPath,
+                    IntermediatePath = this.MakeIntermediatePath(project, projectPath, item.FullPath, intermediatePaths),
                 };
             }
+        }
+
+        private string MakeIntermediatePath(RazorProject project, string projectPath, string fullPath, HashSet<string> currentPaths)
+        {
+            if (string.IsNullOrWhiteSpace(project.IntermediateDirectory))
+                return null;
+
+            string baseName = Path.GetFileNameWithoutExtension(projectPath ?? fullPath);
+            string fileName = $"{baseName}.{fullPath.GetHashCode():x2}.g.cssql.cs";
+            string fullName = Path.Combine(project.IntermediateDirectory, fileName);
+
+            int n = 0;
+
+            while (currentPaths.Contains(fullName, StringComparer.OrdinalIgnoreCase))
+            {
+                fileName = $"{baseName}.{fullPath.GetHashCode():x2}.g{n++}.cssql.cs";
+
+                fullName = Path.Combine(project.IntermediateDirectory, fileName);
+            }
+
+            currentPaths.Add(fullName);
+
+            return fullName;
         }
 
         private void MakeProjectPaths(string projectDirectory, string path, out string fullPath, out string projectPath)

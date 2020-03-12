@@ -36,30 +36,26 @@ namespace Jerrycurl.Build.Razor
 
             this.PrintProjectData(project);
 
-            List<string> tempFiles = new List<string>();
-
-            string tempDir = this.CreateTempDirectory();
+            List<string> filesToCompile = new List<string>();
 
             Stopwatch watch = Stopwatch.StartNew();
 
             foreach (RazorPage razorPage in parser.Parse(project))
             {
-                string tempFile = this.GetTempFile(tempDir, razorPage, tempFiles);
-
-                RazorGenerator generator = new RazorGenerator(this.GetGeneratorOptions());
+                RazorGenerator generator = new RazorGenerator(this.CreateGeneratorOptions());
                 ProjectionResult result = generator.Generate(razorPage.Data);
 
-                Directory.CreateDirectory(Path.GetDirectoryName(tempFile));
-                File.WriteAllText(tempFile, result.Content, Encoding.UTF8);
+                Directory.CreateDirectory(Path.GetDirectoryName(razorPage.IntermediatePath));
+                File.WriteAllText(razorPage.IntermediatePath, result.Content, Encoding.UTF8);
 
-                this.PrintPageData(razorPage, tempFile);
+                this.PrintPageData(razorPage, razorPage.IntermediatePath);
 
-                tempFiles.Add(tempFile);
+                filesToCompile.Add(razorPage.IntermediatePath);
             }
 
-            this.Compile = tempFiles.ToArray();
+            this.Compile = filesToCompile.ToArray();
 
-            this.PrintResultData(tempFiles.Count, watch.ElapsedMilliseconds);
+            this.PrintResultData(filesToCompile.Count, watch.ElapsedMilliseconds);
 
             return true;
         }
@@ -79,50 +75,7 @@ namespace Jerrycurl.Build.Razor
                 return $"{escapedNs}.{escapedClass}";
         }
 
-        private string NormalizePath(string path) => path?.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-
-        private string GetTempFile(string tempDir, RazorPage razorFile, IList<string> tempFiles)
-        {
-            string baseName = Path.GetFileNameWithoutExtension(razorFile.ProjectPath ?? razorFile.Path);
-            string fileName = $"{baseName}.{razorFile.Path.GetHashCode():x2}.g.cssql.cs";
-            string fullName = Path.Combine(tempDir, this.NormalizePath(fileName));
-
-            int n = 0;
-
-            while (tempFiles.Contains(fullName, StringComparer.OrdinalIgnoreCase))
-            {
-                fileName = $"{baseName}.{razorFile.Path.GetHashCode():x2}.g{n++}.cssql.cs";
-
-                fullName = Path.Combine(tempDir, this.NormalizePath(fileName));
-            }
-
-            return fullName;
-        }
-
-        private string CreateTempDirectory()
-        {
-            string intermediatePath = this.IntermediatePath;
-
-            if (intermediatePath == null)
-                intermediatePath = Path.Combine(Environment.CurrentDirectory, "obj", "Jerrycurl");
-
-            intermediatePath = this.NormalizePath(intermediatePath);
-
-            //if (Directory.Exists(intermediatePath))
-            //{
-            //    try
-            //    {
-            //        Directory.Delete(intermediatePath, true);
-            //    }
-            //    catch { }
-            //}
-
-            Directory.CreateDirectory(intermediatePath);
-
-            return intermediatePath;
-        }
-
-        private GeneratorOptions GetGeneratorOptions()
+        private GeneratorOptions CreateGeneratorOptions()
         {
             string templateCode = null;
 
@@ -132,7 +85,7 @@ namespace Jerrycurl.Build.Razor
             return new GeneratorOptions()
             {
                 TemplateCode = templateCode,
-                Imports = new List<RazorFragment>(RazorFacts.GetDefaultNamespaces().Select(ns => new RazorFragment() { Text = ns })),
+                Imports = RazorFacts.GetDefaultNamespaces().Select(ns => new RazorFragment() { Text = ns }).ToList(),
             };
         }
 
@@ -143,6 +96,7 @@ namespace Jerrycurl.Build.Razor
                 RootNamespace = this.RootNamespace,
                 Items = this.GetProjectItems().ToList(),
                 ProjectDirectory = Environment.CurrentDirectory,
+                IntermediateDirectory = this.IntermediatePath ?? RazorProjectConventions.DefaultIntermediateDirectory,
             };
 
             if (string.IsNullOrWhiteSpace(project.RootNamespace))

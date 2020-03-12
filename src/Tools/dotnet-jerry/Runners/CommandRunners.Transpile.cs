@@ -35,14 +35,14 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 throw new RunnerException("Skeleton file not found.");
 
             projectDirectory = PathHelper.MakeAbsolutePath(Environment.CurrentDirectory, projectDirectory);
-            outputDirectory = outputDirectory ?? Path.Combine(projectDirectory, "obj", "Jerrycurl");
-            outputDirectory = PathHelper.MakeAbsolutePath(projectDirectory, outputDirectory);
+            outputDirectory = outputDirectory ?? RazorProjectConventions.DefaultIntermediateDirectory;
 
             RazorProject project = new RazorProject()
             {
                 ProjectDirectory = projectDirectory,
                 RootNamespace = rootNamespace,
                 Items = new List<RazorProjectItem>(),
+                IntermediateDirectory = outputDirectory,
             };
 
             if (args.Options["-f", "--file"] != null)
@@ -85,7 +85,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             {
                 DotNetJerryHost.WriteLine("Cleaning...", ConsoleColor.Yellow);
 
-                foreach (string oldFile in Directory.GetFiles(outputDirectory, "*.g.cssql.cs"))
+                foreach (string oldFile in Directory.GetFiles(outputDirectory, "*.cssql.cs"))
                     File.Delete(oldFile);
             }
 
@@ -104,11 +104,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 {
                     ProjectionResult result = generator.Generate(razorPage.Data);
 
-                    string baseName = Path.GetFileNameWithoutExtension(razorPage.ProjectPath ?? razorPage.Path);
-                    string fileName = $"{baseName}.{razorPage.Path.GetHashCode():x2}.g.cssql.cs";
-                    string fullName = Path.Combine(outputDirectory, fileName);
-
-                    File.WriteAllText(fullName, result.Content);
+                    File.WriteAllText(razorPage.IntermediatePath, result.Content);
                 }
 
                 string filesString = project.Items.Count + " " + (project.Items.Count == 1 ? "file" : "files");

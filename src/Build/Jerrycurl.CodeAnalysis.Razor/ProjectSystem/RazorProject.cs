@@ -9,6 +9,7 @@ namespace Jerrycurl.CodeAnalysis.Razor.ProjectSystem
     {
         public string RootNamespace { get; set; }
         public string ProjectDirectory { get; set; }
+        public string IntermediateDirectory { get; set; } = RazorProjectConventions.DefaultIntermediateDirectory;
         public IList<RazorProjectItem> Items { get; set; } = new List<RazorProjectItem>();
         public IEnumerable<IRazorProjectConvention> Conventions { get; set; } = RazorProjectConventions.Default;
 
