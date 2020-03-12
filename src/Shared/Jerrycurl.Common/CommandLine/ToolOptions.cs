@@ -30,6 +30,30 @@ namespace Jerrycurl.CommandLine
             return this.options.SelectMany(opt => new[] { opt.Name != null ? "--" + opt.Name : "-" + opt.ShortName }.Concat(opt.Values)).ToArray();
         }
 
+        public static string[] ToArgumentList(string arguments)
+        {
+            char[] c = arguments.ToCharArray();
+            bool inSingle = false;
+            bool inDouble = false;
+
+            for (int i = 0; i < c.Length; i++)
+            {
+                if (c[i] == '"' && !inSingle)
+                {
+                    inDouble = !inDouble;
+                    c[i] = '\n';
+                }
+                if (c[i] == '\'' && !inDouble)
+                {
+                    inSingle = !inSingle;
+                    c[i] = '\n';
+                }
+                if (!inSingle && !inDouble && c[i] == ' ')
+                    c[i] = '\n';
+            }
+            return (new string(c)).Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
         public string[] Default => this.options.Where(opt => opt.Name == "").SelectMany(opt => opt.Values).ToArray();
 
         public string Escape() => Escape(this.ToArgumentList());
@@ -65,6 +89,15 @@ namespace Jerrycurl.CommandLine
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         #region " Parsing "
+        public static ToolOptions ParseResponseFile(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                throw new ArgumentException("Value cannot be empty.", nameof(input));
+
+            string[] args = ExpandResponseFiles(input).SelectMany(ToArgumentList).ToArray();
+
+            return Parse(args);
+        }
         public static ToolOptions Parse(string[] args)
         {
             return new ToolOptions(ParseAndYield(args));
@@ -131,27 +164,27 @@ namespace Jerrycurl.CommandLine
         #endregion
 
         #region " Response files (.rsp) "
-        public static IEnumerable<string> ExpandResponseFiles(string filePath, Func<string, string> pathResolver = null)
+        public static IEnumerable<string> ExpandResponseFiles(string input, Func<string, string> pathResolver = null)
         {
-            if (filePath == null)
-                throw new ArgumentNullException(filePath);
+            if (input == null)
+                throw new ArgumentNullException(input);
 
-            return ExpandResponseFiles(new[] { filePath }, pathResolver);
+            return ExpandResponseFiles(new[] { input }, pathResolver);
         }
 
-        public static IEnumerable<string> ExpandResponseFiles(IEnumerable<string> filePaths, Func<string, string> pathResolver = null)
+        public static IEnumerable<string> ExpandResponseFiles(IEnumerable<string> inputs, Func<string, string> pathResolver = null)
         {
-            if (filePaths == null)
-                throw new ArgumentNullException(nameof(filePaths));
+            if (inputs == null)
+                throw new ArgumentNullException(nameof(inputs));
 
             pathResolver = pathResolver ?? (s => s);
 
-            Stack<string> stack = new Stack<string>(filePaths);
+            Queue<string> queue = new Queue<string>(inputs);
             HashSet<string> fileList = new HashSet<string>();
 
-            while (stack.Count > 0)
+            while (queue.Count > 0)
             {
-                string fileName = stack.Pop();
+                string fileName = queue.Dequeue();
 
                 if (string.IsNullOrWhiteSpace(fileName))
                     continue;
@@ -168,7 +201,7 @@ namespace Jerrycurl.CommandLine
                         else if (File.Exists(resolvedPath))
                         {
                             foreach (string subFileName in File.ReadAllLines(resolvedPath))
-                                stack.Push(subFileName);
+                                queue.Enqueue(subFileName);
                         }
                     }
                     else
