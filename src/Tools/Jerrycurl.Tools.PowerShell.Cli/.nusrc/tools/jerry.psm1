@@ -48,7 +48,7 @@ function Install-Jerry
     {
         Write-Host "Upgrading to latest version..."
       
-        dotnet tool install -g "dotnet-jerry"
+        dotnet tool update -g "dotnet-jerry"
     }
 }
 
