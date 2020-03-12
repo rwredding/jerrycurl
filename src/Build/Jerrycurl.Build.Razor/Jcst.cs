@@ -131,6 +131,7 @@ namespace Jerrycurl.Build.Razor
 
             this.Log.LogMessage(importance, message);
         }
+
         private void PrintProjectData(RazorProject project)
         {
             NuGetVersion version = typeof(Jcst).Assembly.GetNuGetPackageVersion();

@@ -76,7 +76,7 @@ namespace Jerrycurl.CodeAnalysis.Razor.Parsing
                 return null;
 
             string baseName = Path.GetFileNameWithoutExtension(projectPath ?? fullPath);
-            string fileName = $"{baseName}.{fullPath.GetHashCode():x2}.g.cssql.cs";
+            string fileName = $"{baseName}.{fullPath.GetStableHashCode():x2}.g.cssql.cs";
             string fullName = Path.Combine(project.IntermediateDirectory, fileName);
 
             int n = 0;
