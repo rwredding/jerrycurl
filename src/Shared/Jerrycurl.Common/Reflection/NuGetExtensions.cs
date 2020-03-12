@@ -18,7 +18,7 @@ namespace Jerrycurl.Reflection
             {
                 Version = infoVersion.Replace("+", "."),
                 IsPrerelease = (dashIndex > -1),
-                CommitHash = plusIndex > -1 ? infoVersion.Substring(0, plusIndex + 1) : null,
+                CommitHash = plusIndex > -1 ? infoVersion.Substring(plusIndex + 1) : null,
                 PublicVersion = plusIndex > -1 ? infoVersion.Remove(plusIndex) : infoVersion,
             };
         }
