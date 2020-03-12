@@ -10,7 +10,15 @@ function Invoke-Jerry
         return;
     }
 
-    if (-not $Command)
+    if (-not $Command and Has-Database-Rsp)
+    {
+        Push-Project-Dir
+
+        jerry rsp --command scaffold --file "Database.rsp"
+      
+        Pop-Location
+    }
+    elseif (-not $Command)
     {
         jerry
     }
@@ -26,6 +34,13 @@ function Invoke-Jerry
       
         Pop-Location
 	}
+}
+
+function Has-Database-Rsp
+{
+    $project = Get-Project
+
+    Test-Path (Join-Path (Split-Path $project.FileName)) -PathType Leaf
 }
 
 function Push-Project-Dir
