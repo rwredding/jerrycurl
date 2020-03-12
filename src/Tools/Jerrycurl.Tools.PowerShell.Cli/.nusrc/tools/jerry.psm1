@@ -1,13 +1,90 @@
 function Invoke-Jerry {
 	param(
         [Parameter(Mandatory=$false)] $Command,
-		[Parameter(Mandatory=$false)] [switch]$Reinstall,
 		[Parameter(Mandatory=$false, ValueFromRemainingArguments=$true)] $Args
 	)
 	
+    Prepare-Jerry
+	
+	if (Is-Project-Missing)
+	{
+        jerry $Command -- $Args
+	}
+	else
+	{
+        Push-Project-Dir
+      
+        jerry $Command -- $Args
+      
+        Pop-Location
+	}
+}
+
+function Push-Project-Dir
+{
+    $project = Get-Project
+    
+    Push-Location (Split-Path $project.FileName)
+}
+
+function Jerry-Scaffold
+{
+    Prepare-Jerry
+
+	if (Is-Project-Missing)
+	{
+        jerry scaffold -- $Args
+	}
+	else
+	{
+        $projectArgs = Get-Scaffold-Arguments
+      
+        Push-Project-Dir
+      
+        jerry $Command -- $Args @projectArgs
+      
+        Pop-Location
+	}
+}
+
+function Get-Project-Arguments
+{
+    $project = Get-Project
+
+    $namespace1 = $project.Properties.Item("JerryCliNamespace").Value
+    $namespace2 = $project.Properties.Item("RootNamespace").Value
+    $vendor = $project.Properties.Item("JerryCliVendor").Value
+    $connection = $project.Properties.Item("JerryCliConnection")
+
+    $args = @()
+
+    if ($namespace1 -neq "")
+    {
+        args += "--namespace", $namespace1
+    }
+    elseif ($namespace2 -neq "")
+    {
+        args += "--namespace", $namespace2
+    }
+
+    if ($vendor -neq "")
+    {
+        args += "--vendor", $vendor
+    }
+
+    if ($connection -neq "")
+    {
+        args += "--connection", $connection
+    }
+
+    return $args
+}
+
+function Prepare-Jerry
+{
 	if (Is-DotNet-Missing)
 	{
-        Write-Host ".NET Core CLI not found. Make sure .NET Core SDK >= 2.0 is installed and in your PATH."
+        Write-Host ".NET Core CLI not found. Make sure .NET Core SDK >= 2.2 is installed and in your PATH."
       
         return;
 	}
@@ -17,30 +94,6 @@ function Invoke-Jerry {
         Write-Host "Jerrycurl CLI not found. Installing latest version..."
       
         dotnet tool install -g "dotnet-jerry"
-	}
-	elseif ($Reinstall)
-	{
-		Write-Host "Reinstalling Jerrycurl CLI..."
-		
-		dotnet tool uninstall -g "dotnet-jerry"
-		dotnet tool install -g "dotnet-jerry"
-	}
-	
-	if (Is-Project-Missing)
-	{
-        jerry $Command -- $Args
-	}
-	else
-	{
-        $proj = Get-Project
-        $projectDir = Split-Path $proj.FileName
-        $rootNamespace = $proj.Properties.Item("RootNamespace").Value
-      
-        Push-Location $projectDir
-      
-        jerry $Command -- $Args --namespace $rootNamespace
-      
-        Pop-Location
 	}
 }
 
@@ -65,4 +118,4 @@ function Is-Jerry-Missing
     ($cmd -eq $null)
 }
 
-Export-ModuleMember Invoke-Jerry
+Export-ModuleMember Invoke-Jerry, Jerry-Scaffold
