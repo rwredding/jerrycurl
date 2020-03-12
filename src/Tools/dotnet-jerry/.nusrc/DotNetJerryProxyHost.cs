@@ -1,5 +1,8 @@
 ﻿using Jerrycurl.Tools.DotNet.Cli;
+using Jerrycurl.Tools.DotNet.Cli.ComponentModel;
 using System.Threading.Tasks;
+
+[assembly: ProxyHost]
 
 class DotNetJerryProxyHost
 {

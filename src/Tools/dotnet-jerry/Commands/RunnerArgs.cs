@@ -2,6 +2,7 @@
 using System.Reflection;
 using Jerrycurl.CommandLine;
 using Jerrycurl.Reflection;
+using Jerrycurl.Tools.DotNet.Cli.ComponentModel;
 
 namespace Jerrycurl.Tools.DotNet.Cli.Commands
 {
@@ -31,7 +32,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
                 Namespace = options["-ns", "--namespace"]?.Value,
                 Output = options["-o", "--output"]?.Value,
                 Verbose = (options["--verbose"] != null),
-                IsProxy = (Assembly.GetEntryAssembly().GetName().Name == ProxyAssemblyName),
+                IsProxy = IsProxyRunner(),
                 Proxy = GetProxyArgs(options),
             };
         }
@@ -47,8 +48,9 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
             string sourcePath = Path.GetDirectoryName(typeof(DotNetJerryHost).Assembly.Location);
             string projectPath = Path.Combine(sourcePath, $"{ProxyAssemblyName}.csproj");
             string binPath = Path.Combine(sourcePath, "built", packageName.ToLower(), "bin");
-            string dllPath = Path.Combine(sourcePath, "built", packageName.ToLower(), "obj");
-            string intermediatePath = Path.Combine(binPath, $"{ProxyAssemblyName}.dll");
+            string intermediatePath = Path.Combine(sourcePath, "built", packageName.ToLower(), "obj");
+            string dllPath = Path.Combine(binPath, $"{ProxyAssemblyName}.dll");
+
 
             binPath = binPath.TrimEnd('\\', '/') + '\\';
             intermediatePath = intermediatePath.TrimEnd('\\', '/') + '\\';
@@ -64,6 +66,8 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
                 IntermediatePath = intermediatePath,
             };
         }
+
+        private static bool IsProxyRunner() => (Assembly.GetEntryAssembly().GetCustomAttribute<ProxyHostAttribute>() != null);
 
         private static string GetNuGetPackageName(ToolOptions options)
         {
