@@ -12,6 +12,7 @@
 		<JerrycurlProjectName Condition=" '$(JerrycurlRootNamespace)' == '' ">$(MSBuildProjectName)</JerrycurlProjectName>
 		<JerrycurlUseLinks Condition=" '$(JerrycurlUseLinks)' == '' ">true</JerrycurlUseLinks>
 		<JerrycurlUseGlobalTool Condition=" '$(JerrycurlUseGlobalTool)' == '' ">false</JerrycurlUseGlobalTool>
+		<JerrycurlAbsoluteFileList>$(IntermediateOutputPath)Jerrycurl.AbsoluteFileList.txt</JerrycurlAbsoluteFileList>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -72,8 +73,8 @@
 			<_JerryFile Include="@(JerryFile)" Condition=" '%(JerryFile.Link)' == '' " />
 		</ItemGroup>
 
-		<WriteLinesToFile File="$(JerrycurlIntermediatePath)\Jerrycurl.AbsoluteFileList.txt" Lines="@(_JerryFile)" Overwrite="true" />
-		<WriteLinesToFile File="$(JerrycurlIntermediatePath)\Jerrycurl.AbsoluteFileList.txt" Lines="%(_JerryLink.FullPath):%(_JerryLink.Link)" />
+		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="@(_JerryFile)" Overwrite="true" />
+		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="%(_JerryLink.FullPath):%(_JerryLink.Link)" />
 	</Target>
 
 	<Target Name="JerryNonSdkWarning">
