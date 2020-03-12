@@ -5,12 +5,12 @@ function Invoke-Jerry
 		[Parameter(Mandatory=$false, ValueFromRemainingArguments=$true)] $Args
 	)
 
-    if (-not Prepare-Jerry)
+    if (-not (Prepare-Jerry))
     {
         return;
     }
 
-    if (-not $Command and Has-Database-Rsp)
+    if (-not $Command -and (Has-Database-Rsp))
     {
         Push-Project-Dir
 
