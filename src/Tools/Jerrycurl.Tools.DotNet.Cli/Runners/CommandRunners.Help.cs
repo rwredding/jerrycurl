@@ -30,9 +30,9 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 Program.WriteLine("Execute a command with the Jerrycurl CLI.");
                 Program.WriteLine();
                 Program.WriteLine("Commands:");
-                Program.WriteLine("  scaffold                    Generate C# classes from an existing database.");
-                Program.WriteLine("  tp                          Transpile .cssql files into C# files.");
-                Program.WriteLine("  info                        Show information about a specific database connector.");
+                Program.WriteLine("  scaffold                    Generate a C# object model from an existing database.");
+                Program.WriteLine("  tp                          Transpile .cssql files into C# classes.");
+                Program.WriteLine("  info                        Show information about a database connector.");
                 Program.WriteLine("  help [command]              Show help information about one of the above.");
                 Program.WriteLine();
             }
@@ -41,10 +41,13 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 switch (args.Options.Default[1])
                 {
                     case "scaffold":
-                        TranspileHelp();
+                        HelpForScaffold(); 
                         break;
                     case "tp":
-                        ScaffoldHelp();
+                        HelpForTranspile();
+                        break;
+                    case "info":
+                        HelpForInfo();
                         break;
                     default:
                         throw new RunnerException($"Invalid command '{args.Options.Default[1]}'.");
@@ -52,7 +55,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             }
         }
 
-        private static void ScaffoldHelp()
+        private static void HelpForScaffold()
         {
             Program.WriteHeader();
 
@@ -74,29 +77,29 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             Program.WriteLine();
         }
 
-        private static void TranspileHelp()
+        private static void HelpForTranspile()
         {
             Program.WriteHeader();
 
             Program.WriteLine("Usage: jerry tp [options]");
             Program.WriteLine();
-            Program.WriteLine("Transpile .cssql files into C# files.");
+            Program.WriteLine("Transpile .cssql files into C# classes.");
             Program.WriteLine();
             Program.WriteLine("Options:");
             Program.WriteLine("  -pd, --project-dir     Lorem ipsum dolor sit amet.");
             Program.WriteLine("  -f, --file             Lorem ipsum dolor sit amet.");
             Program.WriteLine("  -d, --directory        Lorem ipsum dolor sit amet.");
             Program.WriteLine("  -ns, --namespace       Lorem ipsum dolor sit amet.");
-            Program.WriteLine("  -nc, --no-clean        Lorem ipsum dolor sit amet.");
             Program.WriteLine("  -i, --import           Lorem ipsum dolor sit amet.");
             Program.WriteLine("  -o, --output           Lorem ipsum dolor sit amet.");
+            Program.WriteLine("  --no-clean             Lorem ipsum dolor sit amet.");
             Program.WriteLine();
             Program.WriteLine("Examples:");
             Program.WriteLine("  jerry tp -d . -ns MovieDb.Data");
             Program.WriteLine();
         }
 
-        private static void InfoHelp()
+        private static void HelpForInfo()
         {
             Program.WriteHeader();
 
@@ -118,7 +121,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
         {
             Program.WriteHeader();
             Program.WriteLine("Usage: jerry [command] [options]");
-            Program.WriteLine("Use 'jerry help' to show options.");
+            Program.WriteLine("Use 'jerry help [command]' to show options.");
 
             if (string.IsNullOrEmpty(args.Command))
                 throw new RunnerException("No command specified.");
