@@ -42,7 +42,7 @@ function Get-Project-Arguments
     $namespace1 = $project.Properties.Item("JerrycurlCliNamespace").Value
     $namespace2 = $project.Properties.Item("RootNamespace").Value
     $vendor = $project.Properties.Item("JerrycurlCliVendor").Value
-    $connection = $project.Properties.Item("JerrycurlCliConnection")
+    $connection = $project.Properties.Item("JerrycurlCliConnection").Value
     $output = $project.Properties.Item("JerrycurlCliOutput").Value
 
     $args = @()
