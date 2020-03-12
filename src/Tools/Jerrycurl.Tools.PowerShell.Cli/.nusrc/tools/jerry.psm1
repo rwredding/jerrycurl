@@ -40,7 +40,7 @@ function Has-Database-Rsp
 {
     $project = Get-Project
 
-    Test-Path (Join-Path (Split-Path $project.FileName)) -PathType Leaf
+    Test-Path (Join-Path (Split-Path $project.FileName) "Database.rsp") -PathType Leaf
 }
 
 function Push-Project-Dir
