@@ -30,6 +30,8 @@ namespace Jerrycurl.CommandLine
             return this.options.SelectMany(opt => new[] { opt.Name != null ? "--" + opt.Name : "-" + opt.ShortName }.Concat(opt.Values)).ToArray();
         }
 
+        public string[] Commands => this[""]?.Values ?? Array.Empty<string>();
+
         public string Escape() => Escape(this.ToArgumentList());
 
         public ToolOption this[params string[] options]
@@ -70,6 +72,8 @@ namespace Jerrycurl.CommandLine
 
         private static IEnumerable<ToolOption> ParseAndYield(string[] args)
         {
+            bool isDefault = true;
+
             for (int i = 0; i < args.Length; i++)
             {
                 if (IsOption(args[i]))
@@ -82,6 +86,23 @@ namespace Jerrycurl.CommandLine
 
                         i += option.Values.Length;
                     }
+
+                    isDefault = false;
+
+                    yield return option;
+                }
+                else if (isDefault)
+                {
+                    ToolOption option = new ToolOption()
+                    {
+                        Name = "",
+                        ShortName = "",
+                        Values = args.Skip(i).TakeWhile(s => !IsOption(s)).ToArray()
+                    };
+
+                    i += option.Value.Length;
+
+                    isDefault = false;
 
                     yield return option;
                 }
