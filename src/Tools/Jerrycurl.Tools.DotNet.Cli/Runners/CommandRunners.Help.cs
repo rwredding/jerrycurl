@@ -68,7 +68,9 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             Program.WriteLine("  -ns, --namespace <ns>       Namespace to place scaffolded C# classes in.");
             Program.WriteLine("  -o, --output <file>         Path to scaffold .cs files into. Writes one");
             Program.WriteLine("                                file per class unless specified with .cs");
-            Program.WriteLine("                                extension. Defaults to Database.cs.");
+            Program.WriteLine("                                extension. Defaults to Database.cs."); Program.WriteLine();
+            Program.WriteLine("Examples:");
+            Program.WriteLine("  jerry scaffold -v sqlserver -c \"SERVER=.;DATABASE=moviedb\" -ns MovieDb.Data.Database");
             Program.WriteLine();
         }
 
@@ -81,14 +83,16 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             Program.WriteLine("Transpile .cssql files into C# files.");
             Program.WriteLine();
             Program.WriteLine("Options:");
-            Program.WriteLine("  -v, --vendor <moniker>      Vendor used to connect to database. Moniker can");
-            Program.WriteLine("                                be 'sqlserver', 'sqlite', 'oracle', 'postgres'");
-            Program.WriteLine("                                or 'mysql'.");
-            Program.WriteLine("  -c, --connection <cs>       Connection string used to connect to database.");
-            Program.WriteLine("  -ns, --namespace <ns>       Namespace to place scaffolded C# classes in.");
-            Program.WriteLine("  -o, --output <file>         Path to scaffold .cs files into. Writes one");
-            Program.WriteLine("                                file per class unless specified with .cs");
-            Program.WriteLine("                                extension. Defaults to Database.cs.");
+            Program.WriteLine("  -pd, --project-dir     Lorem ipsum dolor sit amet.");
+            Program.WriteLine("  -f, --file             Lorem ipsum dolor sit amet.");
+            Program.WriteLine("  -d, --directory        Lorem ipsum dolor sit amet.");
+            Program.WriteLine("  -ns, --namespace       Lorem ipsum dolor sit amet.");
+            Program.WriteLine("  -nc, --no-clean        Lorem ipsum dolor sit amet.");
+            Program.WriteLine("  -i, --import           Lorem ipsum dolor sit amet.");
+            Program.WriteLine("  -o, --output           Lorem ipsum dolor sit amet.");
+            Program.WriteLine();
+            Program.WriteLine("Examples:");
+            Program.WriteLine("  jerry tp -d . -ns MovieDb.Data");
             Program.WriteLine();
         }
 
@@ -104,6 +108,9 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             Program.WriteLine("  -v, --vendor <moniker>      Vendor used to connect to database. Moniker can");
             Program.WriteLine("                                be 'sqlserver', 'sqlite', 'oracle', 'postgres'");
             Program.WriteLine("                                or 'mysql'.");
+            Program.WriteLine();
+            Program.WriteLine("Examples:");
+            Program.WriteLine("  jerry info -v sqlserver");
             Program.WriteLine();
         }
 
