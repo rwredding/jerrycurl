@@ -21,7 +21,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
     {
         public static void Help(RunnerArgs args)
         {
-            if (args.Options.Commands.Length == 1 || args.Options.Commands[1] == "help")
+            if (args.Options.Default.Length == 1 || args.Options.Default[1] == "help")
             {
                 Program.WriteHeader();
 
@@ -38,7 +38,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             }
             else
             {
-                switch (args.Options.Commands[1])
+                switch (args.Options.Default[1])
                 {
                     case "scaffold":
                         TranspileHelp();
@@ -47,7 +47,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                         ScaffoldHelp();
                         break;
                     default:
-                        throw new RunnerException($"Invalid command '{args.Options.Commands[1]}'.");
+                        throw new RunnerException($"Invalid command '{args.Options.Default[1]}'.");
                 }
             }
         }
