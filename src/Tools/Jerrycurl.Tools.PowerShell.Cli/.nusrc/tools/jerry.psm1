@@ -42,26 +42,26 @@ function Get-Project-Arguments
 
     $args = @()
 
-    if ($namespace1 -neq "")
+    if ($namespace1 -ne "")
     {
         args += "--namespace", $namespace1
     }
-    elseif ($namespace2 -neq "")
+    elseif ($namespace2 -ne "")
     {
         args += "--namespace", $namespace2
     }
 
-    if ($vendor -neq "")
+    if ($vendor -ne "")
     {
         args += "--vendor", $vendor
     }
 
-    if ($connection -neq "")
+    if ($connection -ne "")
     {
         args += "--connection", $connection
     }
 
-    if ($output -neq "")
+    if ($output -ne "")
     {
         args += "--output", $output
     }
