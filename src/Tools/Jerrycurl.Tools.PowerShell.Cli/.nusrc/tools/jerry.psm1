@@ -5,9 +5,16 @@ function Invoke-Jerry
 		[Parameter(Mandatory=$false, ValueFromRemainingArguments=$true)] $Args
 	)
 
-    Prepare-Jerry
+    if (-not Prepare-Jerry)
+    {
+        return;
+    }
 
-	if (Is-Project-Missing)
+    if (-not $Command)
+    {
+        jerry
+    }
+	elseif (Is-Project-Missing)
 	{
         jerry $Command -- $Args
 	}
@@ -73,7 +80,7 @@ function Prepare-Jerry
 	{
         Write-Host ".NET Core CLI not found. Make sure .NET Core SDK >= 2.2 is installed and in your PATH."
       
-        return;
+        return $false
 	}
 	
 	if (Is-Jerry-Missing)
@@ -81,7 +88,11 @@ function Prepare-Jerry
         Write-Host "Jerrycurl CLI not found. Installing latest version..."
       
         dotnet tool install -g "dotnet-jerry"
+
+        return $false
 	}
+
+    return $true
 }
 
 function Is-DotNet-Missing
