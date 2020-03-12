@@ -34,7 +34,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 DotNetJerryHost.WriteLine("Commands:");
                 DotNetJerryHost.WriteLine("  scaffold                    Generate a C# object model from an existing database.");
                 DotNetJerryHost.WriteLine("  transpile                   Transpile a project of .cssql files into C# classes.");
-                DotNetJerryHost.WriteLine("  rsp                         Execute CLI command from a collection of response files (.rsp).");
+                DotNetJerryHost.WriteLine("  rsp                         Execute CLI with input read from one or more files.");
                 DotNetJerryHost.WriteLine("  info                        Show information about a database connector.");
                 DotNetJerryHost.WriteLine("  help [command]              Show help information the commands above.");
                 DotNetJerryHost.WriteLine();
@@ -94,13 +94,12 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
             DotNetJerryHost.WriteLine("Usage: jerry rsp [options]");
             DotNetJerryHost.WriteLine();
-            DotNetJerryHost.WriteLine("Execute CLI command from a collection of response files (.rsp).");
+            DotNetJerryHost.WriteLine("Execute CLI with input read from one or more files.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Options:");
-            DotNetJerryHost.WriteLine("  -f, --file               Add a file to read command-line arguments from.");
-            DotNetJerryHost.WriteLine("                               supports @-prefixes .rsp syntax. Defaults to");
-            DotNetJerryHost.WriteLine("                               'jerry.rsp' in the current directory.");
             DotNetJerryHost.WriteLine("  -c, --command <cmd>      Command to prefix parsed arguments with.");
+            DotNetJerryHost.WriteLine("  -f, --file               Add a file to read command-line arguments from.");
+            DotNetJerryHost.WriteLine("                               Defaults to 'jerry.rsp' in the current directory.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Examples:");
             DotNetJerryHost.WriteLine("  jerry rsp");
