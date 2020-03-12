@@ -1,4 +1,4 @@
-function Jerry-Scaffold
+function Run-Jerry-Scaffold
 {
 	param(
         [Parameter(Mandatory=$false)] $Command,
@@ -112,4 +112,4 @@ function Is-Jerry-Missing
     ($cmd -eq $null)
 }
 
-Export-ModuleMember -Function Jerry-Scaffold
+Export-ModuleMember -Function Run-Jerry-Scaffold
