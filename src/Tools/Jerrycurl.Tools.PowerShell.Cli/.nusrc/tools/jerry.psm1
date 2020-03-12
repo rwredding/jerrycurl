@@ -14,6 +14,11 @@ function Jerry-Scaffold
 	else
 	{
         $projectArgs = Get-Project-Arguments
+
+        echo "REGULAR:"
+        echo $Args
+        echo "PROJ"
+        echo @projectArgs
       
         Push-Project-Dir
       
@@ -66,7 +71,7 @@ function Get-Project-Arguments
         $args += "--output", $output
     }
 
-    return $args
+    $args
 }
 
 function Prepare-Jerry
