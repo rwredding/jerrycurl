@@ -3,6 +3,8 @@ function Invoke-Jerry {
         [Parameter(Mandatory=$false)] $Command,
 		[Parameter(Mandatory=$false, ValueFromRemainingArguments=$true)] $Args
 	)
+
+    Write-Host "Hello World! :)"
 	
     Prepare-Jerry
 	
@@ -51,10 +53,11 @@ function Get-Project-Arguments
 {
     $project = Get-Project
 
-    $namespace1 = $project.Properties.Item("JerryCliNamespace").Value
+    $namespace1 = $project.Properties.Item("JerrycurlCliNamespace").Value
     $namespace2 = $project.Properties.Item("RootNamespace").Value
-    $vendor = $project.Properties.Item("JerryCliVendor").Value
-    $connection = $project.Properties.Item("JerryCliConnection")
+    $vendor = $project.Properties.Item("JerrycurlCliVendor").Value
+    $connection = $project.Properties.Item("JerrycurlCliConnection")
+    $output = $project.Properties.Item("JerrycurlCliOutput").Value
 
     $args = @()
 
@@ -75,6 +78,11 @@ function Get-Project-Arguments
     if ($connection -neq "")
     {
         args += "--connection", $connection
+    }
+
+    if ($output -neq "")
+    {
+        args += "--output", $output
     }
 
     return $args
@@ -118,4 +126,4 @@ function Is-Jerry-Missing
     ($cmd -eq $null)
 }
 
-Export-ModuleMember Invoke-Jerry, Jerry-Scaffold
+Export-ModuleMember -Function Invoke-Jerry, Jerry-Scaffold
