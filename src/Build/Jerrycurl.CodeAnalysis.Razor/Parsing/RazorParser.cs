@@ -15,6 +15,7 @@ using Jerrycurl.Collections;
 using System.Security.Cryptography;
 using Jerrycurl.CodeAnalysis.Razor.ProjectSystem;
 using Jerrycurl.CodeAnalysis.Razor.ProjectSystem.Conventions;
+using Jerrycurl.Diagnostics;
 
 namespace Jerrycurl.CodeAnalysis.Razor.Parsing
 {
@@ -82,7 +83,7 @@ namespace Jerrycurl.CodeAnalysis.Razor.Parsing
 
             while (currentPaths.Contains(fullName, StringComparer.OrdinalIgnoreCase))
             {
-                fileName = $"{baseName}.{fullPath.GetHashCode():x2}.g{n++}.cssql.cs";
+                fileName = $"{baseName}.{fullPath.GetStableHashCode():x2}.g{n++}.cssql.cs";
 
                 fullName = Path.Combine(project.IntermediateDirectory, fileName);
             }
