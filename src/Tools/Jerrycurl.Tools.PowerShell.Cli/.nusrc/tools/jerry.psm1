@@ -1,4 +1,4 @@
-function Invoke-Scaffold
+function Invoke-Jerry
 {
 	param(
         [Parameter(Mandatory=$false)] $Command,
@@ -9,20 +9,13 @@ function Invoke-Scaffold
 
 	if (Is-Project-Missing)
 	{
-        jerry scaffold -- $Args
+        jerry $Command -- $Args
 	}
 	else
 	{
-        $projectArgs = Get-Project-Arguments
-
-        echo "REGULAR:"
-        echo $Args
-        echo "PROJ"
-        echo @projectArgs
-      
         Push-Project-Dir
-      
-        jerry scaffold -- $Args @projectArgs
+
+        jerry $Command -- $Args
       
         Pop-Location
 	}
@@ -112,4 +105,4 @@ function Is-Jerry-Missing
     ($cmd -eq $null)
 }
 
-Export-ModuleMember -Function Invoke-Scaffold
+Export-ModuleMember -Function Invoke-Jerry
