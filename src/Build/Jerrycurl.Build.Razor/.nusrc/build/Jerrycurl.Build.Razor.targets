@@ -11,7 +11,7 @@
 		<JerrycurlVerbose Condition=" '$(JerrycurlVerbose)' == '' ">false</JerrycurlVerbose>
 		<JerrycurlProjectName Condition=" '$(JerrycurlRootNamespace)' == '' ">$(MSBuildProjectName)</JerrycurlProjectName>
 		<JerrycurlUseLinks Condition=" '$(JerrycurlUseLinks)' == '' ">true</JerrycurlUseLinks>
-		<JerrycurlUseGlobalTool Condition=" '$(JerrycurlUseGlobalTool)' == '' ">true</JerrycurlUseGlobalTool>
+		<JerrycurlUseGlobalTool Condition=" '$(JerrycurlUseGlobalTool)' == '' ">false</JerrycurlUseGlobalTool>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -63,22 +63,17 @@
 	</Target>
 
 	<Target Name="JerryCompileForGlobalTool">
-		<!--<ItemGroup Condition=" '$(JerrycurlUseLinks)' == 'true' ">
-			<_JerryLink Include="@(None)" Condition=" '%(None.Link)' != '' and @(None->Metadata('Link')->EndsWith('.cssql'))" />
+		<ItemGroup Condition=" '$(JerrycurlUseLinks)' == 'true' ">
+			<_JerryLink Include="@(None)" Condition=" '%(None.Link)' != '' and @(None-&gt;Metadata('Link')-&gt;EndsWith('.cssql')) " />
 		</ItemGroup>
-
-		<RemoveDuplicates Inputs="@(JerryFile)">
-			<Output TaskParameter="Filtered" ItemName="_JerryFile"/>
-		</RemoveDuplicates>
 
 		<ItemGroup>
-			<_JerryLink>@(_JerryLink):%(_JerryLink.Link)</_JerryLink>
+			<_JerryLink Include="@(JerryFile)" Condition=" '%(JerryFile.Link)' != '' " />
+			<_JerryFile Include="@(JerryFile)" Condition=" '%(JerryFile.Link)' == '' " />
 		</ItemGroup>
 
-		<WriteLinesToFile File="$(JerrycurlIntermediatePath)\Jerrycurl.FileList.txt" Lines="@(_JerryFile)" Overwrite="true" />
-		<WriteLinesToFile File="$(JerrycurlIntermediatePath)\Jerrycurl.FileList.txt" Lines="@(_JerryLink)" />
-		
-		<Message Importance="high" Text="Done!" />-->
+		<WriteLinesToFile File="$(JerrycurlIntermediatePath)\Jerrycurl.AbsoluteFileList.txt" Lines="@(_JerryFile)" Overwrite="true" />
+		<WriteLinesToFile File="$(JerrycurlIntermediatePath)\Jerrycurl.AbsoluteFileList.txt" Lines="%(_JerryLink.FullPath):%(_JerryLink.Link)" />
 	</Target>
 
 	<Target Name="JerryNonSdkWarning">
