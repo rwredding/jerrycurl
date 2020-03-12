@@ -13,7 +13,7 @@ function Jerry-Scaffold
 	}
 	else
 	{
-        $projectArgs = Get-Scaffold-Arguments
+        $projectArgs = Get-Project-Arguments
       
         Push-Project-Dir
       
