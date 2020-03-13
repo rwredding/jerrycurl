@@ -16,11 +16,11 @@ Jerrycurl can be installed into any [SDK-style](https://docs.microsoft.com/en-us
 
 #### Tooling
 If you want to generate a ready-to-go object model from your database, install our [CLI](https://www.nuget.org/packages/dotnet-jerry/) as a [.NET Global Tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools) from NuGet.
-```
+```shell
 > dotnet tool install --global dotnet-jerry
 ```
 This enables the `jerry` executable from anywhere on your machine. In our case we can use the `scaffold` command to generates a `Database.cs` file containing classes that match tables in a local database about movies.
-```
+```shell
 > jerry scaffold -v sqlserver -c "SERVER=.;DATABASE=moviedb;TRUSTED_CONNECTION=true" -ns "MovieDb.Database"
 Connecting to database 'moviedb'...
 Generating...
