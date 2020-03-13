@@ -29,7 +29,9 @@ Generated 7 tables and 21 columns in Database.cs.
 To learn more about our CLI, plop in `jerry help`.
 
 ### MVC design
-By installing the packages above you are getting a set of tools that allows you to design a **MVC-based data access layer** much like you would a web application with **ASP.NET**. This means just as ASP.NET has models, controllers and views, Jerrycurl separates your project into models, accessors and procedures written with **Razor SQL** syntax.
+After installing the packages above you can start adding the different components to your project. This should feel familiar to anyone acquainted with ASP.NET MVC, and for the most part Jerrycurl aligns itself with this framework -- only with a slightly different terminology. 
+
+So where your ASP.NET application contains models, controllers and Razor HTML-based views, Jerrycurl separates your project into models, accessors and procedures written with **Razor SQL** syntax.
 
 #### Model layer
 Models are simple POCO-like classes that can be combined into complete object graphs that represents data for a certain operation. Each model can be mapped at any depth with any type of data relationship: one-to-one, one-to-many, many-to-one and self-joins.
