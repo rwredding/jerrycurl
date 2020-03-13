@@ -19,7 +19,7 @@ If you want to generate a ready-to-go object model from your database, install o
 ```
 > dotnet tool install --global dotnet-jerry
 ```
-This enables the `jerry` executable from anywhere on your machine. In our case we can use the `scaffold` command which generates a `.cs` file containing classes matching your database schema.
+This enables the `jerry` executable from anywhere on your machine. In our case we can use the `scaffold` command to generates a `Database.cs` file containing classes that match tables in a local database about movies.
 ```
 > jerry scaffold -v sqlserver -c "SERVER=.;DATABASE=moviedb;TRUSTED_CONNECTION=true" -ns "MovieDb.Database"
 Connecting to database 'moviedb'...
