@@ -4,10 +4,10 @@
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/jerrycurl-mvc/community)
 # Jerrycurl - MVC and Razor-powered ORM for .NET
 
-**Jerrycurl** is an object-relational framework that allows developers to build **robust data access** in a way similar to how web applications are built with **ASP.NET MVC**.
+**Jerrycurl** is an object-relational framework that allows developers to build **data access layers** in a way similar to how web applications are built with **ASP.NET MVC**.
 
 ### Installation
-Jerrycurl can be installed into any [SDK-style](https://docs.microsoft.com/en-us/nuget/resources/check-project-format) C# project from NuGet. This package contains support for compiling `.cssql` files into your project and executing them via the built-in MVC engine. Additionally you can install support for [one of our supported databases](https://nuget.org/packages?q=Jerrycurl.Vendors) from NuGet as well.
+Jerrycurl can be installed into any [SDK-style](https://docs.microsoft.com/en-us/nuget/resources/check-project-format) C# project from NuGet. The main package contains support for compiling `.cssql` files into your project and executing them via the built-in MVC engine. Additionally you can install support for [one of our supported databases](https://nuget.org/packages?q=Jerrycurl.Vendors) from NuGet as well.
 
 ```shell
 > dotnet add package Jerrycurl
