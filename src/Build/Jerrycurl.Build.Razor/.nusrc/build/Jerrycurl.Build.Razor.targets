@@ -70,7 +70,7 @@
 		</ItemGroup>
 
 		<ItemGroup>
-			<_JerryLink Include="@(JerryFile)" Condition=" '%(JerryFile.Link)' != '' " />
+			<_JerryLink Include="@(JerryFile)" Condition=" '%(JerryFile.Link)' != '' and '%(_JerryLink.FullPath)' != '' " />
 			<_JerryFile Include="@(JerryFile)" Condition=" '%(JerryFile.Link)' == '' " />
 		</ItemGroup>
 

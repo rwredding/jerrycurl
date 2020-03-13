@@ -32,7 +32,7 @@ namespace Jerrycurl.Tools.DotNet.Cli
             }
             catch (Exception ex)
             {
-                WriteLine(ex.Message, ConsoleColor.Red);
+                WriteLine(args.Verbose ? ex.ToString() : ex.Message, ConsoleColor.Red);
 
                 return -1;
             }

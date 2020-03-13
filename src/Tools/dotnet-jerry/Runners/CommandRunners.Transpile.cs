@@ -36,7 +36,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 throw new RunnerException("Skeleton file not found.");
 
             projectDirectory = PathHelper.MakeAbsolutePath(Environment.CurrentDirectory, projectDirectory);
-            outputDirectory = outputDirectory ?? RazorProjectConventions.DefaultIntermediateDirectory;
+            outputDirectory = PathHelper.MakeAbsolutePath(projectDirectory, outputDirectory ?? RazorProjectConventions.DefaultIntermediateDirectory);
 
             RazorProject project = new RazorProject()
             {
@@ -52,10 +52,10 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 {
                     foreach (string expandedFile in ToolOptions.ExpandResponseFiles(file, MakeAbsolutePath))
                     {
-                        if (HasPipeFormat(expandedFile, out var fullPath, out var projectPath))
-                            project.Items.Add(new RazorProjectItem() { FullPath = MakeAbsolutePath(fullPath), ProjectPath = projectPath });
-                        else
+                        if (!HasPipeFormat(expandedFile, out var fullPath, out var projectPath))
                             project.AddItem(expandedFile);
+                        else if (!string.IsNullOrEmpty(fullPath))
+                            project.Items.Add(new RazorProjectItem() { FullPath = MakeAbsolutePath(fullPath), ProjectPath = projectPath });
                     }
                 }
             }
@@ -128,7 +128,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 if (parts.Length == 2)
                 {
                     fullPath = parts[0];
-                    projectPath = parts[1];
+                    projectPath = string.IsNullOrWhiteSpace(parts[1]) ? null : parts[1];
 
                     return true;
                 }
