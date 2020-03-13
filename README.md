@@ -7,32 +7,52 @@
 **Jerrycurl** is an object-relational framework that allows developers to build **robust data access** in a way similar to how web applications are built with **ASP.NET MVC**.
 
 ### Installation
-Jerrycurl can be installed into any [SDK-style](https://docs.microsoft.com/en-us/nuget/resources/check-project-format) C# project from NuGet. This package contains support for compiling `.cssql` files into your project and executing them via the built-in MVC engine. Additionally you should install support for [one of our supported databases](https://nuget.org/packages?q=Jerrycurl.Vendors).
+Jerrycurl can be installed into any [SDK-style](https://docs.microsoft.com/en-us/nuget/resources/check-project-format) C# project from NuGet. This package contains support for compiling `.cssql` files into your project and executing them via the built-in MVC engine. Additionally you can install support for [one of our supported databases](https://nuget.org/packages?q=Jerrycurl.Vendors) from NuGet as well.
 
 ```shell
-dotnet add package Jerrycurl
-dotnet add package Jerrycurl.Vendors.SqlServer
+> dotnet add package Jerrycurl
+> dotnet add package Jerrycurl.Vendors.SqlServer
 ```
 
 #### Tooling
 If you want to generate a ready-to-go object model from an exsisting database, you can install and use our `dotnet-jerry` global tool.
 ```
-dotnet tool install --global dotnet-jerry
+> dotnet tool install --global dotnet-jerry
 ```
 This gives the ability to call `jerry scaffold -v [vendor] -c [connection] -ns [namespace]` from anywhere on your machine.
 ```
-jerry scaffold -v sqlserver -c "SERVER=.;DATABASE=moviedb;TRUSTED_CONNECTION=true" -ns "MovieDb.Database"
-
+> jerry scaffold -v sqlserver -c "SERVER=.;DATABASE=moviedb;TRUSTED_CONNECTION=true" -ns "MovieDb.Database"
 Connecting to database 'moviedb'...
 Generating...
 Generated 7 tables and 21 columns in Database.cs.
 ```
 
 ### MVC design
-By installing Jerrycurl you are getting a **customized MVC engine** that separates your project into domains, models, accessors and procedures written with our specialized **Razor SQL** syntax.
+By installing the packages above you are getting a set of tools that allows you to design a **MVC-based data access layer** much like you would a web application with **ASP.NET**. This means just as ASP.NET has models, controllers and views, Jerrycurl separates your project into models, accessors and procedures written with **Razor SQL** syntax.
+
+#### Model layer
+Models are simple POCO-like classes that can be combined into complete object graphs that represents data for a certain operation. Each model can be mapped at any depth with any type of data relationship: one-to-one, one-to-many, many-to-one and self-joins.
+```csharp
+// Database.cs
+[Table("dbo", "Movie")]
+class Movie
+{
+    [Id, Key("PK_Movie")]
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public int Year { get; set; }
+}
+```
+```csharp
+// Views/Movies/MovieTaglineView.cs
+class MovieTaglineView : Movie
+{
+    public string Tagline { get; set; }
+}
+```
 
 #### Procedure (view) layer
-Procedures are written in `.cssql` files and separated into **commands** that write data and **queries** that read data. Both are written with a combination of **SQL and Razor code** that generate SQL and parameters from projections of your object model.
+Procedures are written in `.cssql` files and separated into **commands** that write data and **queries** that read data. Both are written with a combination of **SQL and Razor code** generating SQL payloads directly from your object model.
 ```
 -- Queries/Movies/GetMovies.cssql
 @result MovieTaglineView
@@ -57,29 +77,8 @@ WHERE      @R.Col(m => m.Year) >= @M.Par(m => m.SinceYear)
 }
 ```
 
-### Model layer
-Models are simple POCO-like classes that can be combined into complete object graphs that represents *all* data for a certain operation. Each model can be mapped at any depth with any type of data relationship: one-to-one, one-to-many, many-to-one and self-joins.
-```csharp
-// Database.cs
-[Table("dbo", "Movie")]
-class Movie
-{
-    [Id, Key("PK_Movie")]
-    public int Id { get; set; }
-    public string Title { get; set; }
-    public int Year { get; set; }
-}
-```
-```csharp
-// Views/Movies/MovieTaglineView.cs
-class MovieTaglineView : Movie
-{
-    public string Tagline { get; set; }
-}
-```
-
-### Accessor (controller) layer
-Accessors provide the bridge from your code to the consumer by exposing a collection of methods executes Razor commands and queries and maps their resulting data sets to matching objects.
+#### Accessor (controller) layer
+Accessors provide the bridge from your code to the consumer by exposing a collection of methods that executes Razor commands and queries and maps their resulting data sets to matching objects.
 ```csharp
 // Accessors/MoviesAccessor.cs
 public class MoviesAccessor : Accessor
@@ -92,7 +91,7 @@ public class MoviesAccessor : Accessor
 }
 ```
 
-### Domain (application) layer
+#### Domain (application) layer
 Domains provide a central place for fetching configuration for any (or a subset of) your database operations.
 ```csharp
 // MovieDomain.cs
@@ -121,7 +120,7 @@ class MovieDomain : IDomain
 * Modern language features with .NET Standard 2.1 and C# 8
 * Free and [available via NuGet](https://www.nuget.org/packages?q=Jerrycurl)
 
-To learn more about Jerrycurl and how to get started, visit [our official site](https://jerrycurl.net/) or check our [samples repo](https://github.com/rwredding/jerrycurl-samples).
+To learn more about Jerrycurl and how to get started, visit [our official site](https://jerrycurl.net) or check our [samples repo](https://github.com/rwredding/jerrycurl-samples).
 
 ## Building from source
 Jerrycurl can be built on [any OS supported by .NET Core](https://docs.microsoft.com/en-us/dotnet/core/install/dependencies) and included in this repository is a [script](build.ps1) that performs all build-related tasks.
@@ -158,25 +157,3 @@ PS> .\test\tools\boot-dbs.ps1 down sqlserver,mysql,postgres,oracle
 > If you already have an empty database running that can be used for testing, you can manually specify its connection string in the environment variable `JERRY_SQLSERVER_CONN`, `JERRY_MYSQL_CONN`, `JERRY_POSTGRES_CONN` or `JERRY_ORACLE_CONN`.
 
 > Pulling the Oracle Database image requires that you are logged into Docker and have accepted their [terms of service](https://hub.docker.com/_/oracle-database-enterprise-edition).
-
-## License
-Copyright © 2019 AC Dancode
-
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along with this program. If not, see http://www.gnu.org/licenses/.
-
-## Legal
-By submitting a Pull Request, you disavow any rights or claims to any changes
-submitted to the Jerrycurl project and assign the copyright of
-those changes to AC Dancode.
-
-If you cannot or do not want to reassign those rights (your employment
-contract for your employer may not allow this), you should not submit a PR.
-Open an issue and someone else can do the work.
-
-This is a legal way of saying "If you submit a PR to us, that code becomes ours".
-99.9% of the time that's what you intend anyways; we hope it doesn't scare you
-away from contributing.
