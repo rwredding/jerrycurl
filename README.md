@@ -19,22 +19,22 @@ If you want to generate a ready-to-go object model from your database, install o
 ```shell
 > dotnet tool install --global dotnet-jerry
 ```
-This enables the `jerry` executable anywhere on your machine. In our case we can use the `scaffold` command to generates a `Database.cs` file containing classes that match tables in a local database about movies.
+This enables the `jerry` executable anywhere on your machine. In our case we'll use the `scaffold` command to generate a `.cs` file containing classes that match tables in a local database about movies.
 ```shell
 > jerry scaffold -v sqlserver -c "SERVER=.;DATABASE=moviedb;TRUSTED_CONNECTION=true" -ns "MovieDb.Database"
 Connecting to database 'moviedb'...
 Generating...
 Generated 7 tables and 21 columns in Database.cs.
 ```
-To learn more about our CLI, plop in `jerry help`.
+To learn more about our CLI, type in `jerry help`.
 
 ### MVC design
 After installing the packages above you can start adding the different components to your project. This should feel familiar to anyone acquainted with ASP.NET MVC, and for the most part Jerrycurl aligns itself with this framework -- only with a slightly different terminology. 
 
-So where your ASP.NET application contains models, controllers and Razor HTML-based views, Jerrycurl separates your project into models, accessors and procedures written with **Razor SQL** syntax.
+So where your ASP.NET application contains models, controllers and **Razor HTML**-based views, Jerrycurl separates your project into models, accessors and procedures written with **Razor SQL** syntax.
 
 #### Model layer
-Models are simple POCO-like classes that can be combined into complete object graphs that represents data for a certain operation. Each model can be mapped at any depth with any type of data relationship: one-to-one, one-to-many, many-to-one and self-joins.
+The model layer is a collection of POCO-like classes that represent tables and customized datasets for your operations. Each model can be mapped at any depth with any type of data relationship: one-to-one, one-to-many, many-to-one and self-joins.
 ```csharp
 // Database.cs
 [Table("dbo", "Movie")]
@@ -51,6 +51,13 @@ class Movie
 class MovieTaglineView : Movie
 {
     public string Tagline { get; set; }
+}
+```
+```csharp
+// Views/Movies/MovieRolesView.cs
+class MovieRolesView : Movie
+{
+    public IList<MovieRole> Roles { get; set; }
 }
 ```
 
