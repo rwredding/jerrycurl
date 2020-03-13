@@ -64,7 +64,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             {
                 foreach (string dir in args.Options["-d", "--directory"].Values)
                 {
-                    RazorProject fromDir = RazorProject.FromDirectory(dir);
+                    RazorProject fromDir = RazorProject.FromDirectory(MakeAbsolutePath(dir));
 
                     foreach (RazorProjectItem item in fromDir.Items)
                         project.Items.Add(item);
