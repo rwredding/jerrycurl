@@ -7,5 +7,7 @@
         public string IntermediatePath { get; internal set; }
 
         public RazorPageData Data { get; internal set; }
+
+        public override string ToString() => this.ProjectPath ?? this.Path;
     }
 }
