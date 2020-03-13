@@ -109,7 +109,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                     File.WriteAllText(razorPage.IntermediatePath, result.Content);
                 }
 
-                string filesString = project.Items.Count + " " + (project.Items.Count == 1 ? "file" : "files");
+                string filesString = parserResult.Count + " " + (parserResult.Count == 1 ? "file" : "files");
                 string outputString = PathHelper.MakeRelativeOrAbsolutePath(project.ProjectDirectory, outputDirectory);
 
                 DotNetJerryHost.WriteLine($"Transpiled {filesString} files into '{outputString}'", ConsoleColor.Green);
