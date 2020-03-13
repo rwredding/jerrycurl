@@ -35,7 +35,7 @@
         <PackageIconUrl>https://raw.githubusercontent.com/rwredding/jerrycurl/master/gfx/icon.png</PackageIconUrl>
         <PackageIconFile>icon.png</PackageIconFile>
         <PackageId>$(MSBuildProjectName)</PackageId>
-        <PackageLicense>LGPL-3.0-or-later</PackageLicense>
+        <PackageLicense>MIT</PackageLicense>
         <PackageTags>orm sql razor mvc cqs database</PackageTags>
     </PropertyGroup>
 </Project>
