@@ -26,10 +26,7 @@ namespace Jerrycurl.CodeAnalysis.Razor.Parsing
             if (project == null)
                 throw new ArgumentNullException(nameof(project));
 
-            if (!string.IsNullOrEmpty(project.ProjectDirectory) && !Path.IsPathRooted(project.ProjectDirectory))
-                throw new InvalidOperationException("Project directory, if specified, must be a rooted path.");
-
-            List<RazorPage> pages = this.ParsePages(project).ToList();
+            IList<RazorPage> pages = this.ParsePages(project).ToList();
 
             foreach (IRazorProjectConvention convention in project.Conventions ?? Array.Empty<IRazorProjectConvention>())
                 convention.Apply(project, pages);
@@ -44,39 +41,50 @@ namespace Jerrycurl.CodeAnalysis.Razor.Parsing
 
             HashSet<string> intermediatePaths = new HashSet<string>();
 
+            bool hasProjectDirectory = !string.IsNullOrWhiteSpace(project.ProjectDirectory);
+
             foreach (RazorProjectItem item in project.Items.NotNull())
             {
-                if (string.IsNullOrEmpty(item.FullPath))
-                    throw new InvalidOperationException($"Cannot parse file at index {project.Items.IndexOf(item)}. Path cannot be empty.");
+                bool hasProjectPath = !string.IsNullOrWhiteSpace(item.ProjectPath);
+
+                if (string.IsNullOrWhiteSpace(item.FullPath))
+                    throw new InvalidOperationException($"Error parsing file at index {project.Items.IndexOf(item)}. Path cannot be empty.");
+                else if (!Path.IsPathRooted(item.FullPath))
+                    throw new InvalidOperationException(Error("Path must be rooted."));
                 else if (!File.Exists(item.FullPath))
-                    throw new FileNotFoundException($"Cannot parse file from path '{item.FullPath}'. File not found.");
+                    throw new FileNotFoundException(Error("File not found."));
+                else if (!hasProjectDirectory && !hasProjectPath)
+                    throw new InvalidOperationException(Error($"ProjectPath must be specified when no ProjectDirectory is present."));
 
-                string projectPath = item.ProjectPath;
+                string projectPath = hasProjectPath ? item.ProjectPath : null;
 
-                if (projectPath != null && Path.IsPathRooted(projectPath))
-                    projectPath = null;
-                else if (projectPath == null)
-                    this.MakeProjectPaths(project.ProjectDirectory, item.FullPath, out _, out projectPath);
-                else if (string.IsNullOrWhiteSpace(projectPath))
-                    projectPath = null;
+                if (hasProjectDirectory)
+                    projectPath = PathHelper.MakeRelativePath(project.ProjectDirectory, projectPath ?? item.FullPath);
+
+                if (projectPath == null)
+                    throw new InvalidOperationException(Error($"ProjectPath '{item.ProjectPath}' must be relative to to ProjectDirectory '{project.ProjectDirectory}'."));
+
+                RazorPageData pageData = this.Parse(item.FullPath);
 
                 yield return new RazorPage()
                 {
-                    Data = this.Parse(item.FullPath),
-                    Path = item.FullPath,
+                    Data = pageData,
+                    Path = Path.GetFullPath(item.FullPath),
                     ProjectPath = projectPath,
-                    IntermediatePath = this.MakeIntermediatePath(project, projectPath, item.FullPath, intermediatePaths),
+                    IntermediatePath = this.MakeIntermediatePath(project, item, pageData, intermediatePaths),
                 };
+
+                string Error(string s) => $"Error parsing file '{item.FullPath}'. {s}";
             }
         }
 
-        private string MakeIntermediatePath(RazorProject project, string projectPath, string fullPath, HashSet<string> currentPaths)
+        private string MakeIntermediatePath(RazorProject project, RazorProjectItem item, RazorPageData pageData, HashSet<string> currentPaths)
         {
             if (string.IsNullOrWhiteSpace(project.IntermediateDirectory))
                 return null;
 
-            int hashCode = fullPath.GetStableHashCode();
-            string baseFileName = Path.GetFileNameWithoutExtension(projectPath ?? fullPath);
+            int hashCode = (item.FullPath + "|" + item.ProjectPath + "|" + pageData.SourceChecksum).GetStableHashCode();
+            string baseFileName = Path.GetFileNameWithoutExtension(item.ProjectPath);
             string fileName = $"{baseFileName}.{hashCode:x2}.g.cssql.cs";
             string fullName = Path.Combine(project.IntermediateDirectory, fileName);
 
@@ -94,25 +102,14 @@ namespace Jerrycurl.CodeAnalysis.Razor.Parsing
             return fullName;
         }
 
-        private void MakeProjectPaths(string projectDirectory, string path, out string fullPath, out string projectPath)
+        public RazorPageData Parse(string fullPath)
         {
-            if (projectDirectory == null)
-            {
-                fullPath = Path.GetFullPath(path);
-                projectPath = null;
-            }
-            else
-                PathHelper.MakeRelativeAndAbsolutePath(projectDirectory, path, out fullPath, out projectPath);
-        }
-
-        public RazorPageData Parse(string fileName)
-        {
-            byte[] fileData = File.ReadAllBytes(fileName);
+            byte[] fileData = File.ReadAllBytes(fullPath);
 
             string sourceString = this.GetPageStringData(fileData);
             string sourceChecksum = this.GetPageChecksum(fileData);
 
-            return this.Parse(new StringSource(sourceString), fileName, sourceChecksum);
+            return this.Parse(new StringSource(sourceString), fullPath, sourceChecksum);
         }
 
         public RazorPageData Parse(ISource source, string sourceName, string sourceChecksum)
