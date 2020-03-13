@@ -53,7 +53,7 @@ namespace Jerrycurl.IO
                 throw new ArgumentException("Path cannot be empty.", nameof(path));
 
             string fullBasePath = Path.GetFullPath(string.IsNullOrEmpty(basePath) ? "." : basePath);
-            string fullPath = Path.GetFullPath(Path.IsPathRooted(path) ? path : Path.Combine(fullBasePath, path));
+            string fullPath = Path.GetFullPath(Path.IsPathRooted(path) ? path : Path.Combine(Path.GetFullPath("."), path));
 
             fullBasePath = fullBasePath.TrimEnd(Path.DirectorySeparatorChar);
 
