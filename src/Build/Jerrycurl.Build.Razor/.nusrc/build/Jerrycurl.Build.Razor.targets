@@ -50,11 +50,7 @@
 			<JerryFile Include="@(None)" Condition=" '%(None.Link)' != '' and @(None->Metadata('Link')->EndsWith('.cssql'))" />
 		</ItemGroup>
 
-		<RemoveDuplicates Inputs="@(JerryFile)">
-			<Output TaskParameter="Filtered" ItemName="_JerryFile"/>
-		</RemoveDuplicates>
-
-		<Jcst Sources="@(_JerryFile)"
+		<Jcst Sources="@(JerryFile)"
                   SkeletonPath="$(JerrycurlSkeletonPath)"
                   IntermediatePath="$(JerrycurlIntermediatePath)"
                   RootNamespace="$(JerrycurlRootNamespace)"
@@ -75,7 +71,7 @@
 		</ItemGroup>
 
 		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="@(_JerryFile)" Overwrite="true" />
-		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="%(_JerryLink.FullPath)|%(_JerryLink.Link)" />
+		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="%(_JerryLink.FullPath)|%(_JerryLink.Link)" Condition=" '@(_JerryLink)' != '' " />
 
 		<Exec Command="jerry transpile --file &quot;@$(JerrycurlAbsoluteFileList)&quot; --output &quot;$(JerrycurlIntermediatePath)&quot; --namespace &quot;$(JerrycurlRootNamespace)"
 		      StandardOutputImportance="$(JerrycurlGlobalToolOutput)" />
