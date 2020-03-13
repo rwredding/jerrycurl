@@ -15,17 +15,18 @@ Jerrycurl can be installed into any [SDK-style](https://docs.microsoft.com/en-us
 ```
 
 #### Tooling
-If you want to generate a ready-to-go object model from an exsisting database, you can install and use our `dotnet-jerry` global tool.
+If you want to generate a ready-to-go object model from your database, install our [CLI](https://www.nuget.org/packages/dotnet-jerry/) as a [.NET Global Tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools) from NuGet.
 ```
 > dotnet tool install --global dotnet-jerry
 ```
-This gives the ability to call `jerry scaffold -v [vendor] -c [connection] -ns [namespace]` from anywhere on your machine.
+This enables the `jerry` executable from anywhere on your machine. In our case we can use the `scaffold` command which generates a `.cs` file containing classes matching your database schema.
 ```
 > jerry scaffold -v sqlserver -c "SERVER=.;DATABASE=moviedb;TRUSTED_CONNECTION=true" -ns "MovieDb.Database"
 Connecting to database 'moviedb'...
 Generating...
 Generated 7 tables and 21 columns in Database.cs.
 ```
+To learn more about our CLI, type in `jerry help`.
 
 ### MVC design
 By installing the packages above you are getting a set of tools that allows you to design a **MVC-based data access layer** much like you would a web application with **ASP.NET**. This means just as ASP.NET has models, controllers and views, Jerrycurl separates your project into models, accessors and procedures written with **Razor SQL** syntax.
