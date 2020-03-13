@@ -22,6 +22,7 @@ dotnet tool install --global dotnet-jerry
 This gives the ability to call `jerry scaffold -v [vendor] -c [connection] -ns [namespace]` from anywhere on your machine.
 ```
 jerry scaffold -v sqlserver -c "SERVER=.;DATABASE=moviedb;TRUSTED_CONNECTION=true" -ns "MovieDb.Database"
+
 Connecting to database 'moviedb'...
 Generating...
 Generated 7 tables and 21 columns in Database.cs.
