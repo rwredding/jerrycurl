@@ -26,7 +26,7 @@ Connecting to database 'moviedb'...
 Generating...
 Generated 7 tables and 21 columns in Database.cs.
 ```
-To learn more about our CLI, type in `jerry help`.
+To learn more about our CLI, plop in `jerry help`.
 
 ### MVC design
 By installing the packages above you are getting a set of tools that allows you to design a **MVC-based data access layer** much like you would a web application with **ASP.NET**. This means just as ASP.NET has models, controllers and views, Jerrycurl separates your project into models, accessors and procedures written with **Razor SQL** syntax.
