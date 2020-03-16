@@ -11,7 +11,7 @@ using NpgsqlTypes;
 
 namespace Jerrycurl.Vendors.Postgres.Metadata
 {
-    public class PostgresBindingContractResolver : IBindingContractResolver
+    public class PostgresContractResolver : IBindingContractResolver
     {
         public int Priority => 1000;
 

@@ -9,5 +9,7 @@
         string String(string value);
 
         string Qualifier { get; }
+
+        DialectSupport Support { get; }
     }
 }

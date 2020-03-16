@@ -1,8 +1,7 @@
 [CmdletBinding(PositionalBinding=$false)]
 param(
     [Switch] $NoBuild,
-    [String] $Configuration = "Release",
-    [String] $Verbosity = "minimal"
+    [String] $Configuration = "Release"
 )
 
 . (Join-Path $PSScriptRoot .\dotfile.ps1)
