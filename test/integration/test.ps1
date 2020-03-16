@@ -15,7 +15,7 @@ foreach ($vendor in Get-All-Vendors)
 {
     $connectionString = Get-Connection-String -Vendor $vendor
     
-    if ($env:APPVEYOR -eq "True" && $vendor -eq "mysql") { $connectionSring = $null }
+    if ($env:APPVEYOR -eq "True" -and $vendor -eq "mysql") { $connectionSring = $null }
     
     Write-Host ""
     Write-Host "   Testing '$vendor'..."
