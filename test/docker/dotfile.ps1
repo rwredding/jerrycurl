@@ -18,7 +18,7 @@ function Get-All-Vendors
 
 function Get-Live-Vendors
 {
-    @("sqlserver", "mysql", "postgres", "oracle")
+    @("sqlserver", "postgres", "oracle", "mysql")
 }
 
 function Set-Connection-String
