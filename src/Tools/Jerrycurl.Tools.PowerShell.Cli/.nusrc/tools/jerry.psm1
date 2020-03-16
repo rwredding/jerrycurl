@@ -10,11 +10,11 @@ function Invoke-Jerry
         return;
     }
 
-    if (-not $Command -and (Has-Database-Rsp))
+    if (-not $Command -and (Has-Database-Cli))
     {
         Push-Project-Dir
 
-        jerry rsp --command scaffold --file "Database.rsp"
+        jerry cli --command scaffold --file "Database.cli"
       
         Pop-Location
     }
@@ -52,11 +52,11 @@ function Install-Jerry
     }
 }
 
-function Has-Database-Rsp
+function Has-Database-Cli
 {
     $project = Get-Project
 
-    Test-Path (Join-Path (Split-Path $project.FileName) "Database.rsp") -PathType Leaf
+    Test-Path (Join-Path (Split-Path $project.FileName) "Database.cli") -PathType Leaf
 }
 
 function Push-Project-Dir

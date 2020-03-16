@@ -4,13 +4,13 @@
 	<ContentType Name="KeplerFile" DisplayName="Jerrycurl Configuration File" ItemType="None">
 		<NameValuePair Name="DependentExtensions" Value=".orm.cs;.orm.js" />
 	</ContentType>
-	<ContentType Name="ResponseFile" DisplayName="Jerrycurl Response File" ItemType="None">
-		<NameValuePair Name="DependentExtensions" Value=".rsp.cs" />
+	<ContentType Name="CliFile" DisplayName="Jerrycurl CLI Template" ItemType="None">
+		<NameValuePair Name="DependentExtensions" Value=".cli.cs" />
 	</ContentType>
 
 	<ItemType Name="JerryFile" DisplayName="Jerrycurl Razor Page"/>
 
 	<FileExtension Name=".cssql" ContentType="JerryFile"/>
 	<FileExtension Name=".orm" ContentType="KeplerFile"/>
-	<FileExtension Name=".rsp" ContentType="ResponseFile"/>
+	<FileExtension Name=".cli" ContentType="CliFile"/>
 </ProjectSchemaDefinitions>

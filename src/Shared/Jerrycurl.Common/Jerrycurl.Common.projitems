@@ -13,7 +13,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)CodeAnalysis\CSharpWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CodeAnalysis\CSharp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CodeAnalysis\Namespace.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CodeAnalysis\RazorFacts.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Facts\DatabaseFacts.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Facts\RazorFacts.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CodeAnalysis\TypeName.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Collections\DictionaryExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Collections\EnumerableExtensions.cs" />
@@ -22,6 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Diagnostics\Equality.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Diagnostics\HashCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\PathHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IO\ResponseFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Linq\Expressions\CompositeKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Linq\Expressions\ExpressionBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Linq\Expressions\ExpressionBuilderContext.cs" />

@@ -1,0 +1,2 @@
+﻿@import Jerrycurl.Test.Integration.Database
+@* add global @import, @project and @inject directives here *@

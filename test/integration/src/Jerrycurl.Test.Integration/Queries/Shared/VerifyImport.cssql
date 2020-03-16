@@ -1,0 +1,4 @@
+﻿@* Only here to verify that _import.cssql is used. *@
+@project Movie m
+
+SELECT @m.Col(m => m.Id) AS @R.Prop() FROM @m.Tbl()

@@ -24,6 +24,7 @@
         <file src="$SourcePath$DotnetToolSettings.xml" target="tools\$TargetFramework$\any" />
 		<file src="$SourcePath$skeleton.jerry" target="tools\$TargetFramework$\any" />
         <file src="$SourcePath$dotnet-jerry-proxy.csproj" target="tools\$TargetFramework$\any" />
+		<file src="$SourcePath$Directory.Build.*" target="tools\$TargetFramework$\any" />
 		<file src="$SourcePath$DotNetJerryProxyHost.cs" target="tools\$TargetFramework$\any" />
 		<file src="$BinPath$dotnet-jerry.*" target="tools\$TargetFramework$\any" />
 		<file src="$BinPath$Jerrycurl.Tools.Common.*" target="tools\$TargetFramework$\any" />

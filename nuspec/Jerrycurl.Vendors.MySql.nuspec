@@ -22,7 +22,7 @@
             </group>
             <group targetFramework="netstandard2.1">
                 <dependency id="Jerrycurl.Mvc" version="$PackageVersion$" />
-                <dependency id="$OraclePackageId$" version="$OraclePackageVersion$" />
+                <dependency id="$MySqlPackageId$" version="$MySqlPackageVersion$" />
             </group>
         </dependencies>
     </metadata>

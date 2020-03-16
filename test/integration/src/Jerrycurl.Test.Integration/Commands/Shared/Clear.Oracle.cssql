@@ -1,0 +1,8 @@
+﻿@project MovieCast c
+@project MovieDetails d
+@project Movie m
+BEGIN
+DELETE FROM @c.TblName();
+DELETE FROM @d.TblName();
+DELETE FROM @m.TblName();
+END;

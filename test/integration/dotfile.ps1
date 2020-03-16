@@ -1,0 +1,327 @@
+function Test-Integration
+{
+    param(
+        [Parameter(Mandatory=$true)]
+        [String] $Vendor,
+        [Parameter(Mandatory=$true)]
+        [String] $ConnectionString,
+        [String] $Version,
+        [String] $TargetFramework = "netcoreapp3.0",
+        [Parameter(Mandatory=$true)]
+        [String] $PackageSource,
+        [String] $Verbosity = "minimal",
+        [Parameter(Mandatory=$true)]
+        [String] $TempPath
+    )
+    
+    $allFrameworks = Get-Target-Frameworks
+    
+    if (-not ($allFrameworks.Contains($TargetFramework)))
+    {
+        Write-Host "Invalid target framework '$TargetFramework'." -ForegroundColor Red
+        Exit -1
+    }
+    
+    if (-not $Version)
+    {
+        [String[]]$nuget = Get-NuGet-Versions -PackageSource $PackageSource
+        
+        if ($nuget.Length -eq 0)
+        {
+            Write-Host "No packages found in '$PackagesPath'" -ForegroundColor Red
+            Exit -1
+        }
+        elseif ($nuget.Length -gt 1)
+        {
+            Write-Host "Multiple packages found in '$PackagesPath'." -ForegroundColor Red
+            Write-Host "Please choose one with the -Version argument:" -ForegroundColor Red
+            Write-Host $nuget
+            Exit -1
+        }
+        else
+        {
+            $Version = $nuget[0]
+        }
+    }
+    
+    $package = Get-Vendor-Package $Vendor
+    
+    if (-not $package)
+    {
+        Write-Host "Unknown vendor '$Vendor'"
+        Exit -1
+    }
+    
+    foreach ($targetFramework in $allFrameworks)
+    {
+        Clean-Source $Vendor $targetFramework $TempPath
+        Prepare-Source $Vendor $TargetFramework $TempPath $PackageSource
+        
+        Install-Cli $Vendor $Version $TargetFramework $Verbosity $TempPath
+        
+        if ($Vendor -eq "oracle")
+        {
+            Create-Oracle-User $Vendor $ConnectionString $TargetFramework $TempPath
+            
+            $oracleConnection = Get-Oracle-Connection
+            
+            Create-Database $Vendor $oracleConnection $TargetFramework $TempPath
+            Run-Project-Test $Vendor $Version $oracleConnection $PackageSource $targetFramework $Verbosity $TempPath   
+        }
+        else
+        {
+            Create-Database $Vendor $ConnectionString $TargetFramework $TempPath
+            Run-Project-Test $Vendor $Version $ConnectionString $PackageSource $targetFramework $Verbosity $TempPath   
+        }
+        
+        if (-not (Verify-Integration $Vendor $targetFramework $TempPath)) { break }
+    }
+}
+
+function Get-Target-Frameworks { @("netcoreapp2.2", "netcoreapp3.0") }
+
+function Verify-Integration
+{
+    param(
+        [Parameter(Mandatory=$true)]
+        [String] $Vendor,
+        [String] $TargetFramework,
+        [String] $TempPath
+    )
+    
+    if ($TargetFramework)
+    {
+        $path = Join-Path (Get-Temp-Path $Vendor $TargetFramework $TempPath) "results.txt"
+    
+        if (Test-Path $path) { ((Get-Content $path) -eq "OK") }
+        else { $false }
+    }
+    else
+    {
+        foreach ($targetFramework in Get-Target-Frameworks)
+        {
+            $result = (Verify-Integration $Vendor $targetFramework $TempPath)
+            
+            if (-not $result) { return $false }
+        }
+        
+        return $true
+    }
+}
+
+function Clean-Source
+{
+    param(
+        [String] $Vendor,
+        [String] $TargetFramework,
+        [String] $TempPath
+    )
+    
+    $path = Get-Temp-Path $Vendor $TargetFramework $TempPath
+    
+    if (Test-Path $path)
+    {
+        Remove-Item $path -Force -Recurse
+    }
+}
+
+function Prepare-Source
+{
+    param(
+        [String] $Vendor,
+        [String] $TargetFramework,
+        [String] $TempPath,
+        [String] $PackageSource
+    )
+    
+    $source = Join-Path $PSScriptRoot ".\src"
+    $temp = Join-Path $TempPath "$Vendor\$TargetFramework"
+    $configFile = Join-Path $temp "nuget.config"
+    $packageSource = $PackageSource
+    
+    if (-not [System.IO.Path]::IsPathRooted($packageSource))
+    {
+        $packageSource = Resolve-Path $packageSource
+    }
+    
+    New-Item $temp -ItemType Directory | Out-Null
+    Copy-Item "$source\*" $temp -Recurse | Out-Null
+    
+    ((Get-Content -Path $configFile -Raw) -Replace '%PackageSource%', "$PackageSource") | Set-Content -Path $configFile
+}
+
+function Get-Temp-Path
+{
+    param(
+        [String] $Vendor,
+        [String] $TargetFramework,
+        [String] $TempPath
+    )
+    
+    Join-Path $TempPath "$Vendor\$TargetFramework"
+}
+
+function Install-Cli
+{
+    param(
+        [String] $Vendor,
+        [String] $Version,
+        [String] $TargetFramework,
+        [String] $Verbosity,
+        [String] $TempPath
+    )
+    
+    $toolPath = Get-Temp-Path $Vendor $TargetFramework $TempPath
+    
+    Push-Location $toolPath
+    dotnet tool install --tool-path . dotnet-jerry --version $Version --verbosity $Verbosity
+    Pop-Location
+}
+
+function Get-Oracle-Connection
+{
+    "DATA SOURCE=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))" +
+    "(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLCDB.localdomain)));"+
+    "USER ID=jerryuser;PASSWORD=Password12"
+}
+
+function Create-Oracle-User
+{
+    param(
+        [String] $Vendor,
+        [String] $ConnectionString,
+        [String] $TargetFramework,
+        [String] $TempPath
+    )
+
+    $sql = Join-Path $PSScriptRoot ".\sql\user.oracle.sql"
+    $toolPath = Get-Temp-Path $Vendor $TargetFramework $TempPath
+    
+    Push-Location $toolPath
+    .\jerry run -v oracle -c $ConnectionString -s "@$sql"
+    Pop-Location
+}
+
+function Create-Database
+{
+    param(
+        [String] $Vendor,
+        [String] $ConnectionString,
+        [String] $TargetFramework,
+        [String] $TempPath
+    )
+
+    $sql = Join-Path $PSScriptRoot ".\sql\create.$Vendor.sql"
+    $toolPath = Get-Temp-Path $Vendor $TargetFramework $TempPath
+
+    Push-Location $toolPath
+    .\jerry run -v $Vendor -c $ConnectionString -s "@$sql"
+    Pop-Location
+}
+
+function Run-Project-Test
+{
+    param(
+        [String] $Vendor,
+        [String] $Version,
+        [String] $ConnectionString,
+        [String] $PackageSource,
+        [String] $TargetFramework,
+        [String] $Verbosity,
+        [String] $TempPath
+    )
+    
+    $projectPath = Join-Path (Get-Temp-Path $Vendor $TargetFramework $TempPath) "Jerrycurl.Test.Integration"
+    $package = Get-Vendor-Package $Vendor
+    $constant = Get-Vendor-Constant $Vendor
+    
+    Push-Location $projectPath
+    dotnet add package Jerrycurl --version $Version --source scriptlocal
+    dotnet add package $package --version $Version --source scriptlocal
+    ..\jerry scaffold -v $Vendor -c $ConnectionString -ns "Jerrycurl.Test.Integration.Database" --verbose
+    if ($LastExitCode -eq 0)
+    {
+        dotnet build --framework $TargetFramework --verbosity $Verbosity --configuration Release -p:DefineConstants=$constant -p:DatabaseVendor=$Vendor
+    }
+    if ($LastExitCode -eq 0)
+    {
+        dotnet run --no-build --framework $TargetFramework --verbosity $Verbosity --configuration Release $ConnectionString "..\results.txt"
+    }
+    Pop-Location
+}
+
+function Get-NuGet-Versions
+{
+    param(
+        [String] $PackageSource
+    )
+    
+    $versions = @()
+    
+    if (Test-Path $PackageSource)
+    {
+        foreach ($file in (Get-ChildItem "$PackageSource\*.nupkg"))
+        {
+            $nuget = Parse-NuGet-String $file.Name
+            
+            if ($nuget.Package -eq "Jerrycurl")
+            {
+                $versions += $nuget.Version
+            }
+        }
+    }
+
+    $versions
+}
+
+function Get-Vendor-Constant
+{
+    param(
+        [String] $Vendor
+    )
+    
+    if ($Vendor -eq "sqlserver") { $constant = "VENDOR_SQLSERVER" }
+    if ($Vendor -eq "postgres")  { $constant = "VENDOR_POSTGRES" }
+    if ($Vendor -eq "oracle")    { $constant = "VENDOR_ORACLE" }
+    if ($Vendor -eq "mysql")     { $constant = "VENDOR_MYSQL" }
+    if ($Vendor -eq "sqlite")    { $constant = "VENDOR_SQLITE" }
+    
+    $constant
+}
+
+function Get-Vendor-Package
+{
+    param(
+        [String] $Vendor
+    )
+    
+    if ($Vendor -eq "sqlserver") { $package = "Jerrycurl.Vendors.SqlServer" }
+    if ($Vendor -eq "postgres")  { $package = "Jerrycurl.Vendors.Postgres" }
+    if ($Vendor -eq "oracle")    { $package = "Jerrycurl.Vendors.Oracle" }
+    if ($Vendor -eq "mysql")     { $package = "Jerrycurl.Vendors.MySql" }
+    if ($Vendor -eq "sqlite")    { $package = "Jerrycurl.Vendors.Sqlite" }
+    
+    $package
+}
+
+function Parse-NuGet-String
+{
+    param(
+        [Parameter(Mandatory=$true)]
+        [string] $InputString
+    )
+    
+
+    $match = [Regex]::Match($InputString, '^([^\d]+)\.(\d+\.\d+\.\d+.*?)(\.nupkg)?$')
+    
+    if ($match.Success)
+    {
+        $package = $match.Groups[1].Value
+        $version = $match.Groups[2].Value
+        
+        @{
+            Package = $package
+            Version = $version
+        }
+    }
+}

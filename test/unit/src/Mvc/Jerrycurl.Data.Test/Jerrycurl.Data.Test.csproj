@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\src\Mvc\Jerrycurl.Data.Abstractions\Jerrycurl.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\..\..\src\Mvc\Jerrycurl.Data\Jerrycurl.Data.csproj" />
+    <ProjectReference Include="..\..\..\..\..\src\Tools\Jerrycurl.Tools.Vendors.Sqlite\Jerrycurl.Tools.Vendors.Sqlite.csproj" />
+    <ProjectReference Include="..\..\..\..\..\src\Vendors\Jerrycurl.Vendors.Sqlite\Jerrycurl.Vendors.Sqlite.csproj" />
+    <ProjectReference Include="..\..\Shared\Jerrycurl.Test.Common\Jerrycurl.Test.Common.csproj" />
+  </ItemGroup>
+</Project>

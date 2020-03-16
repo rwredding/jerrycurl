@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using Jerrycurl.CodeAnalysis.Razor.Generation;
 using Jerrycurl.CodeAnalysis.Razor.Parsing;
 using Jerrycurl.CodeAnalysis.Razor.ProjectSystem;
 using Jerrycurl.CommandLine;
+using Jerrycurl.Facts;
 using Jerrycurl.IO;
 using Jerrycurl.Tools.DotNet.Cli.Commands;
 using Jerrycurl.Tools.DotNet.Cli.Scaffolding;
@@ -50,7 +52,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             {
                 foreach (string file in args.Options["-f", "--file"].Values)
                 {
-                    foreach (string expandedFile in ToolOptions.ExpandResponseFiles(file, MakeAbsolutePath))
+                    foreach (string expandedFile in ResponseFile.ExpandStrings(file, project.ProjectDirectory))
                     {
                         if (!HasPipeFormat(expandedFile, out var fullPath, out var projectPath))
                             project.AddItem(expandedFile);
@@ -74,7 +76,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             GeneratorOptions options = new GeneratorOptions()
             {
                 TemplateCode = File.ReadAllText(skeletonPath),
-                Imports = RazorFacts.GetDefaultNamespaces().Select(ns => new RazorFragment() { Text = ns }).ToList(),
+                Imports = RazorFacts.DefaultNamespaces.Select(ns => new RazorFragment() { Text = ns }).ToList(),
             };
 
             if (args.Options["-i", "--import"] != null)
@@ -93,6 +95,8 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
             if (project.Items.Any())
             {
+                Stopwatch stopwatch = Stopwatch.StartNew();
+
                 Directory.CreateDirectory(outputDirectory);
 
                 RazorParser parser = new RazorParser();
@@ -112,12 +116,10 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 string filesString = parserResult.Count + " " + (parserResult.Count == 1 ? "file" : "files");
                 string outputString = PathHelper.MakeRelativeOrAbsolutePath(project.ProjectDirectory, outputDirectory);
 
-                DotNetJerryHost.WriteLine($"Transpiled {filesString} files into '{outputString}'", ConsoleColor.Green);
+                DotNetJerryHost.WriteLine($"Transpiled {filesString} in {stopwatch.ElapsedMilliseconds:0} ms into '{outputString}'", ConsoleColor.Green);
             }
             else
                 DotNetJerryHost.WriteLine($"No files found.", ConsoleColor.Yellow);
-
-            Console.ResetColor();
 
             string MakeAbsolutePath(string path) => PathHelper.MakeAbsolutePath(project.ProjectDirectory, path);
 

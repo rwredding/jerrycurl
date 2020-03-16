@@ -5,6 +5,7 @@
 	  <InformationalVersion>$(VendorVersion)</InformationalVersion>
 	  <OutputType>Exe</OutputType>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <TieredCompilation>false</TieredCompilation>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,4 +16,4 @@
     <Reference Include="dotnet-jerry" />
     <PackageReference Include="$(VendorPackage)" Version="$(VendorVersion)" />
   </ItemGroup>
-</Project>
+</Project>  

@@ -37,5 +37,42 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             DotNetJerryHost.WriteLine(@"    \_^_/ ");
             DotNetJerryHost.WriteLine();
         }
+
+        private async static Task<DbConnection> GetOpenConnectionAsync(RunnerArgs args, IConnectionFactory factory)
+        {
+            DbConnection connection = factory.GetDbConnection();
+
+            if (connection == null)
+                throw new RunnerException("Connection returned null.");
+
+            try
+            {
+                connection.ConnectionString = args.Connection;
+            }
+            catch (Exception ex)
+            {
+                connection.Dispose();
+
+                throw new RunnerException("Invalid connection string: " + ex.Message, ex);
+            }
+
+            if (!string.IsNullOrEmpty(connection.Database))
+                DotNetJerryHost.WriteLine($"Connecting to '{connection.Database}'...", ConsoleColor.Yellow);
+            else
+                DotNetJerryHost.WriteLine("Connecting to database...", ConsoleColor.Yellow);
+
+            try
+            {
+                await connection.OpenAsync().ConfigureAwait(false);
+
+                return connection;
+            }
+            catch (Exception ex)
+            {
+                connection.Dispose();
+
+                throw new RunnerException("Unable to open connection: " + ex.Message, ex);
+            }
+        }
     }
 }

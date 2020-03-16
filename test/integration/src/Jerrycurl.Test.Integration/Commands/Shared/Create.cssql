@@ -1,0 +1,12 @@
+﻿@foreach (var v in this.M.Vals())
+{
+	INSERT INTO
+		@v.TblName()
+		(
+			@v.In().ColNames()
+		)
+        VALUES
+        (
+            @v.In().Pars()
+        );
+}

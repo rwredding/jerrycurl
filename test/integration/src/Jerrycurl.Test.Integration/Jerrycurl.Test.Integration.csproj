@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>netcoreapp2.2;netcoreapp3.0</TargetFrameworks>
+        <OutputType>exe</OutputType>
+    </PropertyGroup>
+
+  <ItemGroup>
+    <JerryFile Remove="Queries\Shared\GetDatabaseView.Oracle.cssql" Condition=" '$(DatabaseVendor)' != 'oracle'" />
+  </ItemGroup>
+</Project>

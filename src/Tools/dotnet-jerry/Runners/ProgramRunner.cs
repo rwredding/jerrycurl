@@ -28,6 +28,9 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                     case "sf":
                         await CommandRunners.ScaffoldAsync(this.Args, commandFactory.GetScaffoldCommand());
                         break;
+                    case "run":
+                        await CommandRunners.SqlAsync(this.Args, commandFactory.GetScaffoldCommand());
+                        break;
                     case "info":
                         CommandRunners.Info(this.Args, commandFactory.GetInfoCommand());
                         break;
@@ -41,16 +44,15 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 {
                     case "scaffold":
                     case "sf":
-                        await builder.ExecuteAsync();
-                        break;
                     case "info":
+                    case "run":
                         await builder.ExecuteAsync();
                         break;
                     case "transpile":
                     case "tp":
                         CommandRunners.Transpile(this.Args);
                         break;
-                    case "rsp":
+                    case "cli":
                         await CommandRunners.ResponseFileAsync(this.Args);
                         break;
                     case "meow":

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Jerrycurl.IO;
 
 namespace Jerrycurl.CommandLine
 {
@@ -94,10 +95,11 @@ namespace Jerrycurl.CommandLine
             if (string.IsNullOrWhiteSpace(input))
                 throw new ArgumentException("Value cannot be empty.", nameof(input));
 
-            string[] args = ExpandResponseFiles(input).SelectMany(ToArgumentList).ToArray();
+            string[] args = ResponseFile.ExpandStrings(input).SelectMany(ToArgumentList).ToArray();
 
             return Parse(args);
         }
+
         public static ToolOptions Parse(string[] args)
         {
             return new ToolOptions(ParseAndYield(args));
@@ -160,54 +162,6 @@ namespace Jerrycurl.CommandLine
                 throw new InvalidOperationException($"Invalid option format '{name}'.");
 
             return option;
-        }
-        #endregion
-
-        #region " Response files (.rsp) "
-        public static IEnumerable<string> ExpandResponseFiles(string input, Func<string, string> pathResolver = null)
-        {
-            if (input == null)
-                throw new ArgumentNullException(input);
-
-            return ExpandResponseFiles(new[] { input }, pathResolver);
-        }
-
-        public static IEnumerable<string> ExpandResponseFiles(IEnumerable<string> inputs, Func<string, string> pathResolver = null)
-        {
-            if (inputs == null)
-                throw new ArgumentNullException(nameof(inputs));
-
-            pathResolver = pathResolver ?? (s => s);
-
-            Queue<string> queue = new Queue<string>(inputs);
-            HashSet<string> fileList = new HashSet<string>();
-
-            while (queue.Count > 0)
-            {
-                string fileName = queue.Dequeue();
-
-                if (string.IsNullOrWhiteSpace(fileName))
-                    continue;
-                else if (!fileList.Contains(fileName))
-                {
-                    fileList.Add(fileName);
-                    
-                    if (fileName.StartsWith("@"))
-                    {
-                        string resolvedPath = pathResolver(fileName.Substring(1));
-
-                        if (string.IsNullOrWhiteSpace(resolvedPath))
-                            continue;
-                        else if (File.Exists(resolvedPath))
-                        {
-                            foreach (string subFileName in File.ReadAllLines(resolvedPath))
-                                queue.Enqueue(subFileName);
-                        }
-                    }
-                    else
-                        yield return fileName;
-                }
-            }
         }
         #endregion
     }

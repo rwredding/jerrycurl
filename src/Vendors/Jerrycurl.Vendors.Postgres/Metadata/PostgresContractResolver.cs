@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
@@ -43,6 +44,8 @@ namespace Jerrycurl.Vendors.Postgres.Metadata
 
                         if (pi.Parameter is NpgsqlParameter npgParam)
                             npgParam.NpgsqlDbType = NpgsqlDbType.Json;
+
+                        this.SetInputParameter(pi);
                     }
                 };
             }
@@ -57,11 +60,30 @@ namespace Jerrycurl.Vendors.Postgres.Metadata
 
                         if (pi.Parameter is NpgsqlParameter npgParam)
                             npgParam.NpgsqlDbType = NpgsqlDbType.Xml;
+
+                        this.SetInputParameter(pi);
                     }
                 };
             }
+            else
+            {
+                return new BindingParameterContract()
+                {
+                    Convert = fallback.Convert,
+                    Write = pi =>
+                    {
+                        fallback.Write(pi);
 
-            return null;
+                        this.SetInputParameter(pi);
+                    }
+                };
+            }
+        }
+
+        private void SetInputParameter(IBindingParameterInfo paramInfo)
+        {
+            if (paramInfo.Parameter.Direction == ParameterDirection.InputOutput || paramInfo.Parameter.Direction == ParameterDirection.Output)
+                paramInfo.Parameter.Direction = ParameterDirection.Input;
         }
 
         public IBindingValueContract GetValueContract(IBindingMetadata metadata)

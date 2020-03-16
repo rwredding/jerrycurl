@@ -1,0 +1,9 @@
+﻿BEGIN
+@foreach (var v in this.M.Vals())
+{
+	DELETE FROM
+		@v.TblName()
+	WHERE
+		@v.Key().ColNames().IsEq().Pars();
+}
+END;

@@ -68,19 +68,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.CodeAnalysis", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.CodeAnalysis.Razor", "src\Build\Jerrycurl.CodeAnalysis.Razor\Jerrycurl.CodeAnalysis.Razor.csproj", "{09324D8F-15D8-4CF0-A808-7CB8B9BBC047}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Data.Test", "test\src\Mvc\Jerrycurl.Data.Test\Jerrycurl.Data.Test.csproj", "{4BBB040A-7EF4-47E5-85F3-FD4FC38BCC17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Data.Test", "test\unit\src\Mvc\Jerrycurl.Data.Test\Jerrycurl.Data.Test.csproj", "{4BBB040A-7EF4-47E5-85F3-FD4FC38BCC17}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Mvc.Test", "test\src\Mvc\Jerrycurl.Mvc.Test\Jerrycurl.Mvc.Test.csproj", "{EC618E3A-A516-4AE1-A872-3A9F73E5287B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Mvc.Test", "test\unit\src\Mvc\Jerrycurl.Mvc.Test\Jerrycurl.Mvc.Test.csproj", "{EC618E3A-A516-4AE1-A872-3A9F73E5287B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Relations.Test", "test\src\Mvc\Jerrycurl.Relations.Test\Jerrycurl.Relations.Test.csproj", "{8C1B68BB-0DDE-4434-B596-C11E08033382}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Relations.Test", "test\unit\src\Mvc\Jerrycurl.Relations.Test\Jerrycurl.Relations.Test.csproj", "{8C1B68BB-0DDE-4434-B596-C11E08033382}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Vendors.MySql.Test", "test\src\Vendors\Jerrycurl.Vendors.MySql.Test\Jerrycurl.Vendors.MySql.Test.csproj", "{29EDF5A4-6040-4248-A4BC-250788C0FE51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Vendors.MySql.Test", "test\unit\src\Vendors\Jerrycurl.Vendors.MySql.Test\Jerrycurl.Vendors.MySql.Test.csproj", "{29EDF5A4-6040-4248-A4BC-250788C0FE51}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Vendors.Oracle.Test", "test\src\Vendors\Jerrycurl.Vendors.Oracle.Test\Jerrycurl.Vendors.Oracle.Test.csproj", "{E4C1036D-2562-428C-9BC0-695063F49ED9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Vendors.Oracle.Test", "test\unit\src\Vendors\Jerrycurl.Vendors.Oracle.Test\Jerrycurl.Vendors.Oracle.Test.csproj", "{E4C1036D-2562-428C-9BC0-695063F49ED9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Vendors.Sqlite.Test", "test\src\Vendors\Jerrycurl.Vendors.Sqlite.Test\Jerrycurl.Vendors.Sqlite.Test.csproj", "{5579F9BD-D953-4AED-BF41-FF7AB51EE64C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Vendors.Sqlite.Test", "test\unit\src\Vendors\Jerrycurl.Vendors.Sqlite.Test\Jerrycurl.Vendors.Sqlite.Test.csproj", "{5579F9BD-D953-4AED-BF41-FF7AB51EE64C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Vendors.SqlServer.Test", "test\src\Vendors\Jerrycurl.Vendors.SqlServer.Test\Jerrycurl.Vendors.SqlServer.Test.csproj", "{173E7075-0E82-4BA0-A944-9B774BFE03A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Vendors.SqlServer.Test", "test\unit\src\Vendors\Jerrycurl.Vendors.SqlServer.Test\Jerrycurl.Vendors.SqlServer.Test.csproj", "{173E7075-0E82-4BA0-A944-9B774BFE03A9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Vendors", "Vendors", "{9D4793B5-EB74-4BAF-9BD3-738D3C9694A7}"
 EndProject
@@ -124,12 +124,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuspec", "nuspec", "{6E68DF
 		nuspec\Jerrycurl.Vendors.SqlServer.nuspec = nuspec\Jerrycurl.Vendors.SqlServer.nuspec
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Vendors.Postgres.Test", "test\src\Vendors\Jerrycurl.Vendors.Postgres.Test\Jerrycurl.Vendors.Postgres.Test.csproj", "{F7D32363-31D1-478C-BF9B-38E8860A26D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Vendors.Postgres.Test", "test\unit\src\Vendors\Jerrycurl.Vendors.Postgres.Test\Jerrycurl.Vendors.Postgres.Test.csproj", "{F7D32363-31D1-478C-BF9B-38E8860A26D7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{620310BA-DC98-48B6-A409-A4CF4583A62E}"
 	ProjectSection(SolutionItems) = preProject
-		test\Directory.Build.props = test\Directory.Build.props
-		test\Directory.Build.targets = test\Directory.Build.targets
+		test\unit\Directory.Build.props = test\unit\Directory.Build.props
+		test\unit\Directory.Build.targets = test\unit\Directory.Build.targets
+		test\unit\README.md = test\unit\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{64E7AA0B-8D96-4CA0-972F-E40BD32A7CFC}"
@@ -144,9 +145,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Extensions.Json",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{EE5078B9-5036-45D1-8324-37C1715F0212}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Extensions.EntityFrameworkCore.Test", "test\src\Extensions\Jerrycurl.Extensions.EntityFrameworkCore.Test\Jerrycurl.Extensions.EntityFrameworkCore.Test.csproj", "{9B208979-73FF-4978-BEAB-A137E1AAC504}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Extensions.EntityFrameworkCore.Test", "test\unit\src\Extensions\Jerrycurl.Extensions.EntityFrameworkCore.Test\Jerrycurl.Extensions.EntityFrameworkCore.Test.csproj", "{9B208979-73FF-4978-BEAB-A137E1AAC504}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Test.Common", "test\src\Shared\Jerrycurl.Test.Common\Jerrycurl.Test.Common.csproj", "{63C12E40-D889-4525-9A2F-6BDDFF2E12C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Test.Common", "test\unit\src\Shared\Jerrycurl.Test.Common\Jerrycurl.Test.Common.csproj", "{63C12E40-D889-4525-9A2F-6BDDFF2E12C3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Vendors.SqlServer.Legacy", "src\Vendors\Jerrycurl.Vendors.SqlServer.Legacy\Jerrycurl.Vendors.SqlServer.Legacy.csproj", "{D67A7C1A-5DC1-465A-A1FF-42C1203FEFDF}"
 EndProject

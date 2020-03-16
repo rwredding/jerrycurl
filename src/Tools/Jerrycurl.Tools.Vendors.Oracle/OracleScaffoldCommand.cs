@@ -19,9 +19,10 @@ namespace Jerrycurl.Tools.Vendors.Oracle
 
             using (DbCommand tablesAndColumns = connection.CreateCommand())
             {
-                tablesAndColumns.CommandText = @"SELECT *
-                                                 FROM user_tab_cols T1
-                                                 ORDER BY T1.TABLE_NAME, T1.COLUMN_ID";
+                tablesAndColumns.CommandText = @"SELECT T2.*
+                                                 FROM user_tables T1
+                                                 INNER JOIN user_tab_columns T2 ON T2.TABLE_NAME = T1.TABLE_NAME
+                                                 ORDER BY T2.TABLE_NAME, T2.COLUMN_ID";
 
                 await this.AddTablesAndColumnAsync(builder, tablesAndColumns);
             }

@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
 using Jerrycurl.CommandLine;
+using Jerrycurl.Facts;
 using Jerrycurl.Reflection;
 using Jerrycurl.Tools.DotNet.Cli.ComponentModel;
 
@@ -39,16 +40,17 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
 
         private static ProxyArgs GetProxyArgs(ToolOptions options)
         {
-            string packageName = GetNuGetPackageName(options);
-            NuGetVersion version = GetNuGetPackageVersion();
+            string moniker = options["-v", "--vendor"]?.Value;
+            string packageName = DatabaseFacts.GetToolsNuGetPackage(moniker);
+            string packageVersion = GetNuGetPackageVersionString();
 
-            if (packageName == null || version == null)
+            if (packageName == null || packageVersion == null)
                 return null;
 
             string sourcePath = Path.GetDirectoryName(typeof(DotNetJerryHost).Assembly.Location);
             string projectPath = Path.Combine(sourcePath, $"{ProxyAssemblyName}.csproj");
-            string binPath = Path.Combine(sourcePath, "built", packageName.ToLower(), "bin");
-            string intermediatePath = Path.Combine(sourcePath, "built", packageName.ToLower(), "obj");
+            string binPath = Path.Combine(sourcePath, "built", moniker, "bin");
+            string intermediatePath = Path.Combine(sourcePath, "built", moniker, "obj");
             string dllPath = Path.Combine(binPath, $"{ProxyAssemblyName}.dll");
 
             binPath = binPath.TrimEnd('\\', '/') + '\\';
@@ -57,7 +59,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
             return new ProxyArgs()
             {
                 PackageName = packageName,
-                PackageVersion = version.IsPrerelease ? version.Version : version.PublicVersion,
+                PackageVersion = packageVersion,
                 DllPath = dllPath,
                 DllName = ProxyAssemblyName,
                 ProjectPath = projectPath,
@@ -68,25 +70,19 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
 
         private static bool IsProxyRunner() => (Assembly.GetEntryAssembly().GetCustomAttribute<ProxyHostAttribute>() != null);
 
-        private static string GetNuGetPackageName(ToolOptions options)
+        private static string GetNuGetPackageVersionString()
         {
-            string moniker = options["-v", "--vendor"]?.Value;
+#pragma warning disable CS0162
+            NuGetVersion version = GetNuGetPackageVersion();
 
-            switch (moniker)
-            {
-                case "sqlserver":
-                    return "Jerrycurl.Tools.Vendors.SqlServer";
-                case "oracle":
-                    return "Jerrycurl.Tools.Vendors.Oracle";
-                case "mysql":
-                    return "Jerrycurl.Tools.Vendors.MySql";
-                case "postgres":
-                    return "Jerrycurl.Tools.Vendors.Postgres";
-                case "sqlite":
-                    return "Jerrycurl.Tools.Vendors.Sqlite";
-                default:
-                    return null;
-            }
+            if (version == null)
+                return null;
+            else if (ThisAssembly.IsPublicRelease)
+                return version.PublicVersion;
+            else
+                return version.Version;
+
+#pragma warning restore CS0162
         }
 
         public static NuGetVersion GetNuGetPackageVersion() => typeof(DotNetJerryHost).Assembly.GetNuGetPackageVersion();

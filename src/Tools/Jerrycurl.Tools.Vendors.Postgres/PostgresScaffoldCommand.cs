@@ -20,7 +20,7 @@ namespace Jerrycurl.Tools.Vendors.Postgres
 
             using (DbCommand tablesAndColumns = connection.CreateCommand())
             {
-                tablesAndColumns.CommandText = @"SELECT *, PG_GET_SERIAL_SEQUENCE(T1.TABLE_NAME, T2.COLUMN_NAME) AS serial_seq
+                tablesAndColumns.CommandText = @"SELECT *
                                                  FROM INFORMATION_SCHEMA.TABLES T1
                                                  INNER JOIN INFORMATION_SCHEMA.COLUMNS T2 ON T2.TABLE_SCHEMA = T1.TABLE_SCHEMA AND T2.TABLE_NAME = T1.TABLE_NAME
                                                  WHERE T1.TABLE_TYPE = 'BASE TABLE' AND T1.TABLE_SCHEMA NOT IN ('information_schema','pg_catalog')

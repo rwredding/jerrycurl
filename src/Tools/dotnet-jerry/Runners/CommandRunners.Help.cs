@@ -33,8 +33,8 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 DotNetJerryHost.WriteLine();
                 DotNetJerryHost.WriteLine("Commands:");
                 DotNetJerryHost.WriteLine("  scaffold                    Generate a C# object model from an existing database.");
-                DotNetJerryHost.WriteLine("  transpile                   Transpile a project of .cssql files into C# classes.");
-                DotNetJerryHost.WriteLine("  rsp                         Execute CLI with input read from one or more files.");
+                DotNetJerryHost.WriteLine("  transpile                   Transpile a collection of .cssql files into C# classes.");
+                DotNetJerryHost.WriteLine("  cli                         Execute CLI with arguments read from one or more input files.");
                 DotNetJerryHost.WriteLine("  info                        Show information about a database connector.");
                 DotNetJerryHost.WriteLine("  help [command]              Show help information the commands above.");
                 DotNetJerryHost.WriteLine();
@@ -51,7 +51,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                     case "tp":
                         HelpForTranspile();
                         break;
-                    case "rsp":
+                    case "cli":
                         HelpForResponseFile();
                         break;
                     case "info":
@@ -92,19 +92,20 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
         {
             DotNetJerryHost.WriteHeader();
 
-            DotNetJerryHost.WriteLine("Usage: jerry rsp [options]");
+            DotNetJerryHost.WriteLine("Usage: jerry cli [options]");
             DotNetJerryHost.WriteLine();
-            DotNetJerryHost.WriteLine("Execute CLI with input read from one or more files.");
+            DotNetJerryHost.WriteLine("Execute CLI with arguments read from one or more input files.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Options:");
             DotNetJerryHost.WriteLine("  -c, --command <cmd>      Command to prefix parsed arguments with.");
             DotNetJerryHost.WriteLine("  -f, --file               Add a file to read command-line arguments from.");
-            DotNetJerryHost.WriteLine("                               Defaults to 'jerry.rsp' in the current directory.");
+            DotNetJerryHost.WriteLine("                               Defaults to '<command>.cli' in the current directory.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Examples:");
-            DotNetJerryHost.WriteLine("  jerry rsp");
-            DotNetJerryHost.WriteLine("  jerry rsp -f MyFile.rsp");
-            DotNetJerryHost.WriteLine("  jerry rsp -c scaffold -f Database.rsp");
+            DotNetJerryHost.WriteLine("  jerry cli");
+            DotNetJerryHost.WriteLine("  jerry cli -f MyFile.cli");
+            DotNetJerryHost.WriteLine("  jerry cli -c scaffold");
+            DotNetJerryHost.WriteLine("  jerry cli -c scaffold -f Database.cli");
             DotNetJerryHost.WriteLine();
         }
 
@@ -114,18 +115,18 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
             DotNetJerryHost.WriteLine("Usage: jerry transpile [options]");
             DotNetJerryHost.WriteLine();
-            DotNetJerryHost.WriteLine("Transpile a project of .cssql files into C# classes.");
+            DotNetJerryHost.WriteLine("Transpile a collection of .cssql files into C# classes.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Options:");
-            DotNetJerryHost.WriteLine("  -p, --project          Project directory to resolve relative paths and namespaces from.");
-            DotNetJerryHost.WriteLine("                             Defaults to the current directory.");
+            DotNetJerryHost.WriteLine("  -p, --project          Project directory to resolve relative paths from. Default to the");
+            DotNetJerryHost.WriteLine("                             current directory.");
             DotNetJerryHost.WriteLine("  -f, --file             Add a file to the project. Prefix with @ to read from a file-based");
-            DotNetJerryHost.WriteLine("                             list (rsp syntax).");
-            DotNetJerryHost.WriteLine("  -d, --directory        Add all .cssql files from a directory (and its subdirectories)");
+            DotNetJerryHost.WriteLine("                             list (.rsp syntax).");
+            DotNetJerryHost.WriteLine("  -d, --directory        Add all .cssql files from a directory and its subdirectories");
             DotNetJerryHost.WriteLine("                             to the project.");
-            DotNetJerryHost.WriteLine("  -ns, --namespace       Root namespace to resolve final namespace for each resulting C#");
-            DotNetJerryHost.WriteLine("                             class from.");
-            DotNetJerryHost.WriteLine("  -i, --import           Add a default namespace import to the resulting C# classes.");
+            DotNetJerryHost.WriteLine("  -ns, --namespace       Root namespace from which to generate sub-namespaces for each .cssql");
+            DotNetJerryHost.WriteLine("                             file based on its relative project path.");
+            DotNetJerryHost.WriteLine("  -i, --import           Add a default namespace import to each generated C# class.");
             DotNetJerryHost.WriteLine("  -o, --output           Specify the output directory for generated C# files. Defaults");
             DotNetJerryHost.WriteLine("                             to 'obj\\Jerrycurl'");
             DotNetJerryHost.WriteLine("  --no-clean             Do not clean the output directory from existing C# files before");
@@ -144,7 +145,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
         {
             DotNetJerryHost.WriteHeader();
 
-            DotNetJerryHost.WriteLine("Usage: jerry info --v <moniker>");
+            DotNetJerryHost.WriteLine("Usage: jerry info [options]");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Show information about a specific database connector.");
             DotNetJerryHost.WriteLine();
@@ -161,8 +162,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
         public static void HelpForInvalid(RunnerArgs args)
         {
             DotNetJerryHost.WriteHeader();
-            DotNetJerryHost.WriteLine("Usage: jerry [command] [options]");
-            DotNetJerryHost.WriteLine("Use 'jerry help' to show commands and options.");
+            DotNetJerryHost.WriteLine("Usage: jerry [command] [options]. Use 'jerry help' to show commands and options.");
 
             if (string.IsNullOrEmpty(args.Command))
                 throw new RunnerException("No command specified.");

@@ -1,0 +1,17 @@
+﻿@result Jerrycurl.Test.Integration.Views.DatabaseView
+@{
+    var c = this.R.Open(m => m.Cast);
+}
+
+SELECT
+    @R.Star(),
+    @R.Star(m => m.Details)
+FROM
+    @R.Tbl()
+LEFT JOIN
+    @R.Tbl(m => m.Details) ON @R.Col(m => m.Details.MovieId) = @R.Col(m => m.Id);
+
+SELECT
+    @c.Star()
+FROM
+    @c.Tbl()

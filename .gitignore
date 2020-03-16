@@ -54,7 +54,7 @@ BenchmarkDotNet.Artifacts/
 # .NET Core
 project.lock.json
 project.fragment.lock.json
-#artifacts/
+artifacts/
 **/Properties/launchSettings.json
 
 # StyleCop
@@ -331,6 +331,3 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
-
-# dist
-dist

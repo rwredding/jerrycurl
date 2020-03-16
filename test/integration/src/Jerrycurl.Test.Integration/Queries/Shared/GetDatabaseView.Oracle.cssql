@@ -1,0 +1,22 @@
+﻿@result Jerrycurl.Test.Integration.Views.DatabaseView
+@import Jerrycurl.Mvc.Sql.Oracle
+@{
+    var c = this.R.Open(m => m.Cast);
+}
+
+BEGIN
+OPEN @R.Refcursor() FOR
+SELECT
+    @R.Star(),
+    @R.Star(m => m.Details)
+FROM
+    @R.Tbl()
+LEFT JOIN
+    @R.Tbl(m => m.Details) ON @R.Col(m => m.Details.MovieId) = @R.Col(m => m.Id);
+
+OPEN @c.Refcursor() FOR
+SELECT
+    @c.Star()
+FROM
+    @c.Tbl();
+END;

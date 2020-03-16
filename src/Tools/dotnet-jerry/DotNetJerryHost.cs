@@ -4,6 +4,7 @@ using Jerrycurl.Tools.DotNet.Cli.Commands;
 using Jerrycurl.Tools.DotNet.Cli.ComponentModel;
 using Jerrycurl.Tools.DotNet.Cli.Runners;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Jerrycurl.Tools.DotNet.Cli
@@ -12,10 +13,6 @@ namespace Jerrycurl.Tools.DotNet.Cli
     {
         public async static Task<int> Main(string[] args2)
         {
-            Environment.CurrentDirectory = @"D:\projects\dancode\jerrycurl-web\src\Jerrycurl.Web.LandingApp.Data\obj\Debug\netstandard2.0";
-
-            args2 = new[] { "tp", "-p", @"..\..\..", "-d", "." };
-
             RunnerArgs args = RunnerArgs.FromCommandLine(args2);
 
             ProgramRunner runner = new ProgramRunner(args);

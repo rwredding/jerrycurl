@@ -19,66 +19,67 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 {
     internal static partial class CommandRunners
     {
-        public static async Task ScaffoldAsync(RunnerArgs info, ScaffoldCommand command)
+        public static async Task ScaffoldAsync(RunnerArgs args, ScaffoldCommand command)
         {
             if (command == null)
                 throw new RunnerException("Invalid command object.");
 
-            if (string.IsNullOrWhiteSpace(info.Connection))
+            if (string.IsNullOrWhiteSpace(args.Connection))
                 throw new RunnerException("Please specify a connection string using the -c|--connection parameter.");
 
             DatabaseModel databaseModel;
             IList<TypeMapping> typeMappings;
 
-            using (DbConnection connection = command.GetDbConnection())
+            if (args.Verbose)
+                DotNetJerryHost.WriteHeader();
+
+            using (DbConnection connection = await GetOpenConnectionAsync(args, command))
             {
-                try
-                {
-                    connection.ConnectionString = info.Connection;
-                }
-                catch (Exception ex)
-                {
-                    throw new RunnerException("Invalid connection string: " + ex.Message, ex);
-                }
-
-                if (!string.IsNullOrEmpty(connection.Database))
-                    DotNetJerryHost.WriteLine($"Connecting to database '{connection.Database}'...", ConsoleColor.Yellow);
-                else
-                    DotNetJerryHost.WriteLine("Connecting to database...", ConsoleColor.Yellow);
-
-                try
-                {
-                    connection.Open();
-                }
-                catch (Exception ex)
-                {
-                    throw new RunnerException("Unable to open connection: " + ex.Message, ex);
-                }
-
                 DotNetJerryHost.WriteLine("Generating...", ConsoleColor.Yellow);
 
                 databaseModel = await command.GetDatabaseModelAsync(connection);
                 typeMappings = command.GetTypeMappings().ToList();
             }
 
-            ScaffoldProject project = ScaffoldProject.FromModel(databaseModel, typeMappings, info);
+            ScaffoldProject project = ScaffoldProject.FromModel(databaseModel, typeMappings, args);
 
             await ScaffoldWriter.WriteAsync(project);
 
-            int tableCount = project.Files.SelectMany(f => f.Objects).Count();
-            int columnCount = project.Files.SelectMany(f => f.Objects).SelectMany(o => o.Properties).Count();
+            if (args.Verbose)
+                ScaffoldWriteVerboseOutput(project);
 
-            string tablesMoniker = tableCount + " " + (tableCount == 1 ? "table" : "tables");
-            string columnsMoniker = columnCount + " " + (columnCount == 1 ? "column" : "columns");
+            int objectCount = project.Files.SelectMany(f => f.Objects).Count();
 
-            Console.ForegroundColor = ConsoleColor.Green;
+            string classMoniker = objectCount + " " + (objectCount == 1 ? "class" : "classes");
 
             if (project.Files.Count == 1)
-                DotNetJerryHost.WriteLine($"Generated {tablesMoniker} and {columnsMoniker} in {project.Files[0].FileName}.", ConsoleColor.Green);
+                DotNetJerryHost.WriteLine($"Created {classMoniker} in {project.Files[0].FileName}.", ConsoleColor.Green);
             else
-                DotNetJerryHost.WriteLine($"Generated {tablesMoniker} and {columnsMoniker} in {project.Files.Count} files.", ConsoleColor.Green);
+                DotNetJerryHost.WriteLine($"Created {classMoniker} in {project.Files.Count} files.", ConsoleColor.Green);
+        }
 
-            Console.ResetColor();
+        private static void ScaffoldWriteVerboseOutput(ScaffoldProject project)
+        {
+            foreach (var file in project.Files)
+            {
+                DotNetJerryHost.WriteLine($"    File {file.FileName}");
+
+                foreach (var obj in file.Objects)
+                {
+                    string tableName = !string.IsNullOrEmpty(obj.Table.Schema) ? $"\"{obj.Table.Schema}\".\"{obj.Table.Name}\"" : $"\"{obj.Table.Name}\"";
+                    string className = !string.IsNullOrEmpty(obj.Namespace) ? $"{obj.Namespace}.{obj.ClassName}" : obj.ClassName;
+
+                    DotNetJerryHost.WriteLine($"        -> Table {tableName} -> Class {className}");
+
+                    string[] columnNames = obj.Properties.Select(p => $"\"{p.PropertyName}\"").ToArray();
+                    string columnMoniker = string.Join(", ", columnNames.Take(5));
+
+                    if (columnNames.Length > 5)
+                        columnMoniker += $" [+{columnNames.Length - 5}]";
+
+                    DotNetJerryHost.WriteLine($"            -> Property {columnMoniker}");
+                }                
+            }
         }
     }
 }

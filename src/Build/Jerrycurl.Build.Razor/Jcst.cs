@@ -9,6 +9,7 @@ using Jerrycurl.CodeAnalysis.Projection;
 using Jerrycurl.CodeAnalysis.Razor.Generation;
 using Jerrycurl.CodeAnalysis.Razor.Parsing;
 using Jerrycurl.CodeAnalysis.Razor.ProjectSystem;
+using Jerrycurl.Facts;
 using Jerrycurl.Reflection;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -85,7 +86,7 @@ namespace Jerrycurl.Build.Razor
             return new GeneratorOptions()
             {
                 TemplateCode = templateCode,
-                Imports = RazorFacts.GetDefaultNamespaces().Select(ns => new RazorFragment() { Text = ns }).ToList(),
+                Imports = RazorFacts.DefaultNamespaces.Select(ns => new RazorFragment() { Text = ns }).ToList(),
             };
         }
 

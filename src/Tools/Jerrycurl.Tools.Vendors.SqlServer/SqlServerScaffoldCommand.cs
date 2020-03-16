@@ -27,7 +27,7 @@ namespace Jerrycurl.Tools.Vendors.SqlServer
                                                  WHERE T1.TABLE_TYPE = 'BASE TABLE'
                                                  ORDER BY T1.TABLE_SCHEMA, T1.TABLE_NAME, T2.ORDINAL_POSITION";
 
-                await this.AddTablesAndColumnAsync(builder, tablesAndColumns);
+                await this.AddTablesAndColumnsAsync(builder, tablesAndColumns);
             }
 
             using (DbCommand primaryKeys = connection.CreateCommand())
@@ -52,7 +52,7 @@ namespace Jerrycurl.Tools.Vendors.SqlServer
             return builder.Model;
         }
 
-        private async Task AddTablesAndColumnAsync(ModelBuilder builder, DbCommand command)
+        private async Task AddTablesAndColumnsAsync(ModelBuilder builder, DbCommand command)
         {
             foreach (TupleData tuple in await TupleData.FromDbCommandAsync(command))
             {
@@ -61,7 +61,7 @@ namespace Jerrycurl.Tools.Vendors.SqlServer
                 string columnName = tuple["COLUMN_NAME"] as string;
                 string typeName = tuple["DATA_TYPE"] as string;
                 bool isNullable = (tuple["IS_NULLABLE"] as string == "YES");
-                bool isIdentity = ((int)tuple["IS_IDENTITY"] == 1);
+                bool isIdentity = ((int?)tuple["IS_IDENTITY"] == 1);
                 bool ignoreTable = this.IsIgnoredTable(tableSchema, tableName);
 
                 builder.AddColumn(tableSchema, tableName, columnName, typeName, isNullable: isNullable, isIdentity: isIdentity, ignoreTable: ignoreTable);

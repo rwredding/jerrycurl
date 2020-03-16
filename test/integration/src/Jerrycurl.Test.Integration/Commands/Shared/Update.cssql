@@ -1,0 +1,9 @@
+﻿@foreach (var v in this.M.Vals())
+{
+	UPDATE
+		@v.TblName()
+	SET
+		@v.In().ColNames().Eq().Pars()
+	WHERE
+		@v.Key().ColNames().IsEq().Pars();
+}

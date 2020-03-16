@@ -1,0 +1,12 @@
+﻿SELECT
+	@R.Star()
+FROM
+	@R.Tbl()
+
+@if (this.M.Any())
+{
+	WHERE
+		@R.Cols().IsEq(this.M)
+}
+ORDER BY
+	@R.Key().Cols();

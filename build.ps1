@@ -1,83 +1,122 @@
 #Requires -Version 5.0
 
 [CmdletBinding(PositionalBinding=$false)]
-Param(
-    [switch]$NoTest,
-    [switch]$NoPack,
-    [switch]$PublicRelease,
-    [string]$Config = "Release"
+param(
+    [switch] $NoTest,
+    [switch] $NoPack,
+    [switch] $PublicRelease,
+    [switch] $Integration,
+    [string] $Configuration = "Release",
+    [string] $Verbosity = "minimal"
 )
 
 $ErrorActionPreference = "Stop"
 
 $sln = Join-Path $PSScriptRoot jerrycurl.sln
-$verbosity = "minimal"
-$sw = [Diagnostics.Stopwatch]::StartNew()
+$packageSource = Join-Path $PSScriptRoot "artifacts\packages"
+$timer = [Diagnostics.Stopwatch]::StartNew()
 $props = @(
-    "/verbosity:$verbosity"
+    "/verbosity:$Verbosity"
 )
 
-if ($PublicRelease) {
+if ($PublicRelease)
+{
     $props += "/property:PublicRelease=$PublicRelease"
 }
 
-Write-Host "Restoring NuGet packages..." -ForegroundColor "Magenta"
-dotnet restore /property:Configuration=$Config $sln @props
-if ($LastExitCode -ne 0) {
-    Write-Host "Restore failed, aborting." -Foreground "Red"
-    exit -1
+# Restore
+Write-Host "Restoring NuGet packages..." -ForegroundColor Magenta
+dotnet restore /property:Configuration=$Configuration $sln @props
+if ($LastExitCode -ne 0)
+{
+    Write-Host "Restore failed, aborting." -ForegroundColor Red
+    Exit -1
 }
-Write-Host "Done restoring." -ForegroundColor "Green"
+Write-Host "Done restoring." -ForegroundColor Green
 
-Write-Host "Cleaning..." -ForegroundColor "Magenta"
-dotnet clean -c $Config $sln @props
-if ($LastExitCode -ne 0) {
-    Write-Host "Clean failed, aborting." -Foreground "Red"
-    exit -1
+# Clean
+Write-Host "Cleaning..." -ForegroundColor Magenta
+dotnet clean -c $Configuration $sln @props
+if ($LastExitCode -ne 0)
+{
+    Write-Host "Clean failed, aborting." -ForegroundColor Red
+    Exit -1
 }
-Write-Host "Done cleaning." -ForegroundColor "Green"
-
-Write-Host "Building..." -ForegroundColor "Magenta"
-dotnet build -c $Config --no-restore $sln @props
-if ($LastExitCode -ne 0) {
-    Write-Host "Build failed, aborting." -Foreground "Red"
-    exit -1
+if (-not $NoPack)
+{
+    Remove-Item $packageSource\* -Force -ErrorAction Ignore
 }
-Write-Host "Done building." -ForegroundColor "Green"
+Write-Host "Done cleaning." -ForegroundColor Green
 
-if (-Not $NoTest) {
-    $testProj = "Mvc\Jerrycurl.Data.Test"
-	Write-Host "Testing..." -ForegroundColor "Magenta"
-	
-	foreach ($csproj in (dir .\test\src -recurse -filter *.Test.csproj)) {
-        pushd (Split-Path $csproj.FullName -Parent)
-        dotnet fixie --no-build --configuration $Config
-        
-        if ($LastExitCode -ne 0) {            
-            Write-Host "Testing failed, aborting." -Foreground "Red"
-            popd
-            exit -1
-        }
-        popd
-    }
-	
-    Write-Host "Done testing." -ForegroundColor "Green"
-} else {
-    Write-Host "Testing skipped." -ForegroundColor "Yellow"
+# Build
+Write-Host "Building..." -ForegroundColor Magenta
+dotnet build -c $Configuration --no-restore $sln @props
+if ($LastExitCode -ne 0)
+{
+    Write-Host "Build failed, aborting." -ForegroundColor Red
+    Exit -1
 }
+Write-Host "Done building." -ForegroundColor Green
 
-if (-Not $NoPack) {
-	Write-Host "Packing..." -ForegroundColor "Magenta"
-	dotnet pack $sln -c $Config --no-build --no-restore @props
-	
-    if ($LastExitCode -ne 0) {
-		Write-Host "Packing failed, aborting." -Foreground "Red"
-		exit -1
+# Test
+if (-not $NoTest)
+{
+	Write-Host "Testing..." -ForegroundColor Magenta
+
+    .\test\unit\test.ps1 -NoBuild -Verbosity $Verbosity -Configuration $Configuration
+
+    if ($LastExitCode -ne 0)
+    {
+		Write-Host "Testing failed, aborting." -ForegroundColor Red
+		Exit -1
 	}
 	
-	Write-Host "Done packing." -ForegroundColor "Green"
-} else {
-    Write-Host "Packing skipped." -ForegroundColor "Yellow"
+    Write-Host "Done testing." -ForegroundColor Green
+}
+else
+{
+    Write-Host "Testing skipped." -ForegroundColor Yellow
 }
 
-Write-Host "All done. Took $("{0:0.00}" -f $sw.Elapsed.TotalSeconds) seconds" -ForegroundColor "Blue"
+# Pack
+if (-not $NoPack)
+{
+	Write-Host "Packing..." -ForegroundColor Magenta
+	dotnet pack $sln -c $Configuration --no-build --no-restore @props
+	
+    if ($LastExitCode -ne 0)
+    {
+		Write-Host "Packing failed, aborting." -ForegroundColor Red
+		Exit -1
+	}
+	
+	Write-Host "Done packing." -ForegroundColor Green
+}
+else
+{
+    Write-Host "Packing skipped." -ForegroundColor Yellow
+}
+
+# Integration test
+if (-not $NoPack -and $Integration)
+{
+    Write-Host "Integrating..." -ForegroundColor Magenta
+
+    .\test\integration\test.ps1 -Verbosity $Verbosity
+
+    if ($LastExitCode -ne 0)
+    {
+        Write-Host "Integration failed, aborting." -ForegroundColor Red
+		Exit -1
+    }
+    else
+    {
+        Write-Host "Done integrating." -ForegroundColor Green
+    }
+}
+else
+{
+    Write-Host "Integration skipped." -ForegroundColor Yellow
+}
+
+Write-Host "All done. Took $("{0:0.00}" -f $timer.Elapsed.TotalSeconds) seconds" -ForegroundColor Blue
