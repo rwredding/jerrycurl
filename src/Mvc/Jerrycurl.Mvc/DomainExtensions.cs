@@ -55,5 +55,21 @@ namespace Jerrycurl.Mvc
 
             builder.Add(contract);
         }
+
+        public static void AddContract(this ISchemaStore schemas, IProjectionContractResolver contract)
+        {
+            if (schemas == null)
+                throw new ArgumentNullException(nameof(schemas));
+
+            if (contract == null)
+                throw new ArgumentNullException(nameof(contract));
+
+            ProjectionMetadataBuilder builder = schemas.OfType<ProjectionMetadataBuilder>().FirstOrDefault();
+
+            if (builder == null)
+                throw new InvalidOperationException("No relation metadata builder found.");
+
+            builder.Add(contract);
+        }
     }
 }

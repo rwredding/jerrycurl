@@ -9,7 +9,7 @@ using Jerrycurl.Relations.Metadata.Contracts;
 
 namespace Jerrycurl.Relations.Metadata
 {
-    public class RelationMetadataBuilder : Collection<IRelationContractResolver>, IRelationMetadataBuilder
+    public class RelationMetadataBuilder : Collection<IRelationContractResolver>, IMetadataBuilder<IRelationMetadata>
     {
         public IRelationContractResolver DefaultResolver { get; set; } = new DefaultRelationContractResolver();
 

@@ -6,11 +6,15 @@ using Jerrycurl.Relations.Metadata;
 using Jerrycurl.Data.Metadata;
 using Jerrycurl.Mvc.Metadata.Annotations;
 using Jerrycurl.Data.Metadata.Annotations;
+using System.Collections.ObjectModel;
+using Jerrycurl.Collections;
 
 namespace Jerrycurl.Mvc.Metadata
 {
-    public class ProjectionMetadataBuilder : IMetadataBuilder<IProjectionMetadata>
+    public class ProjectionMetadataBuilder : Collection<IProjectionContractResolver>, IMetadataBuilder<IProjectionMetadata>
     {
+        public IProjectionContractResolver DefaultResolver { get; set; } = new DefaultProjectionContractResolver();
+
         public IProjectionMetadata GetMetadata(IMetadataBuilderContext context) => this.GetMetadata(context, context.Identity);
 
         private IProjectionMetadata GetMetadata(IMetadataBuilderContext context, MetadataIdentity identity)
@@ -75,36 +79,18 @@ namespace Jerrycurl.Mvc.Metadata
 
             metadata.Properties = this.CreateLazy(() => this.CreateProperties(context, metadata));
             metadata.Item = this.CreateItem(context, metadata);
-            metadata.Flags = this.GetFlags(metadata);
+
+            this.ApplyFlags(metadata);
 
             return metadata;
         }
 
-        private ProjectionMetadataFlags GetFlags(ProjectionMetadata metadata)
+        private void ApplyFlags(ProjectionMetadata metadata)
         {
-            IdAttribute id = metadata.Relation.Annotations?.OfType<IdAttribute>().FirstOrDefault();
-            OutAttribute out0 = metadata.Relation.Annotations?.OfType<OutAttribute>().FirstOrDefault();
-            InAttribute in0 = metadata.Relation.Annotations?.OfType<InAttribute>().FirstOrDefault();
+            IEnumerable<IProjectionContractResolver> allResolvers = new[] { this.DefaultResolver }.Concat(this);
 
-            IReferenceMetadata reference = metadata.Identity.GetMetadata<IReferenceMetadata>();
-            ProjectionMetadataFlags flags = ProjectionMetadataFlags.None;
-
-            if (id != null)
-                flags |= ProjectionMetadataFlags.Identity;
-
-            if (in0 != null || out0 != null)
-            {
-                flags |= in0 != null ? ProjectionMetadataFlags.Input : ProjectionMetadataFlags.None;
-                flags |= out0 != null ? ProjectionMetadataFlags.Output : ProjectionMetadataFlags.None;
-            }
-            else if (id != null)
-                flags |= ProjectionMetadataFlags.Output;
-            else if (reference != null && reference.HasAnyFlag(ReferenceMetadataFlags.Key))
-                flags |= ProjectionMetadataFlags.Input | ProjectionMetadataFlags.Output;
-            else
-                flags |= ProjectionMetadataFlags.Input;
-
-            return flags;
+            foreach (IProjectionContractResolver resolver in allResolvers)
+                metadata.Flags = resolver.GetFlags(metadata);
         }
     }
 }

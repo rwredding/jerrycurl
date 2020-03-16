@@ -13,7 +13,7 @@ Set-Connection-String "sqlite" ("FILENAME=" + (Join-Path $tempPath "sqlite\int.d
 
 foreach ($vendor in Get-All-Vendors)
 {
-    if ($vendor -eq "postgres" -or $vendor -eq "mysql") { continue }
+    #if ($vendor -eq "postgres" -or $vendor -eq "mysql") { continue }
     
     $connectionString = Get-Connection-String -Vendor $vendor
     

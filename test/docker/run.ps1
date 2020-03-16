@@ -35,7 +35,7 @@ foreach ($vendor in $Vendors)
     $connectionString = Get-Variable "$variable" -ValueOnly -ErrorAction Ignore
     $yml = Get-Yml-Path -Vendor $vendor
     
-    if ($connectionString -and $yml)
+    if ($yml)
     {
         Set-Connection-String -Vendor $vendor -ConnectionString $connectionString
         $args += "-f", $yml

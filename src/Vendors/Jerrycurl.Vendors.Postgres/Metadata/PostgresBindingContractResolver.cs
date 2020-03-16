@@ -4,13 +4,14 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 using Jerrycurl.Data.Metadata;
+using Jerrycurl.Mvc.Metadata;
 using Jerrycurl.Mvc.Metadata.Annotations;
 using Npgsql;
 using NpgsqlTypes;
 
 namespace Jerrycurl.Vendors.Postgres.Metadata
 {
-    public class PostgresContractResolver : IBindingContractResolver
+    public class PostgresBindingContractResolver : IBindingContractResolver
     {
         public int Priority => 1000;
 
