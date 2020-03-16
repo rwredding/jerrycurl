@@ -24,7 +24,7 @@ build_script:
   - sqlcmd -S "(local)" -U "sa" -P "Password12!" -Q "CREATE DATABASE jerry_testdb;"
   - createdb
   - mysql -e "create database jerry_testdb;" --user=root --password=Password12!
-  - ps: .\build.ps1 -Integration
+  - ps: .\build.ps1 -Integrate
   
 artifacts:
   - path: .\artifacts\packages\*.nupkg
