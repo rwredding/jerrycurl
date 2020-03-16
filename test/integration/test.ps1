@@ -13,24 +13,9 @@ Set-Connection-String "sqlite" ("FILENAME=" + (Join-Path $tempPath "sqlite\int.d
 
 foreach ($vendor in Get-All-Vendors)
 {
-    Write-Host "APPVEYOR"
-    Write-Host $env:APPVEYOR
-    
-    Write-Host "CI"
-    Write-Host $env:CI
-    
-    Write-Host "CI2"
-    Write-Host "$env:CI"
-    Write-Host ($env:CI -eq "True" -and $vendor -eq "mysql")
-    
     $connectionString = Get-Connection-String -Vendor $vendor
     
-    if ($env:CI -eq "True" -and $vendor -eq "mysql")
-    {
-        $connectionSring = $null
-        
-        Write-Host "It's null!!"
-    }
+    if ($env:CI -eq "True" -and $vendor -eq "mysql") { $connectionString = "" }
     
     Write-Host ""
     Write-Host "   Testing '$vendor'..."
