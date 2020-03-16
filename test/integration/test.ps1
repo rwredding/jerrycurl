@@ -21,7 +21,7 @@ foreach ($vendor in Get-All-Vendors)
     
     Write-Host "CI2"
     Write-Host "$env:CI"
-    Write-Host ($env:CI -eq "True")
+    Write-Host ($env:CI -eq "True" -and $vendor -eq "mysql")
     
     $connectionString = Get-Connection-String -Vendor $vendor
     
