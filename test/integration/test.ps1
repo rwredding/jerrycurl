@@ -13,6 +13,16 @@ Set-Connection-String "sqlite" ("FILENAME=" + (Join-Path $tempPath "sqlite\int.d
 
 foreach ($vendor in Get-All-Vendors)
 {
+    Write-Host "APPVEYOR"
+    Write-Host $env:APPVEYOR
+    
+    Write-Host "CI"
+    Write-Host $env:CI
+    
+    Write-Host "CI2"
+    Write-Host "$env:CI"
+    Write-Host ($env:CI -eq "True")
+    
     $connectionString = Get-Connection-String -Vendor $vendor
     
     if ($env:APPVEYOR -eq "True" -and $vendor -eq "mysql") { $connectionSring = $null }
