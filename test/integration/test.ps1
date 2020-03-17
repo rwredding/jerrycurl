@@ -11,13 +11,13 @@ param(
 if (-not $PackageSource) { $PackageSource = Join-Path $PSScriptRoot "..\..\artifacts\packages" }
 if (-not $BuildPath)     { $BuildPath     = Join-Path $PSScriptRoot "..\..\artifacts\integration" }
 
-Set-Connection-String "sqlite" ("FILENAME=" + (Join-Path $BuildPath "sqlite\int.db"))
+Set-Live-Connection "sqlite" ("FILENAME=" + (Join-Path $BuildPath "sqlite\int.db"))
 
 foreach ($vendor in Get-All-Vendors)
 {
-    $connectionString = Get-Connection-String -Vendor $vendor
+    $connectionString = Get-Live-Connection -Vendor $vendor
     
-    if ($env:CI -eq "True" -and $vendor -eq "mysql") { $connectionString = "" }
+    if ($env:CI -eq "True" -and $vendor -eq "mysql") { $connectionString = $null }
     
     Write-Host ""
     Write-Host "   Testing '$vendor'..."
