@@ -15,11 +15,11 @@ Jerrycurl can be installed into any [SDK-style](https://docs.microsoft.com/en-us
 ```
 
 #### Tooling
-If you want to generate a ready-to-go object model from your database, install our [CLI](https://www.nuget.org/packages/dotnet-jerry/) as a [.NET Global Tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools) from NuGet.
+If you want to generate a ready-to-go object model from your database, install our [CLI](https://www.nuget.org/packages/dotnet-jerry/) from NuGet.
 ```shell
 > dotnet tool install --global dotnet-jerry
 ```
-This enables the `jerry` executable anywhere on your machine. In our case we'll use the `scaffold` command to generate a `.cs` file containing classes that match tables in a local database about movies.
+This enables the `jerry` executable anywhere on your machine. In our case we'll use the `scaffold` command to generate a `.cs` file with classes matching a local database about movies.
 ```shell
 > jerry scaffold -v sqlserver -c "SERVER=.;DATABASE=moviedb;TRUSTED_CONNECTION=true" -ns "MovieDb.Database"
 Connecting to database 'moviedb'...
@@ -29,9 +29,9 @@ Generated 7 tables and 21 columns in Database.cs.
 To learn more about our CLI, type in `jerry help`.
 
 ### MVC design
-After installing the packages above you can start adding the different components to your project. This should feel familiar to anyone acquainted with ASP.NET MVC, and for the most part Jerrycurl aligns itself with this framework -- only with a slightly different terminology. 
+After installing the packages above you can start adding the different components to your project. This should feel familiar to anyone acquainted with ASP.NET MVC, and for the most part Jerrycurl aligns itself with this framework, only with a slightly different terminology. 
 
-So where your ASP.NET application contains models, controllers and **Razor HTML**-based views, Jerrycurl separates your project into models, accessors and procedures written with **Razor SQL** syntax.
+So where your ASP.NET application contains models, controllers and Razor HTML-based views, Jerrycurl separates your project into models, accessors and procedures written with Razor SQL syntax.
 
 #### Model layer
 The model layer is a collection of POCO-like classes that represent tables and customized datasets for your operations. Each model can be mapped at any depth with any type of data relationship: one-to-one, one-to-many, many-to-one and self-joins.
@@ -62,7 +62,7 @@ class MovieRolesView : Movie
 ```
 
 #### Procedure (view) layer
-Procedures are written in `.cssql` files and separated into **commands** that write data and **queries** that read data. Both are written with a combination of **SQL and Razor code** generating SQL payloads directly from your object model.
+Procedures are written in `.cssql` files and separated into **commands** that write data (`INSERT`, `UPDATE`, `DELETE`) and **queries** that read data (`SELECT`). Both are written with a combination of **SQL and Razor code** generating SQL payloads directly from your object model.
 ```
 -- Queries/Movies/GetMovies.cssql
 @result MovieTaglineView
