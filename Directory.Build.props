@@ -27,7 +27,7 @@
         <IsPackable>false</IsPackable>
         <PackageOutputPath>$(MSBuildThisFileDirectory)artifacts\packages</PackageOutputPath>
         <PackageOwners>AC Dancode</PackageOwners>
-        <PackageAuthors>R. W. Redding</PackageAuthors>
+        <PackageAuthors>rhodosaur</PackageAuthors>
         <IncludeSymbols>true</IncludeSymbols>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>

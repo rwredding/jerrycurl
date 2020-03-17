@@ -10,6 +10,9 @@ namespace Jerrycurl.Mvc.Sql
 {
     public static class ValueExtensions
     {
+        public static IEnumerable<IProjection<TItem>> Vals<TModel, TItem>(this IEnumerable<IProjection<TModel>> projections, Expression<Func<TModel, IEnumerable<TItem>>> expression)
+            => projections.SelectMany(p => p.Vals(expression));
+
         public static IEnumerable<IProjection> Vals(this IProjection projection)
         {
             if (projection.Source == null)
