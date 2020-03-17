@@ -71,6 +71,6 @@ finally
 {
     foreach ($vendor in $filtered)
     {
-        Set-Connection-String -Vendor $vendor -ConnectionString $null
+        Set-Live-Connection $vendor -ConnectionString $null
     }
 }
