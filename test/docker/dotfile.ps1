@@ -55,6 +55,7 @@ function Set-Live-Connection
     if ($variable)
     {
         [Environment]::SetEnvironmentVariable($variable, $ConnectionString, "User")
+        [Environment]::SetEnvironmentVariable($variable, $ConnectionString)
     }
 }
 
