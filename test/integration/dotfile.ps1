@@ -5,6 +5,7 @@ function Test-Integration
         [String] $Vendor,
         [Parameter(Mandatory=$true)]
         [String] $ConnectionString,
+        [String] $UserConnectionString,
         [String] $Version,
         [String] $TargetFramework = "netcoreapp3.0",
         [Parameter(Mandatory=$true)]
@@ -59,20 +60,17 @@ function Test-Integration
         
         Install-Cli $Vendor $Version $TargetFramework $Verbosity $TempPath
         
-        if ($Vendor -eq "oracle")
+        $integrateConnection = $ConnectionString
+        
+        if ($UserConnectionString)
         {
-            Create-Oracle-User $Vendor $ConnectionString $TargetFramework $TempPath
+            Create-Database-User $Vendor $integrateConnection $TargetFramework $TempPath
             
-            $oracleConnection = Get-Oracle-Connection
-            
-            Create-Database $Vendor $oracleConnection $TargetFramework $TempPath
-            Run-Project-Test $Vendor $Version $oracleConnection $PackageSource $targetFramework $Verbosity $TempPath   
+            $integrateConnection = $UserConnectionString
         }
-        else
-        {
-            Create-Database $Vendor $ConnectionString $TargetFramework $TempPath
-            Run-Project-Test $Vendor $Version $ConnectionString $PackageSource $targetFramework $Verbosity $TempPath   
-        }
+        
+        Create-Database $Vendor $integrateConnection $TargetFramework $TempPath
+        Run-Project-Test $Vendor $Version $integrateConnection $PackageSource $targetFramework $Verbosity $TempPath
         
         if (-not (Verify-Integration $Vendor $targetFramework $TempPath)) { break }
     }
@@ -178,14 +176,7 @@ function Install-Cli
     Pop-Location
 }
 
-function Get-Oracle-Connection
-{
-    "DATA SOURCE=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))" +
-    "(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLCDB.localdomain)));"+
-    "USER ID=jerryuser;PASSWORD=Password12"
-}
-
-function Create-Oracle-User
+function Create-Database-User
 {
     param(
         [String] $Vendor,
@@ -194,7 +185,7 @@ function Create-Oracle-User
         [String] $TempPath
     )
 
-    $sql = Join-Path $PSScriptRoot ".\sql\user.oracle.sql"
+    $sql = Join-Path $PSScriptRoot ".\sql\user.$Vendor.sql"
     $toolPath = Get-Temp-Path $Vendor $TargetFramework $TempPath
     
     Push-Location $toolPath

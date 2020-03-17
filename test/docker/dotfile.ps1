@@ -90,7 +90,6 @@ function Get-Connection-String
     $connectionString = $data[$Vendor]
     
     if ($User) { $connectionString = $data.User[$Vendor] }
-    if (-not $connectionString) { $connectionString = $data[$Vendor] }
     
     $connectionString
 }

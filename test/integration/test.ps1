@@ -16,6 +16,7 @@ Set-Live-Connection "sqlite" ("FILENAME=" + (Join-Path $BuildPath "sqlite\int.db
 foreach ($vendor in Get-All-Vendors)
 {
     $connectionString = Get-Live-Connection -Vendor $vendor
+    $userConnectionString = Get-Connection-String -Vendor $vendor -User
     
     if ($env:CI -eq "True" -and $vendor -eq "mysql") { $connectionString = $null }
     
@@ -24,7 +25,7 @@ foreach ($vendor in Get-All-Vendors)
     
     if ($connectionString)
     {
-        Test-Integration -Vendor $vendor -Connection $connectionString -PackageSource $PackageSource -Verbosity $Verbosity -TempPath $BuildPath
+        Test-Integration -Vendor $vendor -Connection $connectionString -PackageSource $PackageSource -Verbosity $Verbosity -TempPath $BuildPath -UserConnectionString $userConnectionString
         
         if (Verify-Integration -Vendor $vendor -TempPath $BuildPath)
         {
@@ -37,3 +38,5 @@ foreach ($vendor in Get-All-Vendors)
         Write-Host "   Skipped. Database server is not running." -ForegroundColor Yellow
     }
 }
+
+Set-Live-Connection "sqlite" $null
