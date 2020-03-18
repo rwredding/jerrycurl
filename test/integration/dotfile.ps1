@@ -223,12 +223,14 @@ function Run-Project-Test
     )
     
     $projectPath = Join-Path (Get-Temp-Path $Vendor $TargetFramework $TempPath) "Jerrycurl.Test.Integration"
+    $resultsPath = Join-Path (Get-Temp-Path $Vendor $TargetFramework $TempPath) "results.txt"
     $package = Get-Vendor-Package $Vendor
     $constant = Get-Vendor-Constant $Vendor
     
+    
     Push-Location $projectPath
-    dotnet add package Jerrycurl --version $Version --source "$PackageSource"
-    dotnet add package $package --version $Version --source "$PackageSource"
+    dotnet add package Jerrycurl --version $Version --source $PackageSource
+    dotnet add package $package --version $Version --source $PackageSource
     ..\jerry scaffold -v $Vendor -c $ConnectionString -ns "Jerrycurl.Test.Integration.Database" --verbose
     if ($LastExitCode -eq 0)
     {
@@ -236,7 +238,7 @@ function Run-Project-Test
     }
     if ($LastExitCode -eq 0)
     {
-        dotnet run --no-build --framework $TargetFramework --verbosity $Verbosity --configuration Release $ConnectionString "..\results.txt"
+        dotnet run --no-build --framework $TargetFramework --verbosity $Verbosity --configuration Release $ConnectionString $resultsPath
     }
     Pop-Location
 }
