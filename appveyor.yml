@@ -26,6 +26,12 @@ build_script:
   - mysql -e "create database jerry_testdb;" --user=root --password=Password12!
   - ps: .\build.ps1
   
-artifacts:
+for:
+-
+  branches:
+    only:
+      - master
+
+  artifacts:
   - path: .\artifacts\packages\*.nupkg
   - path: .\artifacts\packages\*.snupkg
