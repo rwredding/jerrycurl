@@ -45,6 +45,11 @@ function Test-Integration
         }
     }
     
+    if (-not [System.IO.Path]::IsPathRooted($PackageSource))
+    {
+        $PackageSource = Resolve-Path $PackageSource
+    }
+    
     $package = Get-Vendor-Package $Vendor
     
     if (-not $package)
@@ -58,7 +63,7 @@ function Test-Integration
         Clean-Source $Vendor $targetFramework $TempPath
         Prepare-Source $Vendor $TargetFramework $TempPath $PackageSource
         
-        Install-Cli $Vendor $Version $TargetFramework $Verbosity $TempPath
+        Install-Cli $Vendor $Version $TargetFramework $Verbosity $TempPath $PackageSource
         
         $integrateConnection = $ConnectionString
         
@@ -135,13 +140,7 @@ function Prepare-Source
     $source = Join-Path $PSScriptRoot ".\src"
     $temp = Join-Path $TempPath "$Vendor\$TargetFramework"
     $configFile = Join-Path $temp "nuget.config"
-    $packageSource = $PackageSource
-    
-    if (-not [System.IO.Path]::IsPathRooted($packageSource))
-    {
-        $packageSource = Resolve-Path $packageSource
-    }
-    
+
     New-Item $temp -ItemType Directory | Out-Null
     Copy-Item "$source\*" $temp -Recurse | Out-Null
     
@@ -166,13 +165,14 @@ function Install-Cli
         [String] $Version,
         [String] $TargetFramework,
         [String] $Verbosity,
-        [String] $TempPath
+        [String] $TempPath,
+        [String] $PackageSource
     )
     
     $toolPath = Get-Temp-Path $Vendor $TargetFramework $TempPath
     
     Push-Location $toolPath
-    dotnet tool install --tool-path . dotnet-jerry --version $Version --verbosity $Verbosity
+    dotnet tool install --tool-path . dotnet-jerry --version $Version --verbosity $Verbosity --add-source "$PackageSource"
     Pop-Location
 }
 
@@ -227,8 +227,8 @@ function Run-Project-Test
     $constant = Get-Vendor-Constant $Vendor
     
     Push-Location $projectPath
-    dotnet add package Jerrycurl --version $Version --source scriptlocal
-    dotnet add package $package --version $Version --source scriptlocal
+    dotnet add package Jerrycurl --version $Version --source "$PackageSource"
+    dotnet add package $package --version $Version --source "$PackageSource"
     ..\jerry scaffold -v $Vendor -c $ConnectionString -ns "Jerrycurl.Test.Integration.Database" --verbose
     if ($LastExitCode -eq 0)
     {

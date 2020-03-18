@@ -153,7 +153,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jerrycurl.Vendors.SqlServer
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems*{09324d8f-15d8-4cf0-a808-7cb8b9bbc047}*SharedItemsImports = 5
+		src\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems*{175385c8-4fa5-4fdc-81d6-582a2c34cd65}*SharedItemsImports = 5
+		src\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems*{195af90b-b4f3-441a-bd6f-333858a84fc5}*SharedItemsImports = 5
+		src\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems*{4ad5d8d7-2441-4a8e-b130-e40e37a5519d}*SharedItemsImports = 5
+		src\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems*{5d959b12-95d7-47fa-bbf7-1a4a81308194}*SharedItemsImports = 5
+		src\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems*{6b7401af-8115-4211-baec-a0d12feda7ea}*SharedItemsImports = 5
+		src\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems*{8c1b68bb-0dde-4434-b596-c11e08033382}*SharedItemsImports = 5
+		src\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems*{a1959cf9-3b32-4b30-ad33-d6fd35f44203}*SharedItemsImports = 5
+		src\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems*{d3df6be3-83eb-490f-a774-68af3adabbbd}*SharedItemsImports = 5
 		src\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems*{ded3df47-4e41-4fb6-93af-bdc13098cc93}*SharedItemsImports = 13
+		src\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems*{e5748293-e43d-41c0-9e8b-df5aec09ca6e}*SharedItemsImports = 5
+		src\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems*{f2d073a9-fe93-46e2-9f74-810aa72e9b8b}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

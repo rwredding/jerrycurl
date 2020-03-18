@@ -30,16 +30,21 @@ function Set-Docker-Live
     if ($IsOffline)
     {
         [Environment]::SetEnvironmentVariable("JERRY_DOCKER_LIVE", $null, "User")
+        [Environment]::SetEnvironmentVariable("JERRY_DOCKER_LIVE", $null)
     }
     else
     {
         [Environment]::SetEnvironmentVariable("JERRY_DOCKER_LIVE", "TRUE", "User")
+        [Environment]::SetEnvironmentVariable("JERRY_DOCKER_LIVE", "TRUE")
     }
 }
 
 function Is-Docker-Live
 {
-    ([Environment]::GetEnvironmentVariable("JERRY_DOCKER_LIVE", "User") -eq "TRUE")
+    $value1 = [Environment]::GetEnvironmentVariable("JERRY_DOCKER_LIVE", "User")
+    $value2 = [Environment]::GetEnvironmentVariable("JERRY_DOCKER_LIVE")
+    
+    ($value1 -eq "TRUE" -or $value2 -eq "TRUE")
 }
 
 function Set-Live-Connection

@@ -1,3 +1,5 @@
+#Requires -Version 5.0
+
 [CmdletBinding(PositionalBinding=$false)]
 param(
     [Switch] $NoBuild,

@@ -4,10 +4,10 @@
 param(
     [switch] $NoTest,
     [switch] $NoPack,
+    [switch] $NoIntegrate,
     [switch] $PublicRelease,
-    [switch] $Integrate,
-    [string] $Configuration = "Release",
-    [string] $Verbosity = "minimal"
+    [String] $Configuration = "Release",
+    [String] $Verbosity = "minimal"
 )
 
 $ErrorActionPreference = "Stop"
@@ -98,7 +98,7 @@ else
 }
 
 # Integration test
-if (-not $NoPack -and $Integrate)
+if (-not $NoPack -and (-not $NoIntegrate))
 {
     Write-Host "Integrating..." -ForegroundColor Magenta
 

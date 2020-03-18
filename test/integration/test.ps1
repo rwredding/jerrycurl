@@ -1,3 +1,5 @@
+#Requires -Version 5.0
+
 [CmdletBinding(PositionalBinding=$false)]
 param(
     [String] $PackageSource,
@@ -35,7 +37,7 @@ foreach ($vendor in Get-All-Vendors)
     }
     else
     {
-        Write-Host "   Skipped. Database server is not running." -ForegroundColor Yellow
+        Write-Host "   Skipped. Connection not configured." -ForegroundColor Yellow
     }
 }
 
