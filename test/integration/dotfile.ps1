@@ -77,7 +77,9 @@ function Test-Integration
         Create-Database $Vendor $integrateConnection $TargetFramework $TempPath
         Run-Project-Test $Vendor $Version $integrateConnection $PackageSource $targetFramework $Verbosity $TempPath
         
-        if (-not (Verify-Integration $Vendor $targetFramework $TempPath)) { break }
+        $success = Verify-Integration $Vendor $targetFramework $TempPath
+        
+        if (-not $success) { break }
     }
 }
 
@@ -223,14 +225,12 @@ function Run-Project-Test
     )
     
     $projectPath = Join-Path (Get-Temp-Path $Vendor $TargetFramework $TempPath) "Jerrycurl.Test.Integration"
-    $resultsPath = Join-Path (Get-Temp-Path $Vendor $TargetFramework $TempPath) "results.txt"
     $package = Get-Vendor-Package $Vendor
     $constant = Get-Vendor-Constant $Vendor
     
-    
     Push-Location $projectPath
-    dotnet add package Jerrycurl --version $Version --source $PackageSource
-    dotnet add package $package --version $Version --source $PackageSource
+    dotnet add package Jerrycurl --version $Version --source "$PackageSource"
+    dotnet add package $package --version $Version --source "$PackageSource"
     ..\jerry scaffold -v $Vendor -c $ConnectionString -ns "Jerrycurl.Test.Integration.Database" --verbose
     if ($LastExitCode -eq 0)
     {
@@ -238,7 +238,7 @@ function Run-Project-Test
     }
     if ($LastExitCode -eq 0)
     {
-        dotnet run --no-build --framework $TargetFramework --verbosity $Verbosity --configuration Release $ConnectionString $resultsPath
+        dotnet run --no-build --framework $TargetFramework --verbosity $Verbosity --configuration Release $ConnectionString "..\results.txt"
     }
     Pop-Location
 }

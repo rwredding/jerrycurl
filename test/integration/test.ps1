@@ -33,7 +33,11 @@ foreach ($vendor in Get-All-Vendors)
         {
             Write-Host "   Integration success." -ForegroundColor Green
         }
-        else { Exit -1 }
+        else
+        {
+            Write-Host "   Result could not be verified." -ForegroundColor Red
+            Exit -1
+        }
     }
     else
     {
