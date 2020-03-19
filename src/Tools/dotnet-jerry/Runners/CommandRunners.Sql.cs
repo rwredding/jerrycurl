@@ -38,7 +38,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                         string sqlText = string.Join("\r\n", option.Values);
 
                         DotNetJerryHost.WriteLine($"Executing...", ConsoleColor.Yellow);
-                        DotNetJerryHost.WriteLine(sqlText, ConsoleColor.DarkRed);
+                        DotNetJerryHost.WriteLine(sqlText, ConsoleColor.Blue);
 
                         await ExecuteSqlAsync(connection, sqlText);
 
@@ -54,7 +54,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                         string sqlText = string.Join("\r\n", expanded);
 
                         DotNetJerryHost.WriteLine($"Executing...", ConsoleColor.Yellow);
-                        DotNetJerryHost.WriteLine(sqlText, ConsoleColor.DarkRed);
+                        DotNetJerryHost.WriteLine(sqlText, ConsoleColor.Blue);
 
                         await ExecuteSqlAsync(connection, sqlText);
 
@@ -65,7 +65,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                         string sqlText = string.Join("", option.Values.Select(File.ReadAllText));
 
                         DotNetJerryHost.WriteLine($"Executing...", ConsoleColor.Yellow);
-                        DotNetJerryHost.WriteLine(sqlText, ConsoleColor.DarkRed);
+                        DotNetJerryHost.WriteLine(sqlText, ConsoleColor.Blue);
 
                         await ExecuteSqlAsync(connection, sqlText);
 

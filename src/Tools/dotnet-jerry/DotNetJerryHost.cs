@@ -16,11 +16,11 @@ namespace Jerrycurl.Tools.DotNet.Cli
         {
             RunnerArgs runnerArgs;
 
-            runnerArgs = RunnerArgs.FromCommandLine(args);
-
             try
             {
-                
+                runnerArgs = RunnerArgs.FromCommandLine(args);
+
+                Console.WriteLine("!!! Connection: " + runnerArgs.Connection);
             }
             catch (FileNotFoundException ex)
             {
