@@ -6,8 +6,8 @@ skip_commits:
     - '**/*.md'
 
 environment:
-  JERRY_SQLSERVER_CONN: SERVER=(local);DATABASE=jerry_testdb;USER ID=sa;PASSWORD=Password12!
-  JERRY_SQLSERVER_CONN_LINUX: SERVER=(local);DATABASE=jerry_testdb;USER ID=sa;PASSWORD=Password12!
+  JERRY_SQLSERVER_CONN: SERVER=localhost;DATABASE=jerry_testdb;USER ID=sa;PASSWORD=Password12!
+  JERRY_SQLSERVER_CONN_LINUX: SERVER=localhost;DATABASE=jerry_testdb;USER ID=sa;PASSWORD=Password12!
   JERRY_POSTGRES_CONN: SERVER=localhost;PORT=5432;DATABASE=jerry_testdb;USER ID=postgres;PASSWORD=Password12!
   JERRY_POSTGRES_CONN_LINUX: SERVER=localhost;PORT=5432;DATABASE=jerry_testdb;USER ID=appveyor;PASSWORD=Password12!
   JERRY_MYSQL_CONN: SERVER=localhost;DATABASE=jerry_testdb;UID=root;PWD=Password12!;
