@@ -20,7 +20,7 @@ foreach ($vendor in Get-All-Vendors)
     $connectionString = Get-Live-Connection -Vendor $vendor
     $userConnectionString = Get-Connection-String -Vendor $vendor -User
     
-    if ($env:CI -eq "True" -and $vendor -eq "mysql") { $connectionString = $null }
+    if ($env:CI_WINDOWS -eq "true" -and $vendor -eq "mysql") { $connectionString = $null }
     
     Write-Host ""
     Write-Host "   Testing '$vendor'..."

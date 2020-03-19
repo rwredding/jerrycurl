@@ -199,7 +199,7 @@ function Create-Database-User
     $toolPath = Get-Temp-Path $Vendor $TargetFramework $TempPath
     
     Push-Location $toolPath
-    .\jerry run -v $Vendor -c $ConnectionString --file "$sql"
+    .\jerry run -v "$Vendor" -c "$ConnectionString" --file "$sql"
     if ($LastExitCode -ne 0) { Pop-Location; throw "Error running 'jerry run'." }
     Pop-Location
 }
@@ -219,7 +219,7 @@ function Prepare-Database
     $toolPath = Get-Temp-Path $Vendor $TargetFramework $TempPath
 
     Push-Location $toolPath
-    .\jerry run -v $Vendor -c $ConnectionString --file "$sql"
+    .\jerry run -v "$Vendor" -c "$ConnectionString" --file "$sql"
     if ($LastExitCode -ne 0) { Pop-Location; throw "Error running 'jerry run'." }
     Pop-Location
 }
