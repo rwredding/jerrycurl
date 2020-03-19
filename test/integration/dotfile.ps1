@@ -74,7 +74,7 @@ function Test-Integration
             $integrateConnection = $UserConnectionString
         }
         
-        Create-Database $Vendor $integrateConnection $TargetFramework $TempPath
+        Prepare-Database $Vendor $integrateConnection $TargetFramework $TempPath
         Run-Project-Test $Vendor $Version $integrateConnection $PackageSource $targetFramework $Verbosity $TempPath
         
         $success = Verify-Integration $Vendor $targetFramework $TempPath
@@ -122,6 +122,8 @@ function Clean-Source
         [String] $TempPath
     )
     
+    Write-Host "    Cleaning source..." -ForegroundColor Blue
+    
     $path = Get-Temp-Path $Vendor $TargetFramework $TempPath
     
     if (Test-Path $path)
@@ -138,6 +140,8 @@ function Prepare-Source
         [String] $TempPath,
         [String] $PackageSource
     )
+    
+    Write-Host "    Preparing source..." -ForegroundColor Blue
     
     $source = Join-Path $PSScriptRoot ".\src"
     $temp = Join-Path $TempPath "$Vendor\$TargetFramework"
@@ -171,6 +175,8 @@ function Install-Cli
         [String] $PackageSource
     )
     
+    Write-Host "    Installing CLI..." -ForegroundColor Blue
+    
     $toolPath = Get-Temp-Path $Vendor $TargetFramework $TempPath
     
     Push-Location $toolPath
@@ -187,6 +193,8 @@ function Create-Database-User
         [String] $TempPath
     )
 
+    Write-Host "    Creating database user..." -ForegroundColor Blue
+    
     $sql = Join-Path $PSScriptRoot "sql\user.$Vendor.sql"
     $toolPath = Get-Temp-Path $Vendor $TargetFramework $TempPath
     
@@ -196,7 +204,7 @@ function Create-Database-User
     Pop-Location
 }
 
-function Create-Database
+function Prepare-Database
 {
     param(
         [String] $Vendor,
@@ -204,8 +212,10 @@ function Create-Database
         [String] $TargetFramework,
         [String] $TempPath
     )
+    
+    Write-Host "    Preparing database..." -ForegroundColor Blue
 
-    $sql = Join-Path $PSScriptRoot "sql\create.$Vendor.sql"
+    $sql = Join-Path $PSScriptRoot "sql\prepare.$Vendor.sql"
     $toolPath = Get-Temp-Path $Vendor $TargetFramework $TempPath
 
     Push-Location $toolPath
@@ -232,6 +242,7 @@ function Run-Project-Test
     $constant = Get-Vendor-Constant $Vendor
     
     Push-Location $projectPath
+    Write-Host "    Building project..." -ForegroundColor Blue
     dotnet add package Jerrycurl --version $Version --source "$PackageSource"
     dotnet add package $package --version $Version --source "$PackageSource"
     ..\jerry scaffold -v $Vendor -c $ConnectionString -ns "Jerrycurl.Test.Integration.Database" --verbose
@@ -239,6 +250,7 @@ function Run-Project-Test
     {
         dotnet build --framework "$TargetFramework" --verbosity "$Verbosity" --configuration Release "-p:DefineConstants=$constant" "-p:DatabaseVendor=$Vendor"
     }
+    Write-Host "    Running code..." -ForegroundColor Blue
     if ($LastExitCode -eq 0)
     {
         dotnet run --no-build --framework "$TargetFramework" --verbosity "$Verbosity" --configuration Release "$ConnectionString" "$resultsPath"

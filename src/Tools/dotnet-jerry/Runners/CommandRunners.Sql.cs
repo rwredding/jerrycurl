@@ -37,9 +37,6 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                     {
                         string sqlText = string.Join("\r\n", option.Values);
 
-                        DotNetJerryHost.WriteLine($"Executing...", ConsoleColor.Yellow);
-                        DotNetJerryHost.WriteLine(sqlText, ConsoleColor.Blue);
-
                         await ExecuteSqlAsync(connection, sqlText);
 
                         numberOfInputs++;
@@ -53,9 +50,6 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                         string[] expanded = ResponseFile.ExpandFiles(option.Values, settings).ToArray();
                         string sqlText = string.Join("\r\n", expanded);
 
-                        DotNetJerryHost.WriteLine($"Executing...", ConsoleColor.Yellow);
-                        DotNetJerryHost.WriteLine(sqlText, ConsoleColor.Blue);
-
                         await ExecuteSqlAsync(connection, sqlText);
 
                         numberOfInputs++;
@@ -63,9 +57,6 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                     else if (IsRawInput(option))
                     {
                         string sqlText = string.Join("", option.Values.Select(File.ReadAllText));
-
-                        DotNetJerryHost.WriteLine($"Executing...", ConsoleColor.Yellow);
-                        DotNetJerryHost.WriteLine(sqlText, ConsoleColor.Blue);
 
                         await ExecuteSqlAsync(connection, sqlText);
 
@@ -85,6 +76,9 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
                     if (!string.IsNullOrWhiteSpace(command.CommandText))
                     {
+                        DotNetJerryHost.WriteLine($"Executing...", ConsoleColor.Yellow);
+                        DotNetJerryHost.WriteLine(sqlText, ConsoleColor.Blue);
+
                         int affectedRows = await command.ExecuteNonQueryAsync();
 
                         string rowsMoniker = affectedRows + " " + (affectedRows == 1 ? "row" : "rows");
