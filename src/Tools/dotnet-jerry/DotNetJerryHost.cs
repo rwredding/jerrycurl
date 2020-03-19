@@ -19,8 +19,6 @@ namespace Jerrycurl.Tools.DotNet.Cli
             try
             {
                 runnerArgs = RunnerArgs.FromCommandLine(args);
-
-                Console.WriteLine("!!! Connection: " + runnerArgs.Connection);
             }
             catch (FileNotFoundException ex)
             {
