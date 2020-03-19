@@ -1,4 +1,4 @@
-image: Visual Studio 2019
+image: Ubuntu
 
 skip_branch_with_pr: true
 skip_commits:

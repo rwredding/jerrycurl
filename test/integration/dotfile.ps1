@@ -122,7 +122,7 @@ function Clean-Source
         [String] $TempPath
     )
     
-    Write-Host "    Cleaning source..." -ForegroundColor Blue
+    Write-Host "  Cleaning source..." -ForegroundColor Cyan
     
     $path = Get-Temp-Path $Vendor $TargetFramework $TempPath
     
@@ -141,7 +141,7 @@ function Prepare-Source
         [String] $PackageSource
     )
     
-    Write-Host "    Preparing source..." -ForegroundColor Blue
+    Write-Host "  Preparing source..." -ForegroundColor Cyan
     
     $source = Join-Path $PSScriptRoot ".\src"
     $temp = Join-Path $TempPath "$Vendor\$TargetFramework"
@@ -175,7 +175,7 @@ function Install-Cli
         [String] $PackageSource
     )
     
-    Write-Host "    Installing CLI..." -ForegroundColor Blue
+    Write-Host "  Installing CLI..." -ForegroundColor Cyan
     
     $toolPath = Get-Temp-Path $Vendor $TargetFramework $TempPath
     
@@ -193,7 +193,7 @@ function Create-Database-User
         [String] $TempPath
     )
 
-    Write-Host "    Creating database user..." -ForegroundColor Blue
+    Write-Host "  Creating database user..." -ForegroundColor Cyan
     
     $sql = Join-Path $PSScriptRoot "sql\user.$Vendor.sql"
     $toolPath = Get-Temp-Path $Vendor $TargetFramework $TempPath
@@ -213,7 +213,7 @@ function Prepare-Database
         [String] $TempPath
     )
     
-    Write-Host "    Preparing database..." -ForegroundColor Blue
+    Write-Host "  Preparing database..." -ForegroundColor Cyan
 
     $sql = Join-Path $PSScriptRoot "sql\prepare.$Vendor.sql"
     $toolPath = Get-Temp-Path $Vendor $TargetFramework $TempPath
@@ -242,7 +242,7 @@ function Run-Project-Test
     $constant = Get-Vendor-Constant $Vendor
     
     Push-Location $projectPath
-    Write-Host "    Building project..." -ForegroundColor Blue
+    Write-Host "  Building project..." -ForegroundColor Cyan
     dotnet add package Jerrycurl --version $Version --source "$PackageSource"
     dotnet add package $package --version $Version --source "$PackageSource"
     ..\jerry scaffold -v $Vendor -c $ConnectionString -ns "Jerrycurl.Test.Integration.Database" --verbose
@@ -250,7 +250,7 @@ function Run-Project-Test
     {
         dotnet build --framework "$TargetFramework" --verbosity "$Verbosity" --configuration Release "-p:DefineConstants=$constant" "-p:DatabaseVendor=$Vendor"
     }
-    Write-Host "    Running code..." -ForegroundColor Blue
+    Write-Host "  Running code..." -ForegroundColor Cyan
     if ($LastExitCode -eq 0)
     {
         dotnet run --no-build --framework "$TargetFramework" --verbosity "$Verbosity" --configuration Release "$ConnectionString" "$resultsPath"
