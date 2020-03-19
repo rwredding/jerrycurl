@@ -32,7 +32,7 @@ build_script:
   - sh: psql -c "ALTER USER appveyor WITH PASSWORD 'Password12!'" -d jerry_testdb
   - sqlcmd -S "(local)" -U "sa" -P "Password12!" -Q "CREATE DATABASE jerry_testdb;"
   - mysql -e "create database jerry_testdb;" --user=root --password=Password12!
-  - ps: .\build.ps1 -NoTest
+  - ps: .\build.ps1
 
 test: off
 
