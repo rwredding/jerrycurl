@@ -1,4 +1,3 @@
-[CmdletBinding(PositionalBinding=$false)]
 param(
     [String]   $Direction = "toggle",
     [String[]] $Vendors = @("*")
@@ -10,13 +9,6 @@ if ($Direction -eq "toggle")
 {
     if (Is-Docker-Live) { $Direction = "down" }
     else                { $Direction = "up"   }
-}
-
-if (-not $Vendors)
-{
-    Write-Host "No servers specified. Specify any combination of 'sqlserver', 'postgres', 'mysql' and 'oracle'." -ForegroundColor Red
-    Write-Host "If testing Oracle you will need to associate a license with your Docker login at: https://hub.docker.com/_/oracle-database-enterprise-edition" -ForegroundColor Yellow
-    Exit -1
 }
 
 if ($Vendors.Length -eq 1 -and $Vendors[0] -eq "*")
