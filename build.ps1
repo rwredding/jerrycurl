@@ -4,10 +4,10 @@
 param(
     [switch] $NoTest,
     [switch] $NoPack,
+    [switch] $NoIntegrate,
     [switch] $PublicRelease,
-    [switch] $Integration,
-    [string] $Configuration = "Release",
-    [string] $Verbosity = "minimal"
+    [String] $Configuration = "Release",
+    [String] $Verbosity = "minimal"
 )
 
 $ErrorActionPreference = "Stop"
@@ -36,7 +36,7 @@ Write-Host "Done restoring." -ForegroundColor Green
 
 # Clean
 Write-Host "Cleaning..." -ForegroundColor Magenta
-dotnet clean -c $Configuration $sln @props
+dotnet clean --configuration $Configuration $sln @props
 if ($LastExitCode -ne 0)
 {
     Write-Host "Clean failed, aborting." -ForegroundColor Red
@@ -50,7 +50,7 @@ Write-Host "Done cleaning." -ForegroundColor Green
 
 # Build
 Write-Host "Building..." -ForegroundColor Magenta
-dotnet build -c $Configuration --no-restore $sln @props
+dotnet build --configuration $Configuration --no-restore $sln @props
 if ($LastExitCode -ne 0)
 {
     Write-Host "Build failed, aborting." -ForegroundColor Red
@@ -63,7 +63,7 @@ if (-not $NoTest)
 {
 	Write-Host "Testing..." -ForegroundColor Magenta
 
-    .\test\unit\test.ps1 -NoBuild -Verbosity $Verbosity -Configuration $Configuration
+    .\test\unit\test.ps1 -NoBuild -Configuration $Configuration
 
     if ($LastExitCode -ne 0)
     {
@@ -82,7 +82,7 @@ else
 if (-not $NoPack)
 {
 	Write-Host "Packing..." -ForegroundColor Magenta
-	dotnet pack $sln -c $Configuration --no-build --no-restore @props
+	dotnet pack $sln --configuration $Configuration --no-build --no-restore @props
 	
     if ($LastExitCode -ne 0)
     {
@@ -98,7 +98,7 @@ else
 }
 
 # Integration test
-if (-not $NoPack -and $Integration)
+if (-not $NoPack -and (-not $NoIntegrate))
 {
     Write-Host "Integrating..." -ForegroundColor Magenta
 

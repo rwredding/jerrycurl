@@ -1,4 +1,4 @@
-image: Visual Studio 2019
+image: Ubuntu
 
 skip_branch_with_pr: true
 skip_commits:
@@ -6,11 +6,10 @@ skip_commits:
     - '**/*.md'
 
 environment:
-  PGUSER: postgres
-  PGPASSWORD: Password12!
-  PGDATABASE: jerry_testdb
-  JERRY_SQLSERVER_CONN: SERVER=(local)\SQL2017;DATABASE=jerry_testdb;USER ID=sa;PASSWORD=Password12!
+  JERRY_SQLSERVER_CONN: SERVER=(local);DATABASE=jerry_testdb;USER ID=sa;PASSWORD=Password12!
+  JERRY_SQLSERVER_CONN_LINUX: SERVER=(local);DATABASE=jerry_testdb;USER ID=sa;PASSWORD=Password12!
   JERRY_POSTGRES_CONN: SERVER=localhost;PORT=5432;DATABASE=jerry_testdb;USER ID=postgres;PASSWORD=Password12!
+  JERRY_POSTGRES_CONN_LINUX: SERVER=localhost;PORT=5432;DATABASE=jerry_testdb;USER ID=appveyor;PASSWORD=Password12!
   JERRY_MYSQL_CONN: SERVER=localhost;DATABASE=jerry_testdb;UID=root;PWD=Password12!;
 
 services:
@@ -18,14 +17,27 @@ services:
   - postgresql
   - mysql
 
+init:
+  - cmd: SET PATH=%PATH%;C:\Program Files\PostgreSQL\9.6\bin\;C:\Program Files\MySQL\MySQL Server 5.7\bin\
+  - cmd: SET PGUSER=postgres
+  - cmd: SET PGPASSWORD=Password12!
+  - sh: export JERRY_POSTGRES_CONN="$JERRY_POSTGRES_CONN_LINUX"
+  - sh: export JERRY_SQLSERVER_CONN="$JERRY_SQLSERVER_CONN_LINUX"
+
 build_script:
   - dotnet --info
-  - ps: $env:PATH += ";C:\Program Files\MySQL\MySQL Server 5.7\bin\;C:\Program Files\PostgreSQL\9.6\bin\;"
+  - createdb jerry_testdb
+  - sh: psql -c "ALTER USER appveyor WITH PASSWORD 'Password12!'" -d jerry_testdb
   - sqlcmd -S "(local)" -U "sa" -P "Password12!" -Q "CREATE DATABASE jerry_testdb;"
-  - createdb
   - mysql -e "create database jerry_testdb;" --user=root --password=Password12!
-  - ps: .\build.ps1 -Integration
-  
-artifacts:
+  - ps: .\build.ps1
+
+for:
+-
+  branches:
+    only:
+      - master
+
+  artifacts:
   - path: .\artifacts\packages\*.nupkg
   - path: .\artifacts\packages\*.snupkg

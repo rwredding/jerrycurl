@@ -18,10 +18,36 @@ function Get-All-Vendors
 
 function Get-Live-Vendors
 {
-    @("sqlserver", "mysql", "postgres", "oracle")
+    @("sqlserver", "postgres", "oracle", "mysql")
 }
 
-function Set-Connection-String
+function Set-Docker-Live
+{
+    param(
+        [Switch] $IsOffline
+    )
+    
+    if ($IsOffline)
+    {
+        [Environment]::SetEnvironmentVariable("JERRY_DOCKER_LIVE", $null, "User")
+        [Environment]::SetEnvironmentVariable("JERRY_DOCKER_LIVE", $null)
+    }
+    else
+    {
+        [Environment]::SetEnvironmentVariable("JERRY_DOCKER_LIVE", "TRUE", "User")
+        [Environment]::SetEnvironmentVariable("JERRY_DOCKER_LIVE", "TRUE")
+    }
+}
+
+function Is-Docker-Live
+{
+    $value1 = [Environment]::GetEnvironmentVariable("JERRY_DOCKER_LIVE", "User")
+    $value2 = [Environment]::GetEnvironmentVariable("JERRY_DOCKER_LIVE")
+    
+    ($value1 -eq "TRUE" -or $value2 -eq "TRUE")
+}
+
+function Set-Live-Connection
 {
     param(
         [Parameter(Mandatory=$true)]
@@ -34,10 +60,11 @@ function Set-Connection-String
     if ($variable)
     {
         [Environment]::SetEnvironmentVariable($variable, $ConnectionString, "User")
+        [Environment]::SetEnvironmentVariable($variable, $ConnectionString)
     }
 }
 
-function Get-Connection-String
+function Get-Live-Connection
 {
     param(
         [Parameter(Mandatory=$true)]
@@ -55,6 +82,22 @@ function Get-Connection-String
         
         $value
     }
+}
+
+function Get-Connection-String
+{
+    param(
+        [Parameter(Mandatory=$true)]
+        [String] $Vendor,
+        [Switch] $User
+    )
+    
+    $data = Import-PowerShellDataFile -Path (Join-Path $PSScriptRoot connection.psd1)
+    $connectionString = $data[$Vendor]
+    
+    if ($User -and $data.User) { $connectionString = $data.User[$Vendor] }
+    
+    $connectionString
 }
 
 function Get-Yml-Path

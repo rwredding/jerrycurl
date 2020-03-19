@@ -12,6 +12,7 @@ namespace Jerrycurl.Mvc
         protected virtual char? StringPrefix { get; } = null;
 
         public virtual string Qualifier => ".";
+        public virtual DialectSupport Support => (DialectSupport.InputParameters | DialectSupport.OutputParameters);
 
         public virtual string Literal(object value)
         {

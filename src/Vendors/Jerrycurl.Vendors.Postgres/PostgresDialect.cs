@@ -7,5 +7,6 @@ namespace Jerrycurl.Vendors.Postgres
         protected override char IdentifierQuote => '"';
         protected override char? ParameterPrefix => ':';
         protected override char? VariablePrefix => null;
+        public override DialectSupport Support => DialectSupport.InputParameters;
     }
 }

@@ -1,9 +1,14 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using Jerrycurl.CommandLine;
 using Jerrycurl.Facts;
+using Jerrycurl.IO;
 using Jerrycurl.Reflection;
 using Jerrycurl.Tools.DotNet.Cli.ComponentModel;
+using Jerrycurl.Tools.DotNet.Cli.Runners;
 
 namespace Jerrycurl.Tools.DotNet.Cli.Commands
 {
@@ -23,11 +28,11 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
 
         public static RunnerArgs FromCommandLine(string[] args)
         {
-            ToolOptions options = ToolOptions.Parse(args);
+            ToolOptions options = ParseArguments(args);
 
             return new RunnerArgs()
             {
-                Command = args.Length > 0 ? args[0] : null,
+                Command = options.Default.Length > 0 ? options.Default[0] : null,
                 Options = options,
                 Connection = options["-c", "--connection"]?.Value,
                 Namespace = options["-ns", "--namespace"]?.Value,
@@ -36,6 +41,40 @@ namespace Jerrycurl.Tools.DotNet.Cli.Commands
                 IsProxy = IsProxyRunner(),
                 Proxy = GetProxyArgs(options),
             };
+        }
+
+        private static string[] ApplyDefaultArguments(string[] args)
+        {
+            string[] checkFor = new[] { "scaffold", "transpile" };
+
+            if (args.Length == 0)
+            {
+                string[] exists = checkFor.Where(n => File.Exists($"{n}.cli")).ToArray();
+
+                if (exists.Length == 0)
+                    return args;
+                else if (exists.Length > 1)
+                    throw new InvalidOperationException("Multiple default '<command>.cli' files found. Please specify the right one.");
+                else
+                    return new[] { $"@{exists[0]}.cli" };
+            }
+            else if (args.Length == 1 && checkFor.Contains(args[0]) && File.Exists($"{args[0]}.cli"))
+                return new[] { args[0], $"@{args[0]}.cli" };
+            else
+                return args;
+        }
+        private static ToolOptions ParseArguments(string[] args)
+        {
+            ResponseSettings settings = new ResponseSettings()
+            {
+                WorkingDirectory = Environment.CurrentDirectory,
+                IgnoreComments = true,
+                IgnoreMissingFiles = false,
+                IgnoreWhitespace = true,
+                DefaultExtension = ".cli",
+            };
+
+            return ToolOptions.Parse(ApplyDefaultArguments(args), settings);
         }
 
         private static ProxyArgs GetProxyArgs(ToolOptions options)

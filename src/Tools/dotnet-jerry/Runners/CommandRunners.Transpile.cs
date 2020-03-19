@@ -52,13 +52,10 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             {
                 foreach (string file in args.Options["-f", "--file"].Values)
                 {
-                    foreach (string expandedFile in ResponseFile.ExpandStrings(file, project.ProjectDirectory))
-                    {
-                        if (!HasPipeFormat(expandedFile, out var fullPath, out var projectPath))
-                            project.AddItem(expandedFile);
-                        else if (!string.IsNullOrEmpty(fullPath))
-                            project.Items.Add(new RazorProjectItem() { FullPath = MakeAbsolutePath(fullPath), ProjectPath = projectPath });
-                    }
+                    if (!HasPipeFormat(file, out var fullPath, out var projectPath))
+                        project.AddItem(file);
+                    else if (!string.IsNullOrEmpty(fullPath))
+                        project.Items.Add(new RazorProjectItem() { FullPath = MakeAbsolutePath(fullPath), ProjectPath = projectPath });
                 }
             }
 

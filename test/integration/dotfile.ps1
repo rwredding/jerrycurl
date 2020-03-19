@@ -5,6 +5,7 @@ function Test-Integration
         [String] $Vendor,
         [Parameter(Mandatory=$true)]
         [String] $ConnectionString,
+        [String] $UserConnectionString,
         [String] $Version,
         [String] $TargetFramework = "netcoreapp3.0",
         [Parameter(Mandatory=$true)]
@@ -44,6 +45,11 @@ function Test-Integration
         }
     }
     
+    if (-not [System.IO.Path]::IsPathRooted($PackageSource))
+    {
+        $PackageSource = Resolve-Path $PackageSource
+    }
+    
     $package = Get-Vendor-Package $Vendor
     
     if (-not $package)
@@ -57,24 +63,23 @@ function Test-Integration
         Clean-Source $Vendor $targetFramework $TempPath
         Prepare-Source $Vendor $TargetFramework $TempPath $PackageSource
         
-        Install-Cli $Vendor $Version $TargetFramework $Verbosity $TempPath
+        Install-Cli $Vendor $Version $TargetFramework $Verbosity $TempPath $PackageSource
         
-        if ($Vendor -eq "oracle")
+        $integrateConnection = $ConnectionString
+        
+        if ($UserConnectionString)
         {
-            Create-Oracle-User $Vendor $ConnectionString $TargetFramework $TempPath
+            Create-Database-User $Vendor $integrateConnection $TargetFramework $TempPath
             
-            $oracleConnection = Get-Oracle-Connection
-            
-            Create-Database $Vendor $oracleConnection $TargetFramework $TempPath
-            Run-Project-Test $Vendor $Version $oracleConnection $PackageSource $targetFramework $Verbosity $TempPath   
-        }
-        else
-        {
-            Create-Database $Vendor $ConnectionString $TargetFramework $TempPath
-            Run-Project-Test $Vendor $Version $ConnectionString $PackageSource $targetFramework $Verbosity $TempPath   
+            $integrateConnection = $UserConnectionString
         }
         
-        if (-not (Verify-Integration $Vendor $targetFramework $TempPath)) { break }
+        Create-Database $Vendor $integrateConnection $TargetFramework $TempPath
+        Run-Project-Test $Vendor $Version $integrateConnection $PackageSource $targetFramework $Verbosity $TempPath
+        
+        $success = Verify-Integration $Vendor $targetFramework $TempPath
+        
+        if (-not $success) { break }
     }
 }
 
@@ -137,13 +142,7 @@ function Prepare-Source
     $source = Join-Path $PSScriptRoot ".\src"
     $temp = Join-Path $TempPath "$Vendor\$TargetFramework"
     $configFile = Join-Path $temp "nuget.config"
-    $packageSource = $PackageSource
-    
-    if (-not [System.IO.Path]::IsPathRooted($packageSource))
-    {
-        $packageSource = Resolve-Path $packageSource
-    }
-    
+
     New-Item $temp -ItemType Directory | Out-Null
     Copy-Item "$source\*" $temp -Recurse | Out-Null
     
@@ -168,24 +167,18 @@ function Install-Cli
         [String] $Version,
         [String] $TargetFramework,
         [String] $Verbosity,
-        [String] $TempPath
+        [String] $TempPath,
+        [String] $PackageSource
     )
     
     $toolPath = Get-Temp-Path $Vendor $TargetFramework $TempPath
     
     Push-Location $toolPath
-    dotnet tool install --tool-path . dotnet-jerry --version $Version --verbosity $Verbosity
+    dotnet tool install --tool-path . dotnet-jerry --version $Version --verbosity $Verbosity --add-source "$PackageSource"
     Pop-Location
 }
 
-function Get-Oracle-Connection
-{
-    "DATA SOURCE=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))" +
-    "(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLCDB.localdomain)));"+
-    "USER ID=jerryuser;PASSWORD=Password12"
-}
-
-function Create-Oracle-User
+function Create-Database-User
 {
     param(
         [String] $Vendor,
@@ -194,11 +187,12 @@ function Create-Oracle-User
         [String] $TempPath
     )
 
-    $sql = Join-Path $PSScriptRoot ".\sql\user.oracle.sql"
+    $sql = Join-Path $PSScriptRoot "sql\user.$Vendor.sql"
     $toolPath = Get-Temp-Path $Vendor $TargetFramework $TempPath
     
     Push-Location $toolPath
-    .\jerry run -v oracle -c $ConnectionString -s "@$sql"
+    .\jerry run -v $Vendor -c $ConnectionString --file "$sql"
+    if ($LastExitCode -ne 0) { Pop-Location; throw "Error running 'jerry run'." }
     Pop-Location
 }
 
@@ -211,11 +205,12 @@ function Create-Database
         [String] $TempPath
     )
 
-    $sql = Join-Path $PSScriptRoot ".\sql\create.$Vendor.sql"
+    $sql = Join-Path $PSScriptRoot "sql\create.$Vendor.sql"
     $toolPath = Get-Temp-Path $Vendor $TargetFramework $TempPath
 
     Push-Location $toolPath
-    .\jerry run -v $Vendor -c $ConnectionString -s "@$sql"
+    .\jerry run -v $Vendor -c $ConnectionString --file "$sql"
+    if ($LastExitCode -ne 0) { Pop-Location; throw "Error running 'jerry run'." }
     Pop-Location
 }
 
@@ -232,20 +227,21 @@ function Run-Project-Test
     )
     
     $projectPath = Join-Path (Get-Temp-Path $Vendor $TargetFramework $TempPath) "Jerrycurl.Test.Integration"
+    $resultsPath = Join-Path (Get-Temp-Path $Vendor $TargetFramework $TempPath) "results.txt"
     $package = Get-Vendor-Package $Vendor
     $constant = Get-Vendor-Constant $Vendor
     
     Push-Location $projectPath
-    dotnet add package Jerrycurl --version $Version --source scriptlocal
-    dotnet add package $package --version $Version --source scriptlocal
+    dotnet add package Jerrycurl --version $Version --source "$PackageSource"
+    dotnet add package $package --version $Version --source "$PackageSource"
     ..\jerry scaffold -v $Vendor -c $ConnectionString -ns "Jerrycurl.Test.Integration.Database" --verbose
     if ($LastExitCode -eq 0)
     {
-        dotnet build --framework $TargetFramework --verbosity $Verbosity --configuration Release -p:DefineConstants=$constant -p:DatabaseVendor=$Vendor
+        dotnet build --framework "$TargetFramework" --verbosity "$Verbosity" --configuration Release "-p:DefineConstants=$constant" "-p:DatabaseVendor=$Vendor"
     }
     if ($LastExitCode -eq 0)
     {
-        dotnet run --no-build --framework $TargetFramework --verbosity $Verbosity --configuration Release $ConnectionString "..\results.txt"
+        dotnet run --no-build --framework "$TargetFramework" --verbosity "$Verbosity" --configuration Release "$ConnectionString" "$resultsPath"
     }
     Pop-Location
 }

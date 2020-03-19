@@ -90,34 +90,35 @@ namespace Jerrycurl.CommandLine
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         #region " Parsing "
-        public static ToolOptions ParseResponseFile(string input)
+
+        public static ToolOptions Parse(string[] args, ResponseSettings settings = null)
         {
-            if (string.IsNullOrWhiteSpace(input))
-                throw new ArgumentException("Value cannot be empty.", nameof(input));
-
-            string[] args = ResponseFile.ExpandStrings(input).SelectMany(ToArgumentList).ToArray();
-
-            return Parse(args);
+            return new ToolOptions(ParseAndYield(args, settings));
         }
 
-        public static ToolOptions Parse(string[] args)
-        {
-            return new ToolOptions(ParseAndYield(args));
-        }
-
-        private static IEnumerable<ToolOption> ParseAndYield(string[] args)
+        private static IEnumerable<ToolOption> ParseAndYield(string[] args, ResponseSettings settings)
         {
             bool isDefault = true;
 
-            for (int i = 0; i < args.Length; i++)
+            List<string> newArgs = new List<string>();
+
+            foreach (string argument in args)
             {
-                if (IsOption(args[i]))
+                if (ResponseFile.HasPathSyntax(argument, out _))
+                    newArgs.AddRange(ResponseFile.ExpandStrings(argument, settings).SelectMany(ToArgumentList));
+                else
+                    newArgs.Add(argument);
+            }
+
+            for (int i = 0; i < newArgs.Count; i++)
+            {
+                if (IsOption(newArgs[i]))
                 {
-                    ToolOption option = CreateOption(args[i]);
+                    ToolOption option = CreateOption(newArgs[i]);
 
                     if (option != null)
                     {
-                        option.Values = args.Skip(i + 1).TakeWhile(s => !IsOption(s)).ToArray();
+                        option.Values = newArgs.Skip(i + 1).TakeWhile(s => !IsOption(s)).ToArray();
 
                         i += option.Values.Length;
 
@@ -134,7 +135,7 @@ namespace Jerrycurl.CommandLine
                     {
                         Name = "",
                         ShortName = "",
-                        Values = args.Skip(i).TakeWhile(s => !IsOption(s)).ToArray()
+                        Values = newArgs.Skip(i).TakeWhile(s => !IsOption(s)).ToArray()
                     };
 
                     i += option.Values.Length - 1;

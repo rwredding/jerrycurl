@@ -15,7 +15,7 @@ namespace Jerrycurl.Test.Integration
             options.UseSqlServer(ConnectionString);
 #elif VENDOR_POSTGRES
             options.UsePostgres(ConnectionString);
-            options.Sql.Filters.Add(new InputParameterFilter());
+            //options.Sql.Filters.Add(new InputParameterFilter());
 #elif VENDOR_SQLITE
             options.UseSqlite(ConnectionString);
 #elif VENDOR_ORACLE

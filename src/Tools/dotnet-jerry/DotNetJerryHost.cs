@@ -4,6 +4,7 @@ using Jerrycurl.Tools.DotNet.Cli.Commands;
 using Jerrycurl.Tools.DotNet.Cli.ComponentModel;
 using Jerrycurl.Tools.DotNet.Cli.Runners;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,15 +12,36 @@ namespace Jerrycurl.Tools.DotNet.Cli
 {
     public class DotNetJerryHost
     {
-        public async static Task<int> Main(string[] args2)
+        public async static Task<int> Main(string[] args)
         {
-            RunnerArgs args = RunnerArgs.FromCommandLine(args2);
+            RunnerArgs runnerArgs;
 
-            ProgramRunner runner = new ProgramRunner(args);
+            runnerArgs = RunnerArgs.FromCommandLine(args);
 
             try
             {
-                await runner.ExecuteAsync();
+                
+            }
+            catch (FileNotFoundException ex)
+            {
+                WriteHeader();
+                WriteLine();
+                WriteLine($"Could not expand '@{Path.GetFileName(ex.FileName)}'. File not found.", ConsoleColor.Red);
+
+                return -1;
+            }
+            catch (Exception ex)
+            {
+                WriteHeader();
+                WriteLine();
+                WriteLine(ex.Message, ConsoleColor.Red);
+
+                return -1;
+            }
+
+            try
+            {
+                await new ProgramRunner(runnerArgs).ExecuteAsync();
             }
             catch (ToolException ex)
             {
@@ -33,7 +55,9 @@ namespace Jerrycurl.Tools.DotNet.Cli
             }
             catch (Exception ex)
             {
-                WriteLine(args.Verbose ? ex.ToString() : ex.Message, ConsoleColor.Red);
+                bool isVerbose = runnerArgs?.Verbose ?? false;
+
+                WriteLine(isVerbose ? ex.ToString() : ex.Message, ConsoleColor.Red);
 
                 return -1;
             }

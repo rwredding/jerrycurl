@@ -34,7 +34,6 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 DotNetJerryHost.WriteLine("Commands:");
                 DotNetJerryHost.WriteLine("  scaffold                    Generate a C# object model from an existing database.");
                 DotNetJerryHost.WriteLine("  transpile                   Transpile a collection of .cssql files into C# classes.");
-                DotNetJerryHost.WriteLine("  cli                         Execute CLI with arguments read from one or more input files.");
                 DotNetJerryHost.WriteLine("  info                        Show information about a database connector.");
                 DotNetJerryHost.WriteLine("  help [command]              Show help information the commands above.");
                 DotNetJerryHost.WriteLine();
@@ -50,9 +49,6 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                     case "transpile":
                     case "tp":
                         HelpForTranspile();
-                        break;
-                    case "cli":
-                        HelpForResponseFile();
                         break;
                     case "info":
                         HelpForInfo();
@@ -85,27 +81,6 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             DotNetJerryHost.WriteLine("  jerry scaffold -v sqlserver -c \"SERVER=...\" -ns MovieDb.Data.Database");
             DotNetJerryHost.WriteLine("  jerry scaffold -v sqlserver -c \"SERVER=...\" -o MyModel.cs");
             DotNetJerryHost.WriteLine("  jerry scaffold -v sqlserver -c \"SERVER=...\" -o Database");
-            DotNetJerryHost.WriteLine();
-        }
-
-        private static void HelpForResponseFile()
-        {
-            DotNetJerryHost.WriteHeader();
-
-            DotNetJerryHost.WriteLine("Usage: jerry cli [options]");
-            DotNetJerryHost.WriteLine();
-            DotNetJerryHost.WriteLine("Execute CLI with arguments read from one or more input files.");
-            DotNetJerryHost.WriteLine();
-            DotNetJerryHost.WriteLine("Options:");
-            DotNetJerryHost.WriteLine("  -c, --command <cmd>      Command to prefix parsed arguments with.");
-            DotNetJerryHost.WriteLine("  -f, --file               Add a file to read command-line arguments from.");
-            DotNetJerryHost.WriteLine("                               Defaults to '<command>.cli' in the current directory.");
-            DotNetJerryHost.WriteLine();
-            DotNetJerryHost.WriteLine("Examples:");
-            DotNetJerryHost.WriteLine("  jerry cli");
-            DotNetJerryHost.WriteLine("  jerry cli -f MyFile.cli");
-            DotNetJerryHost.WriteLine("  jerry cli -c scaffold");
-            DotNetJerryHost.WriteLine("  jerry cli -c scaffold -f Database.cli");
             DotNetJerryHost.WriteLine();
         }
 
@@ -163,6 +138,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
         {
             DotNetJerryHost.WriteHeader();
             DotNetJerryHost.WriteLine("Usage: jerry [command] [options]. Use 'jerry help' to show commands and options.");
+            DotNetJerryHost.WriteLine();
 
             if (string.IsNullOrEmpty(args.Command))
                 throw new RunnerException("No command specified.");

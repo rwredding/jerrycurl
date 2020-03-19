@@ -27,46 +27,78 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             if (string.IsNullOrWhiteSpace(args.Connection))
                 throw new RunnerException("Please specify a connection string using the -c|--connection argument.");
 
-            string[] inputs = args.Options["-s", "--sql"]?.Values ?? Array.Empty<string>();
-
-            if (inputs.Length == 0)
-                throw new RunnerException("Please specify at least one SQL input with the -s|--sql argument.");
+            int numberOfInputs = 0;
 
             using (DbConnection connection = await GetOpenConnectionAsync(args, factory))
             {
-                foreach (ResponseFile responseFile in inputs.Select(ResponseFile.Parse))
+                foreach (ToolOption option in args.Options)
                 {
-                    if (responseFile.IsPath)
+                    if (IsSqlInput(option))
                     {
-                        DotNetJerryHost.WriteLine($"Executing '@{Path.GetFileName(responseFile.InputPath)}'...", ConsoleColor.Yellow);
+                        string sqlText = string.Join("\r\n", option.Values);
 
-                        if (!File.Exists(responseFile.FullPath))
-                        {
-                            DotNetJerryHost.WriteLine($"Skipped. File not found.", ConsoleColor.Yellow);
+                        DotNetJerryHost.WriteLine($"Executing...", ConsoleColor.Yellow);
+                        DotNetJerryHost.WriteLine(sqlText, ConsoleColor.DarkRed);
 
-                            continue;
-                        }
+                        await ExecuteSqlAsync(connection, sqlText);
+
+                        numberOfInputs++;
                     }
-                    else if (!responseFile.Ignore)
-                        DotNetJerryHost.WriteLine($"Executing '{responseFile.Value}'...", ConsoleColor.Yellow);
-
-                    using (DbCommand command = connection.CreateCommand())
+                    else if (IsFileInput(option))
                     {
-                        command.CommandText = string.Join(Environment.NewLine, ResponseFile.ExpandStrings(responseFile));
-
-                        if (!string.IsNullOrWhiteSpace(command.CommandText))
+                        ResponseSettings settings = new ResponseSettings()
                         {
-                            int affectedRows = await command.ExecuteNonQueryAsync();
+                            IgnoreWhitespace = false,
+                        };
+                        string[] expanded = ResponseFile.ExpandFiles(option.Values, settings).ToArray();
+                        string sqlText = string.Join("\r\n", expanded);
 
-                            string rowsMoniker = affectedRows + " " + (affectedRows == 1 ? "row" : "rows");
+                        DotNetJerryHost.WriteLine($"Executing...", ConsoleColor.Yellow);
+                        DotNetJerryHost.WriteLine(sqlText, ConsoleColor.DarkRed);
 
-                            DotNetJerryHost.WriteLine($"OK. {rowsMoniker} affected.", ConsoleColor.Green);
-                        }
-                        else
-                            DotNetJerryHost.WriteLine($"Skipped. SQL text is empty.", ConsoleColor.Yellow);
+                        await ExecuteSqlAsync(connection, sqlText);
+
+                        numberOfInputs++;
+                    }
+                    else if (IsRawInput(option))
+                    {
+                        string sqlText = string.Join("", option.Values.Select(File.ReadAllText));
+
+                        DotNetJerryHost.WriteLine($"Executing...", ConsoleColor.Yellow);
+                        DotNetJerryHost.WriteLine(sqlText, ConsoleColor.DarkRed);
+
+                        await ExecuteSqlAsync(connection, sqlText);
+
+                        numberOfInputs++;
                     }
                 }
             }
+
+            if (numberOfInputs == 0)
+                throw new RunnerException("Please specify at least one SQL input with the --sql, --file or --raw arguments.");
+
+            async Task ExecuteSqlAsync(DbConnection connection, string sqlText)
+            {
+                using (DbCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = sqlText;
+
+                    if (!string.IsNullOrWhiteSpace(command.CommandText))
+                    {
+                        int affectedRows = await command.ExecuteNonQueryAsync();
+
+                        string rowsMoniker = affectedRows + " " + (affectedRows == 1 ? "row" : "rows");
+
+                        DotNetJerryHost.WriteLine($"OK. {rowsMoniker} affected.", ConsoleColor.Green);
+                    }
+                    else
+                        DotNetJerryHost.WriteLine($"Skipped. SQL text is empty.", ConsoleColor.Yellow);
+                }
+            }
+
+            bool IsRawInput(ToolOption option) => (option.Name == "raw" || option.ShortName == "r");
+            bool IsSqlInput(ToolOption option) => (option.Name == "sql" || option.ShortName == "s");
+            bool IsFileInput(ToolOption option) => (option.Name == "file" || option.ShortName == "f");
         }
     }
 }

@@ -52,9 +52,6 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                     case "tp":
                         CommandRunners.Transpile(this.Args);
                         break;
-                    case "cli":
-                        await CommandRunners.ResponseFileAsync(this.Args);
-                        break;
                     case "meow":
                         CommandRunners.Meow();
                         break;

@@ -11,16 +11,26 @@ namespace Jerrycurl.Test.Integration
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
             if (args.Length != 2)
-                return;
+            {
+                Console.WriteLine("Invalid arguments.");
+                
+                return -1;
+            }
 
             string connectionString = args[0];
             string resultsPath = args[1];
 
             if (File.Exists(resultsPath))
                 File.Delete(resultsPath);
+            
+            Console.WriteLine();
+            Console.WriteLine("| ConnectionString: " + connectionString);
+            Console.WriteLine("| ResultsPath: " + resultsPath);    
+            Console.WriteLine();
+            Console.WriteLine("> Running integration code...");
 
             Settings.ConnectionString = connectionString;
 
@@ -59,8 +69,13 @@ namespace Jerrycurl.Test.Integration
             VerifyModel(movies);
 
             accessor.VerifyImport();
+            
+            Console.WriteLine($"> Ran to EOF. Writing results to '{resultsPath}'.");
+            Console.WriteLine();
 
             File.WriteAllText(resultsPath, "OK");
+            
+            return 0;
         }
 
         private static void VerifyModel(IList<DatabaseView> model)
