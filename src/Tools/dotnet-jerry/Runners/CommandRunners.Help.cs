@@ -27,15 +27,19 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             {
                 DotNetJerryHost.WriteHeader();
 
-                DotNetJerryHost.WriteLine("Usage: jerry [command] [options]");
+                DotNetJerryHost.WriteLine("Usage: jerry [command] [options] [@filename]");
                 DotNetJerryHost.WriteLine();
-                DotNetJerryHost.WriteLine("Execute a command with the Jerrycurl CLI.");
+                DotNetJerryHost.WriteLine("Execute a command with the specified options. Use @[filename]-prefixed arguments to read from");
                 DotNetJerryHost.WriteLine();
                 DotNetJerryHost.WriteLine("Commands:");
                 DotNetJerryHost.WriteLine("  scaffold                    Generate a C# object model from an existing database.");
                 DotNetJerryHost.WriteLine("  transpile                   Transpile a collection of .cssql files into C# classes.");
                 DotNetJerryHost.WriteLine("  info                        Show information about a database connector.");
-                DotNetJerryHost.WriteLine("  help [command]              Show help information the commands above.");
+                DotNetJerryHost.WriteLine("  args                        Show all arguments including expanded @files.");
+                DotNetJerryHost.WriteLine("  help [command]              Show help information about the commands above.");
+                DotNetJerryHost.WriteLine();
+                DotNetJerryHost.WriteLine("Arguments:");
+                DotNetJerryHost.WriteLine("  scaffold                    Generate a C# object model from an existing database.");
                 DotNetJerryHost.WriteLine();
             }
             else

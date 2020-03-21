@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Jerrycurl.CodeAnalysis.Projection;
 using Jerrycurl.CodeAnalysis.Razor.Generation;
@@ -76,8 +77,13 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
                     if (!string.IsNullOrWhiteSpace(command.CommandText))
                     {
-                        DotNetJerryHost.WriteLine($"Executing...", ConsoleColor.Yellow);
-                        DotNetJerryHost.WriteLine(sqlText, ConsoleColor.Blue);
+                        if (args.Verbose)
+                        {
+                            DotNetJerryHost.WriteLine($"Executing...", ConsoleColor.Yellow);
+                            DotNetJerryHost.WriteLine(sqlText, ConsoleColor.Blue);
+                        }
+                        else
+                            DotNetJerryHost.WriteLine($"Executing '{GetSqlPreviewText(sqlText)}'...", ConsoleColor.Yellow);
 
                         int affectedRows = await command.ExecuteNonQueryAsync();
 
@@ -88,6 +94,21 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                     else
                         DotNetJerryHost.WriteLine($"Skipped. SQL text is empty.", ConsoleColor.Yellow);
                 }
+            }
+
+            string GetSqlPreviewText(string sqlText)
+            {
+                StringBuilder builder = new StringBuilder();
+
+                for (int i = 0; i < sqlText.Length && builder.Length <= 30; i++)
+                {
+                    if (!char.IsWhiteSpace(sqlText[i]))
+                        builder.Append(sqlText[i]);
+                    else if (builder.Length > 0 && !char.IsWhiteSpace(builder[builder.Length - 1]))
+                        builder.Append(' ');
+                }
+
+                return builder.ToString();
             }
 
             bool IsRawInput(ToolOption option) => (option.Name == "raw" || option.ShortName == "r");
