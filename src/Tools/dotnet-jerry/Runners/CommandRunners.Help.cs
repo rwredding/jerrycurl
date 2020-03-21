@@ -40,14 +40,14 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 DotNetJerryHost.WriteLine("  help [command]              Show help information about the commands above.");
                 DotNetJerryHost.WriteLine();
                 DotNetJerryHost.WriteLine("Examples:");
-                DotNetJerryHost.WriteLine("- Generate a C# model with arguments specified in a local 'db.cli' file:");
-                DotNetJerryHost.WriteLine("  jerry scaffold @db");
+                DotNetJerryHost.WriteLine("  Generate a C# model with arguments specified in a local 'db.cli' file:");
+                DotNetJerryHost.WriteLine("  > jerry scaffold @db");
                 DotNetJerryHost.WriteLine();
-                DotNetJerryHost.WriteLine("- Transpile .cssql files from local directories 'Queries' and 'Commands':");
-                DotNetJerryHost.WriteLine("  jerry transpile -d Queries -d Commands");
+                DotNetJerryHost.WriteLine("  Transpile .cssql files from local directories 'Queries' and 'Commands':");
+                DotNetJerryHost.WriteLine("  > jerry transpile -d Queries -d Commands");
                 DotNetJerryHost.WriteLine();
-                DotNetJerryHost.WriteLine("- Show help for the 'scaffold' command.");
-                DotNetJerryHost.WriteLine("  jerry help scaffold");
+                DotNetJerryHost.WriteLine("  Show help for the 'scaffold' command:");
+                DotNetJerryHost.WriteLine("  > jerry help scaffold");
                 DotNetJerryHost.WriteLine();
             }
             else
@@ -80,17 +80,18 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             DotNetJerryHost.WriteLine("Generate a C# object model from an existing database.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Options:");
-            DotNetJerryHost.WriteLine("  -v, --vendor <moniker>      Vendor used to connect. Can be 'sqlserver', 'sqlite', 'oracle',");
-            DotNetJerryHost.WriteLine("                                  'postgres' or 'mysql'.");
+            DotNetJerryHost.WriteLine("  -v, --vendor <moniker>      Vendor used to connect. Can be 'sqlserver', 'sqlite',");
+            DotNetJerryHost.WriteLine("                                   'oracle', 'postgres' or 'mysql'.");
             DotNetJerryHost.WriteLine("  -c, --connection <cs>       Connection string used to connect.");
             DotNetJerryHost.WriteLine("  -ns, --namespace <ns>       Namespace to place generated classes in.");
             DotNetJerryHost.WriteLine("  -o, --output <file>         File or directory to generate .cs files into.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Examples:");
-            DotNetJerryHost.WriteLine("- Generate model into 'Database.cs' with specified vendor, connection and namespace.");
-            DotNetJerryHost.WriteLine("    jerry scaffold -v sqlserver -c \"DATABASE=moviedb\" -ns MovieDb.Database");
-            DotNetJerryHost.WriteLine("- Generate model into the 'Database' directory using one file per table.");
-            DotNetJerryHost.WriteLine("    jerry scaffold [...] -o .\\Database");
+            DotNetJerryHost.WriteLine("  Generate model into 'Database.cs' with specified vendor, connection and namespace:");
+            DotNetJerryHost.WriteLine("  > jerry scaffold -v sqlserver -c \"DATABASE=moviedb\" -ns MovieDb.Database");
+            DotNetJerryHost.WriteLine();
+            DotNetJerryHost.WriteLine("  Generate model into the 'Database' directory using one file per table:");
+            DotNetJerryHost.WriteLine("  > jerry scaffold [...] -o .\\Database");
             DotNetJerryHost.WriteLine();
         }
 
@@ -114,9 +115,10 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             DotNetJerryHost.WriteLine("  --no-clean             Do not clean the output directory before transpiling.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Examples:");
-            DotNetJerryHost.WriteLine("  Transpile all .cssql files from the current directory with the specified root namespace.");
+            DotNetJerryHost.WriteLine("  Transpile all .cssql files from the current directory with the specified root namespace:");
             DotNetJerryHost.WriteLine("  > jerry transpile -d . -ns MovieDb.Data");
-            DotNetJerryHost.WriteLine("  Transpile .cssql files and import 'MovieDb.Database' namespace.");
+            DotNetJerryHost.WriteLine();
+            DotNetJerryHost.WriteLine("  Transpile .cssql files and import 'MovieDb.Database' namespace:");
             DotNetJerryHost.WriteLine("  > jerry transpile -f Query1.cssql Query2.cssql -i MovieDb.Database");
             DotNetJerryHost.WriteLine();
         }
@@ -130,13 +132,12 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             DotNetJerryHost.WriteLine("Show information about a specific database connector.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Options:");
-            DotNetJerryHost.WriteLine("  -v, --vendor <moniker>      Vendor used to connect to database. Moniker can");
-            DotNetJerryHost.WriteLine("                                be 'sqlserver', 'sqlite', 'oracle', 'postgres'");
-            DotNetJerryHost.WriteLine("                                or 'mysql'.");
+            DotNetJerryHost.WriteLine("  -v, --vendor <moniker>      Vendor used to connect. Can be 'sqlserver', 'sqlite',");
+            DotNetJerryHost.WriteLine("                                   'oracle', 'postgres' or 'mysql'.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Examples:");
-            DotNetJerryHost.WriteLine("- Show information about the Microsoft SQL Server connector:");
-            DotNetJerryHost.WriteLine("  jerry info -v sqlserver");
+            DotNetJerryHost.WriteLine("  Show information about the Microsoft SQL Server connector:");
+            DotNetJerryHost.WriteLine("  > jerry info -v sqlserver");
             DotNetJerryHost.WriteLine();
         }
 
@@ -146,16 +147,18 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
             DotNetJerryHost.WriteLine("Usage: jerry run [options]");
             DotNetJerryHost.WriteLine();
-            DotNetJerryHost.WriteLine("Show information about a specific database connector.");
+            DotNetJerryHost.WriteLine("Run SQL statements against a database.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Options:");
-            DotNetJerryHost.WriteLine("  -v, --vendor <moniker>      Vendor used to connect to database. Moniker can");
-            DotNetJerryHost.WriteLine("                                be 'sqlserver', 'sqlite', 'oracle', 'postgres'");
-            DotNetJerryHost.WriteLine("                                or 'mysql'.");
+            DotNetJerryHost.WriteLine("  -v, --vendor <moniker>      Vendor used to connect. Can be 'sqlserver', 'sqlite',");
+            DotNetJerryHost.WriteLine("                                   'oracle', 'postgres' or 'mysql'.");
+            DotNetJerryHost.WriteLine("  -s, --sql <statements>      SQL string to execute on the server.");
+            DotNetJerryHost.WriteLine("  -f, --file <file>           SQL file to execute. Expands lines starting with @.");
+            DotNetJerryHost.WriteLine("  --raw <file>                SQL file to execute. Does not expand lines.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Examples:");
-            DotNetJerryHost.WriteLine("- Show information about the Microsoft SQL Server connector:");
-            DotNetJerryHost.WriteLine("  jerry info -v sqlserver");
+            DotNetJerryHost.WriteLine("  Delete all movies for a database specified in a local template file:");
+            DotNetJerryHost.WriteLine("  > jerry run @db --sql \"DELETE FROM [Movie]\"");
             DotNetJerryHost.WriteLine();
         }
 
