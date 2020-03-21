@@ -28,7 +28,19 @@ namespace Jerrycurl.CommandLine
 
         public string[] ToArgumentList()
         {
-            return this.options.SelectMany(opt => new[] { opt.Name != null ? "--" + opt.Name : "-" + opt.ShortName }.Concat(opt.Values)).ToArray();
+            List<string> arguments = new List<string>();
+
+            foreach (ToolOption option in this.options)
+            {
+                if (!string.IsNullOrEmpty(option.Name))
+                    arguments.Add("--" + option.Name);
+                else if (!string.IsNullOrEmpty(option.ShortName))
+                    arguments.Add("--" + option.ShortName);
+
+                arguments.AddRange(option.Values);
+            }
+
+            return arguments.ToArray();
         }
 
         public static string[] ToArgumentList(string arguments)

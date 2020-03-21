@@ -29,8 +29,8 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
                 DotNetJerryHost.WriteLine("Usage: jerry [command] [options] [@file]");
                 DotNetJerryHost.WriteLine();
-                DotNetJerryHost.WriteLine("Execute a command with the specified options. Specify options directly or from");
-                DotNetJerryHost.WriteLine("file input using @file[.cli] syntax.");
+                DotNetJerryHost.WriteLine("Execute a command with the specified options. Specify directly and from file input");
+                DotNetJerryHost.WriteLine("using @file[.cli] syntax.");
                 DotNetJerryHost.WriteLine();
                 DotNetJerryHost.WriteLine("Commands:");
                 DotNetJerryHost.WriteLine("  scaffold                    Generate a C# object model from an existing database.");
@@ -40,11 +40,13 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 DotNetJerryHost.WriteLine("  help [command]              Show help information about the commands above.");
                 DotNetJerryHost.WriteLine();
                 DotNetJerryHost.WriteLine("Examples:");
-                DotNetJerryHost.WriteLine("  # Show help for the 'scaffold' command.");
+                DotNetJerryHost.WriteLine("  Show help for the 'scaffold' command.");
                 DotNetJerryHost.WriteLine("    > jerry help scaffold");
-                DotNetJerryHost.WriteLine("  # Generate a C# model with arguments specified in a local 'db.cli' file.");
+                DotNetJerryHost.WriteLine("");
+                DotNetJerryHost.WriteLine("  Generate a C# model with arguments specified in a local 'db.cli' file.");
                 DotNetJerryHost.WriteLine("    > jerry scaffold @db");
-                DotNetJerryHost.WriteLine("  # Transpile .cssql files from local directories 'Queries' and 'Commands'.");
+                DotNetJerryHost.WriteLine("");
+                DotNetJerryHost.WriteLine("  Transpile .cssql files from local directories 'Queries' and 'Commands'.");
                 DotNetJerryHost.WriteLine("    > jerry transpile -d Queries -d Commands");
                 DotNetJerryHost.WriteLine();
             }
@@ -85,9 +87,9 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             DotNetJerryHost.WriteLine("  -o, --output <file>         File or directory to generate .cs files into.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Examples:");
-            DotNetJerryHost.WriteLine("  # Generate model into 'Database.cs' with specified vendor, connection and namespace.");
+            DotNetJerryHost.WriteLine("  Generate model into 'Database.cs' with specified vendor, connection and namespace.");
             DotNetJerryHost.WriteLine("    > jerry scaffold -v sqlserver -c \"DATABASE=moviedb\" -ns MovieDb.Database");
-            DotNetJerryHost.WriteLine("  # Generate model into the 'Database' directory using one file per table.");
+            DotNetJerryHost.WriteLine("  Generate model into the 'Database' directory using one file per table.");
             DotNetJerryHost.WriteLine("    > jerry scaffold [...] -o .\\Database");
             DotNetJerryHost.WriteLine();
         }
@@ -112,10 +114,10 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             DotNetJerryHost.WriteLine("  --no-clean             Do not clean the output directory before transpiling.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Examples:");
-            DotNetJerryHost.WriteLine("  # Transpile all .cssql files from the current directory with the specified root namespace.");
-            DotNetJerryHost.WriteLine("    > jerry transpile -d . -ns MovieDb.Data");
-            DotNetJerryHost.WriteLine("  # Transpile .cssql files and import 'MovieDb.Database' namespace.");
-            DotNetJerryHost.WriteLine("    > jerry transpile -f Query1.cssql Query2.cssql -i MovieDb.Database");
+            DotNetJerryHost.WriteLine("  Transpile all .cssql files from the current directory with the specified root namespace.");
+            DotNetJerryHost.WriteLine("  > jerry transpile -d . -ns MovieDb.Data");
+            DotNetJerryHost.WriteLine("  Transpile .cssql files and import 'MovieDb.Database' namespace.");
+            DotNetJerryHost.WriteLine("  > jerry transpile -f Query1.cssql Query2.cssql -i MovieDb.Database");
             DotNetJerryHost.WriteLine();
         }
 
@@ -133,8 +135,8 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             DotNetJerryHost.WriteLine("                                or 'mysql'.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Examples:");
-            DotNetJerryHost.WriteLine("  # Show information about the Microsoft SQL Server connector.");
-            DotNetJerryHost.WriteLine("    > jerry info -v sqlserver");
+            DotNetJerryHost.WriteLine("  Show information about the Microsoft SQL Server connector.");
+            DotNetJerryHost.WriteLine("  > jerry info -v sqlserver");
             DotNetJerryHost.WriteLine();
         }
 
