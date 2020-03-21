@@ -38,7 +38,7 @@ namespace Jerrycurl.CodeAnalysis.Razor.ProjectSystem
                     RazorProjectItem newItem = new RazorProjectItem()
                     {
                         FullPath = fullPath,
-                        ProjectPath = PathHelper.MakeRelativePath(fullPath, projectDirectory),
+                        ProjectPath = PathHelper.MakeRelativePath(projectDirectory, fullPath),
                     };
 
                     projectItems.Add(newItem);
