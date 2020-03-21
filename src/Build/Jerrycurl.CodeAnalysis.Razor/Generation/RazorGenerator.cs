@@ -124,7 +124,7 @@ namespace Jerrycurl.CodeAnalysis.Razor.Generation
                     .WriteLine();
             }
 
-            if (pageData.Namespace?.Text != null)
+            if (!string.IsNullOrWhiteSpace(pageData.Namespace?.Text))
             {
                 projector.Open("beginnamespace")
                     .Write($"namespace ")
@@ -134,7 +134,7 @@ namespace Jerrycurl.CodeAnalysis.Razor.Generation
                 projector.Open("endnamespace")
                     .Write("}");
             }
-            else if (!string.IsNullOrEmpty(this.Options.Namespace?.Text))
+            else if (!string.IsNullOrWhiteSpace(this.Options.Namespace?.Text))
             {
                 projector.Open("beginnamespace")
                     .Write($"namespace ")
