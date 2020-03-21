@@ -137,13 +137,10 @@ namespace Jerrycurl.Build.Razor
         {
             NuGetVersion version = typeof(Jcst).Assembly.GetNuGetPackageVersion();
 
-            this.PrintMessage("Jerrycurl Build Engine");
             if (version == null)
-                this.PrintMessage("\tVersion: <unknown>");
-            else if (version.CommitHash != null)
-                this.PrintMessage($"\tVersion: {version.PublicVersion} ({version.CommitHash})");
+                this.PrintMessage($"Jerrycurl Build Engine");
             else
-                this.PrintMessage($"\tVersion: {version.PublicVersion}");
+                this.PrintMessage($"Jerrycurl Build Engine v{version.PublicVersion} ({version.CommitHash})");
             this.PrintMessage($"\tProjectName: {this.ProjectName}");
             this.PrintMessage($"\tProjectDirectory: {project.ProjectDirectory}");
             this.PrintMessage($"\tRootNamespace: {this.RootNamespace}");
