@@ -233,8 +233,8 @@ function Run-Project-Test
         [String] $PackageSource,
         [String] $TargetFramework,
         [String] $Verbosity,
-        [String] $TempPath
-        [Switch] $UseCliForTranspilation
+        [String] $TempPath,
+        [Switch] $TranspileWithCli
     )
     
     $projectPath = Join-Path (Get-Temp-Path $Vendor $TargetFramework $TempPath) "Jerrycurl.Test.Integration"
@@ -245,12 +245,14 @@ function Run-Project-Test
         "--framework",
         "$TargetFramework",
         "--verbosity",
+        "$Verbosity",
         "--configuration",
+        "Release",
         "-p:DefineConstants=$constant",
         "-p:DatabaseVendor=$Vendor"
     )
     
-    if ($UseCliForTranspilation)
+    if ($TranspileWithCli)
     {
         $buildArgs += "-p:JerrycurlUseCli=true", "-p:JerrycurlCliPath=..\jerry"
     }
