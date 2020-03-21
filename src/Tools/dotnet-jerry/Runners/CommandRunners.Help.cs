@@ -34,7 +34,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 DotNetJerryHost.WriteLine();
                 DotNetJerryHost.WriteLine("Commands:");
                 DotNetJerryHost.WriteLine("  scaffold                    Generate a C# object model from an existing database.");
-                DotNetJerryHost.WriteLine("  transpile                   Transpile a collection of .cssql files into C# classes.");
+                DotNetJerryHost.WriteLine("  transpile                   Transpile a project of .cssql files into .cs files.");
                 DotNetJerryHost.WriteLine("  info                        Show information about a database connector.");
                 DotNetJerryHost.WriteLine("  args                        Show all arguments Useful for debugging @file inputs.");
                 DotNetJerryHost.WriteLine("  help [command]              Show help information about the commands above.");
@@ -61,6 +61,9 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                     case "transpile":
                     case "tp":
                         HelpForTranspile();
+                        break;
+                    case "run":
+                        HelpForRun();
                         break;
                     case "info":
                         HelpForInfo();
@@ -101,11 +104,11 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
 
             DotNetJerryHost.WriteLine("Usage: jerry transpile [options]");
             DotNetJerryHost.WriteLine();
-            DotNetJerryHost.WriteLine("Transpile a project of .cssql files into C# classes.");
+            DotNetJerryHost.WriteLine("Transpile a project of .cssql files into .cs files.");
             DotNetJerryHost.WriteLine();
             DotNetJerryHost.WriteLine("Options:");
-            DotNetJerryHost.WriteLine("  -p,  --project         Project directory to resolve relative paths from. Defaults to the");
-            DotNetJerryHost.WriteLine("                             current directory.");
+            DotNetJerryHost.WriteLine("  -p,  --project         Project directory to resolve relative paths and namespaces from.");
+            DotNetJerryHost.WriteLine("                              Defaults to the current directory.");
             DotNetJerryHost.WriteLine("  -f,  --file            Add a file to the project.");
             DotNetJerryHost.WriteLine("  -d,  --directory       Add all .cssql files to the project from a specified directory.");
             DotNetJerryHost.WriteLine("  -ns, --namespace       Root namespace for the project.");
