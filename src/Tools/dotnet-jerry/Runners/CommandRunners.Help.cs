@@ -27,9 +27,10 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             {
                 DotNetJerryHost.WriteHeader();
 
-                DotNetJerryHost.WriteLine("Usage: jerry [command] [options] [@filename]");
+                DotNetJerryHost.WriteLine("Usage: jerry [command] [options] [@file]");
                 DotNetJerryHost.WriteLine();
-                DotNetJerryHost.WriteLine("Execute a command with the specified options. Use @[filename]-prefixed arguments to read from");
+                DotNetJerryHost.WriteLine("Execute a command with the specified options. Specify options directly or from");
+                DotNetJerryHost.WriteLine("file input using @file[.cli] syntax.");
                 DotNetJerryHost.WriteLine();
                 DotNetJerryHost.WriteLine("Commands:");
                 DotNetJerryHost.WriteLine("  scaffold                    Generate a C# object model from an existing database.");
@@ -38,8 +39,11 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
                 DotNetJerryHost.WriteLine("  args                        Show all arguments including expanded @files.");
                 DotNetJerryHost.WriteLine("  help [command]              Show help information about the commands above.");
                 DotNetJerryHost.WriteLine();
-                DotNetJerryHost.WriteLine("Arguments:");
-                DotNetJerryHost.WriteLine("  scaffold                    Generate a C# object model from an existing database.");
+                DotNetJerryHost.WriteLine("Examples:");
+                DotNetJerryHost.WriteLine("# Generate a C# model using arguments from local 'database.cli' template file.");
+                DotNetJerryHost.WriteLine("    jerry scaffold @database ");
+                DotNetJerryHost.WriteLine("# Transpile .cssql files from local directory 'Queries' and 'Commands'.");
+                DotNetJerryHost.WriteLine("    jerry transpile -d Queries -d Commands");
                 DotNetJerryHost.WriteLine();
             }
             else
