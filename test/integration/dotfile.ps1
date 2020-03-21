@@ -234,12 +234,26 @@ function Run-Project-Test
         [String] $TargetFramework,
         [String] $Verbosity,
         [String] $TempPath
+        [Switch] $UseCliForTranspilation
     )
     
     $projectPath = Join-Path (Get-Temp-Path $Vendor $TargetFramework $TempPath) "Jerrycurl.Test.Integration"
     $resultsPath = Join-Path (Get-Temp-Path $Vendor $TargetFramework $TempPath) "results.txt"
     $package = Get-Vendor-Package $Vendor
     $constant = Get-Vendor-Constant $Vendor
+    $buildArgs = @(
+        "--framework",
+        "$TargetFramework",
+        "--verbosity",
+        "--configuration",
+        "-p:DefineConstants=$constant",
+        "-p:DatabaseVendor=$Vendor"
+    )
+    
+    if ($UseCliForTranspilation)
+    {
+        $buildArgs += "-p:JerrycurlUseCli=true", "-p:JerrycurlCliPath=..\jerry"
+    }
     
     Push-Location $projectPath
     Write-Host "  Building project ($TargetFramework)..." -ForegroundColor Cyan
@@ -248,7 +262,7 @@ function Run-Project-Test
     ..\jerry scaffold -v $Vendor -c $ConnectionString -ns "Jerrycurl.Test.Integration.Database" --verbose
     if ($LastExitCode -eq 0)
     {
-        dotnet build --framework "$TargetFramework" --verbosity "$Verbosity" --configuration Release "-p:DefineConstants=$constant" "-p:DatabaseVendor=$Vendor" "-p:UseJerrycurlCli=true" "-p:JerrycurlCliPath=..\jerry"
+        dotnet build @buildArgs
     }
     Write-Host "  Running code..." -ForegroundColor Cyan
     if ($LastExitCode -eq 0)
