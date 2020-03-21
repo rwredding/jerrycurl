@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -8,7 +7,6 @@ using Jerrycurl.Facts;
 using Jerrycurl.IO;
 using Jerrycurl.Reflection;
 using Jerrycurl.Tools.DotNet.Cli.ComponentModel;
-using Jerrycurl.Tools.DotNet.Cli.Runners;
 
 namespace Jerrycurl.Tools.DotNet.Cli.Commands
 {

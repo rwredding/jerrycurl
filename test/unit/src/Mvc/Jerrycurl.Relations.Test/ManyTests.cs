@@ -1,8 +1,4 @@
-﻿using Jerrycurl.Relations.Tests.Models;
-using Jerrycurl.Test;
-using Shouldly;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Shouldly;
 
 namespace Jerrycurl.Relations.Tests
 {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using Jerrycurl.Data.Commands;
 using Jerrycurl.Data.Filters;
 using Jerrycurl.Data.Queries;

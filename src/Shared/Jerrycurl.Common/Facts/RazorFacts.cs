@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Jerrycurl.Facts
+﻿namespace Jerrycurl.Facts
 {
     internal static class RazorFacts
     {

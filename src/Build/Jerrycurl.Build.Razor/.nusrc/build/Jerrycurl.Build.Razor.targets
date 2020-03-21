@@ -11,9 +11,10 @@
 		<JerrycurlVerbose Condition=" '$(JerrycurlVerbose)' == '' ">false</JerrycurlVerbose>
 		<JerrycurlProjectName Condition=" '$(JerrycurlRootNamespace)' == '' ">$(MSBuildProjectName)</JerrycurlProjectName>
 		<JerrycurlUseLinks Condition=" '$(JerrycurlUseLinks)' == '' ">true</JerrycurlUseLinks>
-		<JerrycurlUseGlobalTool Condition=" '$(JerrycurlUseGlobalTool)' == '' ">false</JerrycurlUseGlobalTool>
-		<JerrycurlAbsoluteFileList>$(IntermediateOutputPath)Jerrycurl.AbsoluteFileList.txt</JerrycurlAbsoluteFileList>
-		<JerrycurlGlobalToolOutput Condition=" '$(JerrycurlVerbose)' == 'false' ">low</JerrycurlGlobalToolOutput>
+		<JerrycurlUseCli Condition=" '$(JerrycurlUseCli)' == '' ">false</JerrycurlUseCli>
+		<JerrycurlCliPath Condition=" '$(JerrycurlCliPath)' == '' ">jerry</JerrycurlCliPath>
+		<JerrycurlCliFileList>$(IntermediateOutputPath)Jerrycurl.AbsoluteFileList.txt</JerrycurlCliFileList>
+		<JerrycurlCliOutputImportance Condition=" '$(JerrycurlVerbose)' == 'false' ">low</JerrycurlCliOutputImportance>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -24,13 +25,13 @@
 		<JerryFile Remove="$(BaseOutputPath)/**/*.cssql;$(BaseIntermediateOutputPath)/**/*.cssql" />
 	</ItemGroup>
 
-	<PropertyGroup Condition=" '$(UsingMicrosoftNETSdk)' == 'true' and '$(JerrycurlUseGlobalTool)' != 'true'">
+	<PropertyGroup Condition=" '$(UsingMicrosoftNETSdk)' == 'true' and '$(JerrycurlUseCli)' != 'true'">
 		<CoreCompileDependsOn>$(CoreCompileDependsOn);JerryCompile</CoreCompileDependsOn>
 		<CoreCleanDependsOn>$(CoreCleanDependsOn);JerryClean</CoreCleanDependsOn>
 	</PropertyGroup>
 
-	<PropertyGroup Condition=" '$(UsingMicrosoftNETSdk)' == 'true' and '$(JerrycurlUseGlobalTool)' == 'true'">
-		<CoreCompileDependsOn>$(CoreCompileDependsOn);JerryCompileForGlobalTool</CoreCompileDependsOn>
+	<PropertyGroup Condition=" '$(UsingMicrosoftNETSdk)' == 'true' and '$(JerrycurlUseCli)' == 'true'">
+		<CoreCompileDependsOn>$(CoreCompileDependsOn);JerryCompileWithCli</CoreCompileDependsOn>
 		<CoreCleanDependsOn>$(CoreCleanDependsOn);JerryClean</CoreCleanDependsOn>
 	</PropertyGroup>
 
@@ -60,21 +61,22 @@
 		</Jcst>
 	</Target>
 
-	<Target Name="JerryCompileForGlobalTool">
+	<Target Name="JerryCompileWithCli">
 		<ItemGroup Condition=" '$(JerrycurlUseLinks)' == 'true' ">
 			<_JerryLink Include="@(None)" Condition=" '%(None.Link)' != '' and @(None-&gt;Metadata('Link')-&gt;EndsWith('.cssql')) " />
 		</ItemGroup>
 
 		<ItemGroup>
-			<_JerryLink Include="@(JerryFile)" Condition=" '%(JerryFile.Link)' != '' and '%(_JerryLink.FullPath)' != '' " />
+			<_JerryLink Include="@(JerryFile)" Condition=" '%(JerryFile.Link)' != '' and '%(JerryFile.FullPath)' != '' " />
 			<_JerryFile Include="@(JerryFile)" Condition=" '%(JerryFile.Link)' == '' " />
+			<_JerrySpec Include="&quot;%(_JerryFile.FullPath)&quot;" />
+			<_JerrySpec Include="&quot;%(_JerryLink.FullPath)|%(_JerryLink.Link)&quot;" Condition=" '@(_JerryLink)' != '' " />
 		</ItemGroup>
 
-		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="@(_JerryFile)" Overwrite="true" />
-		<WriteLinesToFile File="$(JerrycurlAbsoluteFileList)" Lines="%(_JerryLink.FullPath)|%(_JerryLink.Link)" Condition=" '@(_JerryLink)' != '' " />
+		<WriteLinesToFile File="$(JerrycurlCliFileList)" Lines="@(_JerrySpec)" Overwrite="true" />
 
-		<Exec Command="jerry transpile --file &quot;@$(JerrycurlAbsoluteFileList)&quot; --output &quot;$(JerrycurlIntermediatePath)&quot; --namespace &quot;$(JerrycurlRootNamespace)"
-		      StandardOutputImportance="$(JerrycurlGlobalToolOutput)" />
+		<Exec Command="$(JerrycurlCliPath) transpile --file &quot;@$(JerrycurlCliFileList)&quot; --output &quot;$(JerrycurlIntermediatePath)&quot; --namespace &quot;$(JerrycurlRootNamespace)&quot;"
+		      StandardOutputImportance="$(JerrycurlCliOutputImportance)" />
 
 		<ItemGroup>
 			<Compile Include="$(JerrycurlIntermediatePath)\*.cssql.cs" Condition=" Exists('$(JerrycurlIntermediatePath)') " />

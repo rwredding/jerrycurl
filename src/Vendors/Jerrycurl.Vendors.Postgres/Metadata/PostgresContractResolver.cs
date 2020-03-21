@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 using Jerrycurl.Data.Metadata;
-using Jerrycurl.Mvc.Metadata;
 using Jerrycurl.Mvc.Metadata.Annotations;
 using Npgsql;
 using NpgsqlTypes;

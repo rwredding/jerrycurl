@@ -1,11 +1,9 @@
 ﻿using Jerrycurl.CommandLine;
 using Jerrycurl.Reflection;
 using Jerrycurl.Tools.DotNet.Cli.Commands;
-using Jerrycurl.Tools.DotNet.Cli.ComponentModel;
 using Jerrycurl.Tools.DotNet.Cli.Runners;
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Jerrycurl.Tools.DotNet.Cli

@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Text;
+﻿using System.Data.Common;
 using System.Threading.Tasks;
 using Jerrycurl.Data.Commands;
 using Jerrycurl.Data.Filters;
-using Jerrycurl.Data.Queries;
 using Jerrycurl.Test;
-using Jerrycurl.Vendors.Sqlite.Test;
-using Shouldly;
 
 namespace Jerrycurl.Vendors.Sqlite.Test
 {

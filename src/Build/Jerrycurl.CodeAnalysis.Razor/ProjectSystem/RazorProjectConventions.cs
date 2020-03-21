@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using Jerrycurl.CodeAnalysis.Razor.ProjectSystem.Conventions;
-using Jerrycurl.IO;
+﻿using Jerrycurl.CodeAnalysis.Razor.ProjectSystem.Conventions;
 
 namespace Jerrycurl.CodeAnalysis.Razor.ProjectSystem
 {
