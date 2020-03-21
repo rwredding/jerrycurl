@@ -18,7 +18,7 @@ namespace Jerrycurl.CommandLine
             if (!string.IsNullOrEmpty(this.Name))
                 arguments.Add("--" + this.Name);
             else if (!string.IsNullOrEmpty(this.ShortName))
-                arguments.Add("--" + this.ShortName);
+                arguments.Add("-" + this.ShortName);
 
             arguments.AddRange(this.Values);
 

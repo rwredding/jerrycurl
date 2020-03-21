@@ -54,7 +54,6 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
             List<string> arguments = new List<string>()
             {
                 this.Args.Proxy.DllPath,
-                this.Args.Command,
             };
 
             arguments.AddRange(this.Args.Options.ToArgumentList());

@@ -15,7 +15,7 @@ namespace Jerrycurl.Tools.DotNet.Cli
         public async static Task<int> Main(string[] args)
         {
             RunnerArgs runnerArgs;
-
+            
             try
             {
                 runnerArgs = RunnerArgs.FromCommandLine(args);
@@ -68,11 +68,11 @@ namespace Jerrycurl.Tools.DotNet.Cli
             NuGetVersion version = RunnerArgs.GetNuGetPackageVersion();
 
             if (version == null)
-                Console.WriteLine($"Jerrycurl CLI");
+                WriteLine($"Jerrycurl CLI");
             else if (version.CommitHash != null)
-                Console.WriteLine($"Jerrycurl CLI v{version.PublicVersion} ({version.CommitHash})");
+                WriteLine($"Jerrycurl CLI v{version.PublicVersion} ({version.CommitHash})");
             else
-                Console.WriteLine($"Jerrycurl CLI v{version.PublicVersion}");
+                WriteLine($"Jerrycurl CLI v{version.PublicVersion}");
         }
 
         public static void WriteLine() => Console.WriteLine();
