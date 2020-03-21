@@ -22,7 +22,7 @@ namespace Jerrycurl.Tools.DotNet.Cli.Runners
     {
         public static void Args(RunnerArgs args)
         {
-            Console.WriteLine(string.Join(" ", args.Options.ToArgumentList()));
+            Console.WriteLine(string.Join(" ", args.Options.Skip(1).SelectMany(opt => opt.ToArgumentList())));
         }
     }
 }

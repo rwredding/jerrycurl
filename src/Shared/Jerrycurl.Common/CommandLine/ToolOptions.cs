@@ -26,22 +26,7 @@ namespace Jerrycurl.CommandLine
 
         public static string Escape(IEnumerable<string> args) => string.Join(" ", args.Select(Escape));
 
-        public string[] ToArgumentList()
-        {
-            List<string> arguments = new List<string>();
-
-            foreach (ToolOption option in this.options)
-            {
-                if (!string.IsNullOrEmpty(option.Name))
-                    arguments.Add("--" + option.Name);
-                else if (!string.IsNullOrEmpty(option.ShortName))
-                    arguments.Add("--" + option.ShortName);
-
-                arguments.AddRange(option.Values);
-            }
-
-            return arguments.ToArray();
-        }
+        public string[] ToArgumentList() => this.options.SelectMany(opt => opt.ToArgumentList()).ToArray();
 
         public static string[] ToArgumentList(string arguments)
         {
