@@ -41,6 +41,7 @@ for:
   branches:
     only:
       - master
+      - dev
 
   artifacts:
   - path: .\artifacts\packages\*.nupkg
