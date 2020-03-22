@@ -76,7 +76,8 @@
 		<WriteLinesToFile File="$(JerrycurlCliFileList)" Lines="@(_JerrySpec)" Overwrite="true" />
 
 		<Exec Command="$(JerrycurlCliPath) transpile --file &quot;@$(JerrycurlCliFileList)&quot; --output &quot;$(JerrycurlIntermediatePath)&quot; --namespace &quot;$(JerrycurlRootNamespace)&quot;"
-		      StandardOutputImportance="$(JerrycurlCliOutputImportance)">
+		      StandardOutputImportance="$(JerrycurlCliOutputImportance)"
+		      ContinueOnError="true">
 			<Output TaskParameter="ExitCode" PropertyName="JerrycurlCliExitCode"/>
 		</Exec>
 
