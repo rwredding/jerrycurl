@@ -80,7 +80,7 @@
 			<Output TaskParameter="ExitCode" PropertyName="JerrycurlCliExitCode"/>
 		</Exec>
 
-		<Warning Condition=" '$(JerrycurlCliExitCode)' == '9009'" Text="Jerrycurl CLI (jerry.exe) was not found. Please specify the .exe location in the 'JerrycurlCliPath' property." />
+		<Error Condition=" '$(JerrycurlCliExitCode)' == '9009' " Text="Jerrycurl CLI was not found. Please specify the path of jerry.exe in the 'JerrycurlCliPath' property." />
 
 		<ItemGroup>
 			<Compile Include="$(JerrycurlIntermediatePath)\*.cssql.cs" Condition=" Exists('$(JerrycurlIntermediatePath)') " />
