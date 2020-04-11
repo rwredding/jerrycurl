@@ -24,7 +24,7 @@ namespace Jerrycurl.Mvc.Sql.SqlServer
 
             Relation relation = new Relation(projection.Source, projection.Attributes.Select(a => a.Metadata.Identity));
 
-            string paramName = projection.Context.Lookup.Custom("TP", projection.Identity, field: projection.Source);
+            string paramName = projection.Context.Lookup.Custom("TP", projection.Identity, metadata: projection.Metadata.Identity, field: projection.Source);
             string dialectName = projection.Context.Domain.Dialect.Parameter(paramName);
 
             return projection.Attr().Append(dialectName).Append(new TableValuedParameter(paramName, relation));
