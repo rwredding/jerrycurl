@@ -74,7 +74,7 @@ namespace Jerrycurl.Vendors.SqlServer
             }
 
             if (refTuple == null)
-                sqlParam.Value = DBNull.Value;
+                sqlParam.Value = null;
             else
                 sqlParam.Value = iterator();
 
