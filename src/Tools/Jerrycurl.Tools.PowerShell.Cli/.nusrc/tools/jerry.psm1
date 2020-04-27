@@ -14,7 +14,7 @@ function Invoke-Jerry
     {
         Push-Project-Dir
 
-        jerry cli --command scaffold --file "Database.cli"
+        jerry -- "scaffold" "@Database.cli"
       
         Pop-Location
     }
@@ -34,22 +34,6 @@ function Invoke-Jerry
       
         Pop-Location
 	}
-}
-
-function Install-Jerry
-{
-    if (Is-Jerry-Missing)
-    {
-        Write-Host "Installing latest Jerrycurl CLI version..."
-      
-        dotnet tool install -g "dotnet-jerry"
-    }
-    else
-    {
-        Write-Host "Upgrading to latest Jerrycurl CLI version..."
-      
-        dotnet tool update -g "dotnet-jerry"
-    }
 }
 
 function Has-Database-Cli

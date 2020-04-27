@@ -14,7 +14,7 @@
         <tags>$PackageTags$</tags>
         <repository type="git" url="$RepositoryUrl$" commit="$GitCommitId$" />
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Razor-powered ORM for SQL lovers</description>
+        <description>An object-relational mapper for .NET. Powered by MVC, CQS and Razor SQL</description>
         <dependencies>
             <group>
                 <dependency id="Jerrycurl.Build.Razor" version="$PackageVersion$" />
