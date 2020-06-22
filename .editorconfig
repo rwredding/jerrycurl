@@ -23,7 +23,10 @@ csharp_new_line_before_catch = true
 csharp_new_line_before_finally = true 
 csharp_new_line_before_members_in_object_initializers = true 
 csharp_new_line_before_members_in_anonymous_types = true 
-csharp_new_line_between_query_expression_clauses = true 
+csharp_new_line_between_query_expression_clauses = true
+
+# Modifier preferences
+dotnet_style_require_accessibility_modifiers = always:warning
 
 [*.{nuspec,props,targets,xml}]
 indent_style = tab
