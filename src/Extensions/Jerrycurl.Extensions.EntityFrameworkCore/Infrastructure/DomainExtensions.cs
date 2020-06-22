@@ -8,7 +8,12 @@ namespace Jerrycurl.Mvc
         public static void UseEntityFrameworkCore<TContext>(this DomainOptions options)
             where TContext : DbContext, new()
         {
-            options.Schemas.AddContract(new EntityFrameworkCoreContractResolver<TContext>());
+            using TContext dbContext = new TContext();
+
+            options.UseEntityFrameworkCore(dbContext);
         }
+
+        public static void UseEntityFrameworkCore(this DomainOptions options, DbContext dbContext)
+            => options.Schemas.AddContract(new EntityFrameworkCoreContractResolver(dbContext));
     }
 }

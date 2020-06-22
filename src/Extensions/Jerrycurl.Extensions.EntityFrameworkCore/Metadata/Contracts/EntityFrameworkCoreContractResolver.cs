@@ -9,20 +9,20 @@ using System.Linq;
 
 namespace Jerrycurl.Extensions.EntityFrameworkCore.Metadata.Builders
 {
-    public class EntityFrameworkCoreContractResolver<TContext> : IRelationContractResolver
-        where TContext : DbContext, new()
+    public class EntityFrameworkCoreContractResolver : IRelationContractResolver
     {
         private IEntityType[] entities;
 
-        public EntityFrameworkCoreContractResolver()
+        public EntityFrameworkCoreContractResolver(DbContext dbContext)
         {
-            this.InitializeEntities();
+            if (dbContext == null)
+                throw new ArgumentNullException(nameof(dbContext));
+
+            this.InitializeEntities(dbContext);
         }
 
-        private void InitializeEntities()
+        private void InitializeEntities(DbContext dbContext)
         {
-            using TContext dbContext = new TContext();
-
             this.entities = dbContext.Model.GetEntityTypes().ToArray();
         }
 
