@@ -7,12 +7,12 @@ namespace Jerrycurl.Data.Commands
     public class ParameterBinding : ICommandBinding
     {
         public string ParameterName { get; }
-        public IField Field { get; }
+        public IField Target { get; }
 
-        public ParameterBinding(string parameterName, IField field)
+        public ParameterBinding(string parameterName, IField target)
         {
             this.ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
-            this.Field = field ?? throw new ArgumentNullException(nameof(field));
+            this.Target = target ?? throw new ArgumentNullException(nameof(target));
         }
 
         public ParameterBinding(IParameter parameter)
@@ -21,7 +21,7 @@ namespace Jerrycurl.Data.Commands
                 throw new ArgumentNullException(nameof(parameter));
 
             this.ParameterName = parameter.Name;
-            this.Field = parameter.Field;
+            this.Target = parameter.Field;
         }
 
         public override string ToString() => this.ParameterName;

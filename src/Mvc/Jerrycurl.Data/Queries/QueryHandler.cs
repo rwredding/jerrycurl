@@ -21,6 +21,57 @@ namespace Jerrycurl.Data.Queries
             this.Options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
+        #region " Aggregate "
+
+        public T Aggregate<T>(QueryData query) => this.Aggregate<T>(new[] { query });
+        public T Aggregate<T>(IEnumerable<QueryData> queries)
+        {
+            if (queries == null)
+                throw new ArgumentNullException(nameof(queries));
+
+            if (this.Options.Schemas == null)
+                throw new InvalidOperationException("No schema store found.");
+
+            ResultAdapter<T> adapter = new ResultAdapter<T>(this.Options.Schemas, ResultType.Aggregate);
+
+            using SyncSession connection = new SyncSession(this.Options);
+
+            foreach (Query operation in this.GetOperations(queries))
+            {
+                foreach (IDataReader dataReader in connection.Execute(operation))
+                    adapter.AddResult(dataReader);
+            }
+
+            return adapter.ToAggregate();
+        }
+
+        public Task<T> AggregateAsync<T>(QueryData query, CancellationToken cancellationToken = default) => this.AggregateAsync<T>(new[] { query }, cancellationToken);
+
+        public async Task<T> AggregateAsync<T>(IEnumerable<QueryData> queries, CancellationToken cancellationToken = default)
+        {
+            if (queries == null)
+                throw new ArgumentNullException(nameof(queries));
+
+            if (this.Options.Schemas == null)
+                throw new InvalidOperationException("No schema builder found.");
+
+            ResultAdapter<T> adapter = new ResultAdapter<T>(this.Options.Schemas, ResultType.Aggregate);
+
+            await using AsyncSession connection = new AsyncSession(this.Options);
+
+            foreach (Query operation in this.GetOperations(queries))
+            {
+                await foreach (DbDataReader dataReader in connection.ExecuteAsync(operation, cancellationToken).ConfigureAwait(false))
+                    await adapter.AddResultAsync(dataReader, cancellationToken).ConfigureAwait(false);
+            }
+
+            return adapter.ToAggregate();
+        }
+
+        #endregion
+
+        #region " List "
+
         public IList<TItem> List<TItem>(QueryData query) => this.List<TItem>(new[] { query });
         public IList<TItem> List<TItem>(IEnumerable<QueryData> queries)
         {
@@ -30,18 +81,13 @@ namespace Jerrycurl.Data.Queries
             if (this.Options.Schemas == null)
                 throw new InvalidOperationException("No schema store found.");
 
-            ResultAdapter<TItem> adapter = new ResultAdapter<TItem>(this.Options.Schemas);
+            ResultAdapter<TItem> adapter = new ResultAdapter<TItem>(this.Options.Schemas, ResultType.List);
 
             using SyncSession connection = new SyncSession(this.Options);
 
-            foreach (QueryData queryData in queries.NotNull())
-            {
-                Query builder = new Query(queryData);
-
-                if (string.IsNullOrWhiteSpace(queryData.QueryText))
-                    continue;
-
-                foreach (IDataReader dataReader in connection.Execute(builder))
+            foreach (Query operation in this.GetOperations(queries))
+            { 
+                foreach (IDataReader dataReader in connection.Execute(operation))
                     adapter.AddResult(dataReader);
             }
 
@@ -58,23 +104,22 @@ namespace Jerrycurl.Data.Queries
             if (this.Options.Schemas == null)
                 throw new InvalidOperationException("No schema builder found.");
 
-            ResultAdapter<TItem> adapter = new ResultAdapter<TItem>(this.Options.Schemas);
+            ResultAdapter<TItem> adapter = new ResultAdapter<TItem>(this.Options.Schemas, ResultType.List);
 
             await using AsyncSession connection = new AsyncSession(this.Options);
 
-            foreach (QueryData queryData in queries.NotNull())
+            foreach (Query operation in this.GetOperations(queries))
             {
-                Query builder = new Query(queryData);
-
-                if (string.IsNullOrWhiteSpace(queryData.QueryText))
-                    continue;
-
-                await foreach (DbDataReader dataReader in connection.ExecuteAsync(builder, cancellationToken).ConfigureAwait(false))
+                await foreach (DbDataReader dataReader in connection.ExecuteAsync(operation, cancellationToken).ConfigureAwait(false))
                     await adapter.AddResultAsync(dataReader, cancellationToken).ConfigureAwait(false);
             }
 
             return adapter.ToList();
         }
+
+        #endregion
+
+        #region " Enumerate "
 
         public IAsyncEnumerable<QueryReader> EnumerateAsync(QueryData query, CancellationToken cancellationToken = default) => this.EnumerateAsync(query, cancellationToken);
         public async IAsyncEnumerable<QueryReader> EnumerateAsync(IEnumerable<QueryData> queries, [EnumeratorCancellation]CancellationToken cancellationToken = default)
@@ -87,14 +132,9 @@ namespace Jerrycurl.Data.Queries
 
             await using AsyncSession connection = new AsyncSession(this.Options);
 
-            foreach (QueryData queryData in queries.NotNull())
+            foreach (Query operation in this.GetOperations(queries))
             {
-                Query query = new Query(queryData);
-
-                if (string.IsNullOrWhiteSpace(queryData.QueryText))
-                    continue;
-
-                await foreach (DbDataReader dataReader in connection.ExecuteAsync(query, cancellationToken).ConfigureAwait(false))
+                await foreach (DbDataReader dataReader in connection.ExecuteAsync(operation, cancellationToken).ConfigureAwait(false))
                     yield return new QueryReader(dataReader, this.Options.Schemas);
             }
         }
@@ -123,16 +163,16 @@ namespace Jerrycurl.Data.Queries
 
             using SyncSession connection = new SyncSession(this.Options);
 
-            foreach (QueryData queryData in queries.NotNull())
+            foreach (Query operation in this.GetOperations(queries))
             {
-                Query query = new Query(queryData);
-
-                if (string.IsNullOrWhiteSpace(queryData.QueryText))
-                    continue;
-
-                foreach (IDataReader reader in connection.Execute(query))
+                foreach (IDataReader reader in connection.Execute(operation))
                     yield return new QueryReader(reader, this.Options.Schemas);
             }
         }
+
+        #endregion
+
+        private IEnumerable<Query> GetOperations(IEnumerable<QueryData> queries)
+            => queries.NotNull().Where(d => !string.IsNullOrWhiteSpace(d.QueryText)).Select(d => new Query(d));
     }
 }

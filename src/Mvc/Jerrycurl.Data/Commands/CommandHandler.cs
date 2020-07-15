@@ -22,24 +22,18 @@ namespace Jerrycurl.Data.Commands
         }
 
         public void Execute(CommandData command) => this.Execute(new[] { command });
-
         public void Execute(IEnumerable<CommandData> commands)
         {
             FieldMap fieldMap = new FieldMap();
 
             using SyncSession session = new SyncSession(this.Options);
 
-            foreach (CommandData commandData in commands.NotNull())
-            {
-                Command command = new Command(commandData, fieldMap);
-
-                if (string.IsNullOrWhiteSpace(commandData.CommandText))
-                    continue;
-
-                foreach (IDataReader reader in session.Execute(command))
+            foreach (Command operation in this.GetOperations(commands, fieldMap))
+            { 
+                foreach (IDataReader reader in session.Execute(operation))
                 {
                     TableIdentity tableInfo = TableIdentity.FromRecord(reader);
-                    FieldData[] fields = command.GetHeading(tableInfo);
+                    FieldData[] fields = operation.GetHeading(tableInfo);
                     MetadataIdentity[] metadata = fields.Select(f => f?.Attribute).ToArray();
 
                     var binder = FuncCache.GetFieldDataBinder(metadata, tableInfo);
@@ -54,24 +48,18 @@ namespace Jerrycurl.Data.Commands
         }
 
         public Task ExecuteAsync(CommandData command, CancellationToken cancellationToken = default) => this.ExecuteAsync(new[] { command }, cancellationToken);
-
         public async Task ExecuteAsync(IEnumerable<CommandData> commands, CancellationToken cancellationToken = default)
         {
             FieldMap fieldMap = new FieldMap();
 
             await using AsyncSession session = new AsyncSession(this.Options);
 
-            foreach (CommandData commandData in commands.NotNull())
+            foreach (Command operation in this.GetOperations(commands, fieldMap))
             {
-                Command command = new Command(commandData, fieldMap);
-
-                if (string.IsNullOrWhiteSpace(commandData.CommandText))
-                    continue;
-
-                await foreach (DbDataReader dataReader in session.ExecuteAsync(command, cancellationToken).ConfigureAwait(false))
+                await foreach (DbDataReader dataReader in session.ExecuteAsync(operation, cancellationToken).ConfigureAwait(false))
                 {
                     TableIdentity tableInfo = TableIdentity.FromRecord(dataReader);
-                    FieldData[] fields = command.GetHeading(tableInfo);
+                    FieldData[] fields = operation.GetHeading(tableInfo);
                     MetadataIdentity[] attributes = fields.Select(f => f?.Attribute).ToArray();
 
                     var binder = FuncCache.GetFieldDataBinder(attributes, tableInfo);
@@ -85,5 +73,7 @@ namespace Jerrycurl.Data.Commands
                 fieldData.Bind();
         }
 
+        private IEnumerable<Command> GetOperations(IEnumerable<CommandData> commands, FieldMap fieldMap)
+            => commands.NotNull().Where(d => !string.IsNullOrWhiteSpace(d.CommandText)).Select(d => new Command(d, fieldMap));
     }
 }

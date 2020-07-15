@@ -4,6 +4,6 @@ namespace Jerrycurl.Data.Commands
 {
     public interface ICommandBinding
     {
-        IField Field { get; }
+        IField Target { get; }
     }
 }

@@ -12,16 +12,19 @@ namespace Jerrycurl.Data.Queries.Internal
     internal class ResultAdapter<TItem>
     {
         public ISchemaStore Schemas { get; }
+        public ResultType ResultType { get; }
 
         public ExpandingArray Lists { get; } = new ExpandingArray();
         public ExpandingArray Dicts { get; } = new ExpandingArray();
         public ExpandingArray<bool> Bits { get; } = new ExpandingArray<bool>();
+        public ExpandingArray Aggregate { get; } = new ExpandingArray();
 
         private ResultState<TItem> state;
 
-        public ResultAdapter(ISchemaStore schemas)
+        public ResultAdapter(ISchemaStore schemas, ResultType resultType)
         {
             this.Schemas = schemas ?? throw new ArgumentNullException(nameof(schemas));
+            this.ResultType = resultType;
         }
 
         private void SetState(IDataReader dataReader)
@@ -48,12 +51,7 @@ namespace Jerrycurl.Data.Queries.Internal
                 this.state.ListItem(dataReader, this.Lists, this.Dicts);
         }
 
-        public IList<TItem> ToList()
-        {
-            if (this.Lists[0] == null)
-                this.state?.Aggregate.Factory(this.Lists, this.Bits);
-
-            return (IList<TItem>)this.Lists[0];
-        }
+        public TItem ToAggregate() => default;
+        public IList<TItem> ToList() => (IList<TItem>)this.Lists[0];
     }
 }

@@ -45,7 +45,7 @@ namespace Jerrycurl.Data
 
         public static BindingException FromProperty(Type schemaType, string propertyName, string message = null, Exception innerException = null)
         {
-            message = message ?? innerException?.Message;
+            message ??= innerException?.Message;
 
             if (schemaType != null && message != null)
                 message = $"Unable to bind to property '{propertyName}' in model '{schemaType.GetSanitizedFullName()}'. {message}";

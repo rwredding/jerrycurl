@@ -6,9 +6,9 @@ using System;
 using System.Collections.Concurrent;
 using HashCode = Jerrycurl.Diagnostics.HashCode;
 
-namespace Jerrycurl.Data.Queries.Internal.State
+namespace Jerrycurl.Data.Queries.Internal.V11
 {
-    internal class IndexState
+    internal class QueryIndexer
     {
         private readonly ConcurrentDictionary<MetadataIdentity, int> listMap = new ConcurrentDictionary<MetadataIdentity, int>();
         private readonly ConcurrentDictionary<IndexKey, int> parentMap = new ConcurrentDictionary<IndexKey, int>();

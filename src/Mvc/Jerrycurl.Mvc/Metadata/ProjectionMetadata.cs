@@ -16,6 +16,7 @@ namespace Jerrycurl.Mvc.Metadata
         public Lazy<IReadOnlyList<ProjectionMetadata>> Properties { get; set; }
         public IProjectionMetadata Item { get; set; }
         public IProjectionMetadata List { get; set; }
+        public IProjectionMetadata Parameter { get; set; }
         public ProjectionMetadataFlags Flags { get; set; }
 
         IReadOnlyList<IProjectionMetadata> IProjectionMetadata.Properties => this.Properties.Value;

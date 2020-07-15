@@ -76,8 +76,19 @@ namespace Jerrycurl.Mvc.Metadata
             metadata.Properties = this.CreateLazy(() => this.CreateProperties(context, metadata));
             metadata.Item = this.CreateItem(context, metadata);
             metadata.Flags = this.GetFlags(metadata);
+            metadata.Parameter = this.GetParameter(metadata);
 
             return metadata;
+        }
+
+        private ProjectionMetadata GetParameter(ProjectionMetadata metadata)
+        {
+            IReferenceKey foreignKey = metadata.Reference?.Keys.FirstOrDefault(k => k.Type == ReferenceKeyType.ForeignKey);
+
+            if (foreignKey != null)
+
+
+            if (metadata.Reference.)
         }
 
         private ProjectionMetadataFlags GetFlags(ProjectionMetadata metadata)

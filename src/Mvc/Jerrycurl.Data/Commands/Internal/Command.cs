@@ -48,7 +48,7 @@ namespace Jerrycurl.Data.Commands.Internal
                 adoCommand.Parameters.Add(adoParameter);
             }
 
-            foreach (var g in this.Data.Bindings.GroupBy(b => b.Field).Select(g => g.ToArray()))
+            foreach (var g in this.Data.Bindings.GroupBy(b => b.Target).Select(g => g.ToArray()))
             {
                 ParameterBinding parameterBinding = g.OfType<ParameterBinding>().FirstOrDefault();
                 ColumnBinding columnBinding = g.OfType<ColumnBinding>().FirstOrDefault();
@@ -56,7 +56,7 @@ namespace Jerrycurl.Data.Commands.Internal
                 if (parameterBinding == null && columnBinding == null)
                     throw new CommandException("ICommandBinding must be a ColumnBinding or ParameterBinding instance.");
 
-                IField field = columnBinding?.Field ?? parameterBinding.Field;
+                IField field = columnBinding?.Target ?? parameterBinding.Target;
 
                 FieldData fieldData = this.Map.Get(field);
 
