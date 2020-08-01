@@ -9,6 +9,7 @@ using Jerrycurl.Data.Metadata;
 using Jerrycurl.Mvc.Metadata.Annotations;
 using Jerrycurl.Reflection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Jerrycurl.Extensions.Newtonsoft.Json.Metadata.Contracts
 {
@@ -50,24 +51,34 @@ namespace Jerrycurl.Extensions.Newtonsoft.Json.Metadata.Contracts
             {
                 Expression isNull = Expression.ReferenceEqual(value, Expression.Constant(null, value.Type));
 
-                if (nullCheck == null)
-                    nullCheck = isNull;
-                else
-                    nullCheck = Expression.AndAlso(nullCheck, isNull);
+                nullCheck = nullCheck == null ? isNull : Expression.AndAlso(nullCheck, isNull);
             }
 
             if (value.Type == typeof(object))
                 value = Expression.Convert(value, typeof(string));
 
-            Expression jsonValue = this.GetJsonDeserializer(valueInfo.Metadata, value, valueInfo.Helper);
+            Expression targetValue;
+
+            if (valueInfo.TargetType == typeof(JToken))
+                targetValue = this.GetParseJTokenExpression(valueInfo.Metadata, value);
+            else
+                targetValue = this.GetDeserializeExpression(valueInfo.Metadata, value, valueInfo.Helper);
 
             if (nullCheck != null)
-                return Expression.Condition(nullCheck, Expression.Default(jsonValue.Type), jsonValue);
+                return Expression.Condition(nullCheck, Expression.Default(targetValue.Type), targetValue);
 
-            return jsonValue;
+            return targetValue;
         }
 
-        private Expression GetJsonDeserializer(IBindingMetadata metadata, Expression value, Expression helper)
+        private Expression GetParseJTokenExpression(IBindingMetadata metadata, Expression value)
+        {
+            MethodInfo parseMethod = typeof(JToken).GetMethod(nameof(JToken.Parse), new[] { typeof(string) });
+
+            return Expression.Call(parseMethod, value);
+        }
+
+
+        private Expression GetDeserializeExpression(IBindingMetadata metadata, Expression value, Expression helper)
         {
             IEnumerable<MethodInfo> methods = typeof(JsonConvert).GetMethods().Where(m => m.Name == "DeserializeObject" && m.ContainsGenericParameters);
 
@@ -85,26 +96,32 @@ namespace Jerrycurl.Extensions.Newtonsoft.Json.Metadata.Contracts
             }
         }
 
-        private bool HasJsonAttribute(IBindingMetadata metadata)
-        {
-            return metadata.Relation.Annotations.OfType<JsonAttribute>().Any();
-        }
+        private bool HasJsonAttribute(IBindingMetadata metadata) => metadata.Relation.Annotations.OfType<JsonAttribute>().Any();
+        private bool IsNativeJToken(IBindingMetadata metadata) => (metadata.Type == typeof(JToken));
 
         public IBindingParameterContract GetParameterContract(IBindingMetadata metadata)
         {
-            if (!this.HasJsonAttribute(metadata))
-                return null;
-
-            return new BindingParameterContract()
+            if (this.IsNativeJToken(metadata))
             {
-                Convert = o => o != null ? (object)JsonConvert.SerializeObject(o, this.Settings) : DBNull.Value,
-            };
+                return new BindingParameterContract()
+                {
+                    Convert = o => (object)((JObject)o)?.ToString() ?? DBNull.Value,
+                };
+            }
+            else if (this.HasJsonAttribute(metadata))
+            {
+                return new BindingParameterContract()
+                {
+                    Convert = o => o != null ? (object)JsonConvert.SerializeObject(o, this.Settings) : DBNull.Value,
+                };
+            }
 
+            return null;
         }
         public IBindingCompositionContract GetCompositionContract(IBindingMetadata metadata) => null;
         public IBindingValueContract GetValueContract(IBindingMetadata metadata)
         {
-            if (!this.HasJsonAttribute(metadata))
+            if (!this.HasJsonAttribute(metadata) && !this.IsNativeJToken(metadata))
                 return null;
 
             return new BindingValueContract()
@@ -114,12 +131,6 @@ namespace Jerrycurl.Extensions.Newtonsoft.Json.Metadata.Contracts
             };
         }
 
-        public IBindingHelperContract GetHelperContract(IBindingMetadata metadata)
-        {
-            if (!this.HasJsonAttribute(metadata))
-                return null;
-
-            return this.helper;
-        }
+        public IBindingHelperContract GetHelperContract(IBindingMetadata metadata) => this.HasJsonAttribute(metadata) ? this.helper : null;
     }
 }

@@ -12,7 +12,6 @@ namespace Jerrycurl.Data.Queries.Internal
     internal class ResultAdapter<TItem>
     {
         public ISchemaStore Schemas { get; }
-        public ResultType ResultType { get; }
 
         public ExpandingArray Lists { get; } = new ExpandingArray();
         public ExpandingArray Dicts { get; } = new ExpandingArray();
@@ -21,10 +20,9 @@ namespace Jerrycurl.Data.Queries.Internal
 
         private ResultState<TItem> state;
 
-        public ResultAdapter(ISchemaStore schemas, ResultType resultType)
+        public ResultAdapter(ISchemaStore schemas)
         {
             this.Schemas = schemas ?? throw new ArgumentNullException(nameof(schemas));
-            this.ResultType = resultType;
         }
 
         private void SetState(IDataReader dataReader)

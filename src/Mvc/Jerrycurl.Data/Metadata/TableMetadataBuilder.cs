@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using Jerrycurl.Data.Metadata;
@@ -8,8 +9,10 @@ using Jerrycurl.Relations.Metadata;
 
 namespace Jerrycurl.Data.Metadata
 {
-    public class TableMetadataBuilder : IMetadataBuilder<ITableMetadata>
+    public class TableMetadataBuilder : Collection<ITableContractResolver>, ITableMetadataBuilder
     {
+        public ITableContractResolver DefaultResolver { get; set; } = new DefaultTableContractResolver();
+
         public ITableMetadata GetMetadata(IMetadataBuilderContext context) => this.GetMetadata(context, context.Identity);
 
         private ITableMetadata GetMetadata(IMetadataBuilderContext context, MetadataIdentity identity)

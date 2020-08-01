@@ -15,15 +15,15 @@ namespace Jerrycurl.Data.Sessions
         private bool wasDisposed = false;
         private bool wasOpened = false;
 
-        public SyncSession(SessionOptions options)
+        public SyncSession(Func<IDbConnection> connectionFactory, ICollection<IFilter> filters)
         {
-            if (options == null)
-                throw new ArgumentNullException(nameof(options));
+            if (connectionFactory == null)
+                throw new ArgumentNullException(nameof(connectionFactory));
 
-            this.connection = options?.ConnectionFactory?.Invoke();
+            this.connection = connectionFactory.Invoke();
             this.VerifyConnection();
 
-            this.filters = options?.Filters.Select(f => f.GetHandler(this.connection)).NotNull().ToArray() ?? Array.Empty<IFilterHandler>();
+            this.filters = filters?.Select(f => f.GetHandler(this.connection)).NotNull().ToArray() ?? Array.Empty<IFilterHandler>();
         }
 
         private void VerifyConnection()
@@ -151,7 +151,8 @@ namespace Jerrycurl.Data.Sessions
 
                         this.ApplyFilters(h => h.OnException, exceptionContext, swallowExceptions: true);
 
-                        throw;
+                        if (!exceptionContext.IsHandled)
+                            throw;
                     }
                 }
             }

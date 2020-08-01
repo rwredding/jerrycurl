@@ -9,6 +9,8 @@ namespace Jerrycurl.Collections
         public static T Second<T>(this IEnumerable<T> source) => source.Skip(1).First();
         public static T SecondOrDefault<T>(this IEnumerable<T> source) => source.Skip(1).FirstOrDefault();
 
+        public static IEnumerable<T> Except<T>(this IEnumerable<T> source, T element) => source.Except(new[] { element });
+
         public static HashSet<T> ToSet<T>(this IEnumerable<T> source) => new HashSet<T>(source);
         public static HashSet<T> ToSet<T>(this IEnumerable<T> source, IEqualityComparer<T> comparer) => new HashSet<T>(source, comparer);
 

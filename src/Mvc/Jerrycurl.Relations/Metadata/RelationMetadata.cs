@@ -14,6 +14,7 @@ namespace Jerrycurl.Relations.Metadata
         public RelationMetadata Item { get; set; }
         public Lazy<IReadOnlyList<RelationMetadata>> Properties { get; set; }
         public RelationMetadataFlags Flags { get; set; }
+        public int Depth { get; set; }
 
         public IReadOnlyList<Attribute> Annotations { get; set; } = Array.Empty<Attribute>();
         public MemberInfo Member { get; set; }

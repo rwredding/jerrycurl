@@ -7,7 +7,6 @@ namespace Jerrycurl.Mvc
 {
     public class ProcBuffer : SqlBuffer, ISqlSerializer<CommandData>, ISqlSerializer<QueryData>
     {
-
         IEnumerable<CommandData> ISqlSerializer<CommandData>.Serialize(ISqlOptions options)
         {
             foreach (ISqlContent content in this.Read(options))

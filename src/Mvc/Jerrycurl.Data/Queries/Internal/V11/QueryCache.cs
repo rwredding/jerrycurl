@@ -1,47 +1,82 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using System.Text;
+using Jerrycurl.Data.Queries.Internal.V11.Factories;
+using Jerrycurl.Data.Queries.Internal.V11.Parsers;
 using Jerrycurl.Relations.Metadata;
 
 namespace Jerrycurl.Data.Queries.Internal.V11
 {
     internal class QueryCache<TItem>
     {
-        private static readonly ConcurrentDictionary<TableIdentity, object> factoryMap = new ConcurrentDictionary<TableIdentity, object>();
-        private static QueryIndexer queryIndexer;
-        private static readonly object typeLock = new object();
+        private static readonly ConcurrentDictionary<ListIdentity, EnumerateReader<TItem>> enumerateReaders = new ConcurrentDictionary<ListIdentity, EnumerateReader<TItem>>();
+        private static readonly ConcurrentDictionary<ListIdentity, BufferWriter> listWriters = new ConcurrentDictionary<ListIdentity, BufferWriter>();
+        private static readonly ConcurrentDictionary<ListIdentity, BufferWriter> aggregrateWriters = new ConcurrentDictionary<ListIdentity, BufferWriter>();
+        private static readonly ConcurrentDictionary<AggregateIdentity, AggregateReader<TItem>> aggregateReaders = new ConcurrentDictionary<AggregateIdentity, AggregateReader<TItem>>();
+        private static readonly ConcurrentDictionary<ISchema, QueryIndexer> indexers = new ConcurrentDictionary<ISchema, QueryIndexer>();
 
-        public ListItemReader ListItem { get; private set; }
-        public ListReader List { get; set; }
-        public AggregateReader Aggregate { get; private set; }
-        public InitializeReader Initialize { get; private set; }
+        private static QueryIndexer GetIndexer(ISchema schema) => indexers.GetOrAdd(schema, new QueryIndexer());
 
-        private static QueryIndexer GetIndexer(ISchemaStore schemas)
+        public static AggregateReader<TItem> GetAggregateReader(AggregateIdentity identity)
         {
-            if (queryIndexer != null)
-                return queryIndexer;
-
-            lock (typeLock)
+            return aggregateReaders.GetOrAdd(identity, _ =>
             {
-                if (queryIndexer != null)
-                    return queryIndexer;
+                QueryIndexer indexer = GetIndexer(identity.Schema);
+                AggregateParser parser = new AggregateParser(identity.Schema, indexer);
+                AggregateTree tree = parser.Parse(identity);
 
-                Type listType = typeof(IList<>).MakeGenericType(typeof(TItem));
+                QueryCompiler compiler = new QueryCompiler();
 
-                ISchema schema = schemas.GetSchema(listType);
-
-                return (queryIndexer = new QueryIndexer(schema));
-            }
+                return compiler.Compile<TItem>(tree);
+            });
         }
 
-        public static QueryCache<TItem> Get(ISchemaStore schemas, TableIdentity heading)
+        public static EnumerateReader<TItem> GetEnumerateReader(ISchemaStore schemas, IDataRecord dataRecord)
         {
-            return (QueryCache<TItem>)factoryMap.GetOrAdd(heading, _ =>
-            {
-                QueryIndexer indexer = GetIndexer(schemas);
+            ISchema schema = schemas.GetSchema(typeof(IList<TItem>));
+            ListIdentity identity = ListIdentity.FromRecord(schema, dataRecord);
 
-                return new ResultCompiler(indexer).Compile<TItem>(heading);
+            return enumerateReaders.GetOrAdd(identity, _ =>
+            {
+                EnumerateParser parser = new EnumerateParser();
+                EnumerateTree tree = parser.Parse(null);
+
+                QueryCompiler compiler = new QueryCompiler();
+
+                return compiler.Compile<TItem>(tree);
+            });
+        }
+
+        public static BufferWriter GetAggregateWriter(ISchema schema, IDataRecord dataRecord)
+        {
+            ListIdentity identity = ListIdentity.FromRecord(schema, dataRecord);
+
+            return aggregrateWriters.GetOrAdd(identity, _ =>
+            {
+                BufferParser parser = new BufferParser(schema, null);
+                BufferTree tree = parser.Parse(identity);
+
+                QueryCompiler compiler = new QueryCompiler();
+
+                return compiler.Compile(tree);
+            });
+        }
+
+        public static BufferWriter GetListWriter(ISchema schema, IDataRecord dataRecord)
+        {
+            ListIdentity identity = ListIdentity.FromRecord(schema, dataRecord);
+
+            return listWriters.GetOrAdd(identity, _ =>
+            {
+                BufferParser parser = new BufferParser(schema, null);
+                BufferTree tree = parser.Parse(identity);
+
+                QueryCompiler compiler = new QueryCompiler();
+
+                return compiler.Compile(tree);
             });
         }
     }

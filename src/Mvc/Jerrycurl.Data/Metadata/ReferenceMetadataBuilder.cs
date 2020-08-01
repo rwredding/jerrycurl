@@ -114,7 +114,7 @@ namespace Jerrycurl.Data.Metadata
                 foreach (RefAttribute refAttr in property.Relation.Annotations.OfType<RefAttribute>())
                 {
                     string refName = refAttr.Name;
-                    string keyName = refAttr.Key ?? property.Relation.Member?.Name ?? "";
+                    string keyName = refAttr.KeyName ?? property.Relation.Member?.Name ?? "";
 
                     refMap.Add((property, refAttr, refName, keyName));
                 }
@@ -272,17 +272,6 @@ namespace Jerrycurl.Data.Metadata
                 return true;
 
             return false;
-        }
-
-        private class DuplicateKeyComparer<TKey> : IComparer<TKey>
-            where TKey : IComparable
-        {
-            public int Compare(TKey x, TKey y)
-            {
-                int result = x.CompareTo(y);
-
-                return result == 0 ? 1 : result;
-            }
         }
     }
 }

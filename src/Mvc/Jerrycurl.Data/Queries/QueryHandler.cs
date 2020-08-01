@@ -32,9 +32,9 @@ namespace Jerrycurl.Data.Queries
             if (this.Options.Schemas == null)
                 throw new InvalidOperationException("No schema store found.");
 
-            ResultAdapter<T> adapter = new ResultAdapter<T>(this.Options.Schemas, ResultType.Aggregate);
+            ResultAdapter<T> adapter = new ResultAdapter<T>(this.Options.Schemas);
 
-            using SyncSession connection = new SyncSession(this.Options);
+            using ISyncSession connection = this.Options.GetSyncSession();
 
             foreach (Query operation in this.GetOperations(queries))
             {
@@ -55,9 +55,9 @@ namespace Jerrycurl.Data.Queries
             if (this.Options.Schemas == null)
                 throw new InvalidOperationException("No schema builder found.");
 
-            ResultAdapter<T> adapter = new ResultAdapter<T>(this.Options.Schemas, ResultType.Aggregate);
+            ResultAdapter<T> adapter = new ResultAdapter<T>(this.Options.Schemas);
 
-            await using AsyncSession connection = new AsyncSession(this.Options);
+            await using IAsyncSession connection = this.Options.GetAsyncSession();
 
             foreach (Query operation in this.GetOperations(queries))
             {
@@ -81,9 +81,9 @@ namespace Jerrycurl.Data.Queries
             if (this.Options.Schemas == null)
                 throw new InvalidOperationException("No schema store found.");
 
-            ResultAdapter<TItem> adapter = new ResultAdapter<TItem>(this.Options.Schemas, ResultType.List);
+            ResultAdapter<TItem> adapter = new ResultAdapter<TItem>(this.Options.Schemas);
 
-            using SyncSession connection = new SyncSession(this.Options);
+            using ISyncSession connection = this.Options.GetSyncSession();
 
             foreach (Query operation in this.GetOperations(queries))
             { 
@@ -104,9 +104,9 @@ namespace Jerrycurl.Data.Queries
             if (this.Options.Schemas == null)
                 throw new InvalidOperationException("No schema builder found.");
 
-            ResultAdapter<TItem> adapter = new ResultAdapter<TItem>(this.Options.Schemas, ResultType.List);
+            ResultAdapter<TItem> adapter = new ResultAdapter<TItem>(this.Options.Schemas);
 
-            await using AsyncSession connection = new AsyncSession(this.Options);
+            await using IAsyncSession connection = this.Options.GetAsyncSession();
 
             foreach (Query operation in this.GetOperations(queries))
             {
@@ -130,7 +130,7 @@ namespace Jerrycurl.Data.Queries
             if (this.Options.Schemas == null)
                 throw new InvalidOperationException("No schema builder found.");
 
-            await using AsyncSession connection = new AsyncSession(this.Options);
+            await using IAsyncSession connection = this.Options.GetAsyncSession();
 
             foreach (Query operation in this.GetOperations(queries))
             {
@@ -161,7 +161,7 @@ namespace Jerrycurl.Data.Queries
             if (this.Options.Schemas == null)
                 throw new InvalidOperationException("No schema builder found.");
 
-            using SyncSession connection = new SyncSession(this.Options);
+            using ISyncSession connection = this.Options.GetSyncSession();
 
             foreach (Query operation in this.GetOperations(queries))
             {

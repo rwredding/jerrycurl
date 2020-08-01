@@ -10,6 +10,7 @@ namespace Jerrycurl.Data.Metadata
         ITableMetadata MemberOf { get; }
         IReadOnlyList<ITableMetadata> Properties { get; }
         ITableMetadata Item { get; }
+        IRelationMetadata Relation { get; }
 
         IReadOnlyList<string> TableName { get; }
         string ColumnName { get; }

@@ -5,7 +5,7 @@ namespace Jerrycurl.Data.Metadata.Annotations
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true, Inherited = true)]
     public class RefAttribute : Attribute
     {
-        public string Key { get; set; }
+        public string KeyName { get; set; }
         public int Index { get; set; }
         public string Name { get; set; }
 
@@ -14,20 +14,20 @@ namespace Jerrycurl.Data.Metadata.Annotations
 
         }
 
-        public RefAttribute(string key)
+        public RefAttribute(string keyName)
         {
-            this.Key = key;
+            this.KeyName = keyName;
         }
 
-        public RefAttribute(string key, int index)
+        public RefAttribute(string keyName, int index)
         {
-            this.Key = key;
+            this.KeyName = keyName;
             this.Index = index;
         }
 
-        public RefAttribute(string key, int index, string name)
+        public RefAttribute(string keyName, int index, string name)
         {
-            this.Key = key;
+            this.KeyName = keyName;
             this.Index = index;
             this.Name = name;
         }

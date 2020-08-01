@@ -26,7 +26,7 @@ namespace Jerrycurl.Data.Commands
         {
             FieldMap fieldMap = new FieldMap();
 
-            using SyncSession session = new SyncSession(this.Options);
+            using ISyncSession session = this.Options.GetSyncSession();
 
             foreach (Command operation in this.GetOperations(commands, fieldMap))
             { 
@@ -52,7 +52,7 @@ namespace Jerrycurl.Data.Commands
         {
             FieldMap fieldMap = new FieldMap();
 
-            await using AsyncSession session = new AsyncSession(this.Options);
+            await using IAsyncSession session = this.Options.GetAsyncSession();
 
             foreach (Command operation in this.GetOperations(commands, fieldMap))
             {

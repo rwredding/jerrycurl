@@ -9,6 +9,7 @@ namespace Jerrycurl.Data.Filters
         public IDbConnection Connection { get; }
         public IDbCommand Command { get; }
         public Exception Exception { get; }
+        public bool IsHandled { get; set; }
 
         internal FilterContext(IDbConnection connection, Exception exception, object sourceObject = null)
         {

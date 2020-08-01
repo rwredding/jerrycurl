@@ -20,16 +20,16 @@ namespace Jerrycurl.Data.Sessions
         private bool wasDisposed = false;
         private bool wasOpened = false;
 
-        public AsyncSession(SessionOptions options)
+        public AsyncSession(Func<IDbConnection> connectionFactory, ICollection<IFilter> filters)
         {
-            if (options == null)
-                throw new ArgumentNullException(nameof(options));
+            if (connectionFactory == null)
+                throw new ArgumentNullException(nameof(connectionFactory));
 
-            this.connectionBase = options?.ConnectionFactory?.Invoke();
+            this.connectionBase = connectionFactory.Invoke();
             this.connection = this.connectionBase as DbConnection;
             this.VerifyConnection();
 
-            this.filters = options?.Filters.Select(f => f.GetAsyncHandler(this.connectionBase)).NotNull().ToArray() ?? Array.Empty<IFilterAsyncHandler>();
+            this.filters = filters?.Select(f => f.GetAsyncHandler(this.connectionBase)).NotNull().ToArray() ?? Array.Empty<IFilterAsyncHandler>();
         }
 
         private void VerifyConnection()
@@ -160,7 +160,8 @@ namespace Jerrycurl.Data.Sessions
 
                         await this.ApplyFilters(h => h.OnExceptionAsync, exceptionContext, swallowExceptions: true).ConfigureAwait(false);
 
-                        throw;
+                        if (!exceptionContext.IsHandled)
+                            throw;
                     }
                 }
             }

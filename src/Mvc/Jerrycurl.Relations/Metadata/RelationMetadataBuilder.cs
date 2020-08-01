@@ -52,6 +52,7 @@ namespace Jerrycurl.Relations.Metadata
 
             model.MemberOf = model;
             model.Properties = this.CreateLazy(() => this.CreateProperties(context, model));
+            model.Depth = 0;
 
             model.Annotations = this.CreateAnnotations(model).ToList();
             model.Item = this.CreateItem(context, model);
@@ -139,15 +140,16 @@ namespace Jerrycurl.Relations.Metadata
             if (contract == null)
                 return null;
 
-            MetadataIdentity itemId = parent.Identity.Push(contract.ItemName ?? "Item");
+            MetadataIdentity itemIdentity = parent.Identity.Push(contract.ItemName ?? "Item");
 
-            RelationMetadata metadata = new RelationMetadata(itemId)
+            RelationMetadata metadata = new RelationMetadata(itemIdentity)
             {
                 Parent = parent,
                 Type = contract.ItemType,
                 Flags = RelationMetadataFlags.Item | RelationMetadataFlags.Property,
                 ReadIndex = contract.ReadIndex,
                 WriteIndex = contract.WriteIndex,
+                Depth = parent.Depth + 1,
             };
 
             metadata.MemberOf = metadata;
@@ -183,6 +185,7 @@ namespace Jerrycurl.Relations.Metadata
                 Member = memberInfo,
                 MemberOf = parent.MemberOf,
                 Flags = RelationMetadataFlags.Property,
+                Depth = parent.Depth,
             };
 
             metadata.Item = this.CreateItem(context, metadata);

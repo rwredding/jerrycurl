@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Jerrycurl.Relations;
@@ -7,7 +8,7 @@ namespace Jerrycurl.Data.Sessions
 {
     public class ParameterCollection : Collection<IParameter>
     {
-        private readonly Dictionary<FieldIdentity, IParameter> innerMap = new Dictionary<FieldIdentity, IParameter>();
+        private readonly Dictionary<IField, IParameter> innerMap = new Dictionary<IField, IParameter>();
 
         public char? Prefix { get; }
 
@@ -18,11 +19,14 @@ namespace Jerrycurl.Data.Sessions
 
         public IParameter Add(IField field)
         {
-            if (!this.innerMap.TryGetValue(field.Identity, out IParameter param))
+            if (field == null)
+                throw new ArgumentNullException(nameof(field));
+
+            if (!this.innerMap.TryGetValue(field, out IParameter param))
             {
                 string paramName = $"{this.Prefix}P{this.innerMap.Count}";
 
-                this.innerMap.Add(field.Identity, param = new Parameter(paramName, field));
+                this.innerMap.Add(field, param = new Parameter(paramName, field));
                 this.Add(param);
             }
 

@@ -153,12 +153,7 @@ namespace Jerrycurl.Data.Metadata
             return null;
         }
 
-        private Type GetUnwrappedType(Type type)
-        {
-            Type valueType = Nullable.GetUnderlyingType(type);
-
-            return valueType ?? type;
-        }
+        private Type GetUnwrappedType(Type type) => Nullable.GetUnderlyingType(type) ?? type;
         private Type GetOpenType(IBindingMetadata metadata)
         {
             if (metadata.Type.IsGenericType)
