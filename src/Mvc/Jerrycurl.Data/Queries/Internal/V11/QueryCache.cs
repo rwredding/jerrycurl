@@ -41,8 +41,8 @@ namespace Jerrycurl.Data.Queries.Internal.V11
 
             return enumerateReaders.GetOrAdd(identity, _ =>
             {
-                EnumerateParser parser = new EnumerateParser();
-                EnumerateTree tree = parser.Parse(null);
+                EnumerateParser parser = new EnumerateParser(schema);
+                EnumerateTree tree = parser.Parse(identity);
 
                 QueryCompiler compiler = new QueryCompiler();
 
@@ -56,7 +56,8 @@ namespace Jerrycurl.Data.Queries.Internal.V11
 
             return aggregrateWriters.GetOrAdd(identity, _ =>
             {
-                BufferParser parser = new BufferParser(schema, null);
+                QueryIndexer indexer = GetIndexer(identity.Schema);
+                BufferParser parser = new BufferParser(schema, indexer);
                 BufferTree tree = parser.Parse(identity);
 
                 QueryCompiler compiler = new QueryCompiler();
@@ -71,7 +72,8 @@ namespace Jerrycurl.Data.Queries.Internal.V11
 
             return listWriters.GetOrAdd(identity, _ =>
             {
-                BufferParser parser = new BufferParser(schema, null);
+                QueryIndexer indexer = GetIndexer(identity.Schema);
+                BufferParser parser = new BufferParser(schema, indexer);
                 BufferTree tree = parser.Parse(identity);
 
                 QueryCompiler compiler = new QueryCompiler();

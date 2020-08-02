@@ -10,6 +10,7 @@ namespace Jerrycurl.Data.Metadata
         public string Other { get; set; }
         public ReferenceKeyType Type { get; set; }
         public List<ReferenceMetadata> Properties { get; set; } = new List<ReferenceMetadata>();
+        public bool IsPrimaryKey { get; set; }
 
         IReadOnlyList<IReferenceMetadata> IReferenceKey.Properties => this.Properties;
 

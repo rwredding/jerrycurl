@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Jerrycurl.Collections;
 using Jerrycurl.Data.Metadata;
+using Jerrycurl.Data.Queries.Internal.V11.Binders;
 using Jerrycurl.Relations.Metadata;
 
 namespace Jerrycurl.Data.Queries.Internal.V11.Parsers

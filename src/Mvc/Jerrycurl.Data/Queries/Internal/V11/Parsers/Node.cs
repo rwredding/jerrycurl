@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Jerrycurl.Data.Metadata;
+using Jerrycurl.Data.Queries.Internal.V11.Binders;
 using Jerrycurl.Relations.Metadata;
 
 namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
@@ -31,6 +32,8 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
         public IList<Node> Properties { get; } = new List<Node>();
         public NodeFlags Flags { get; set; }
         public int Depth => this.Metadata.Relation.Depth;
+
+        public NodeReader Reader { get; set; }
 
         public bool HasFlag(NodeFlags flag) => this.Flags.HasFlag(flag);
     }

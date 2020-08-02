@@ -122,8 +122,8 @@ namespace Jerrycurl.Data.Queries
 
         #region " Enumerate "
 
-        public IAsyncEnumerable<QueryReader> EnumerateAsync(QueryData query, CancellationToken cancellationToken = default) => this.EnumerateAsync(query, cancellationToken);
-        public async IAsyncEnumerable<QueryReader> EnumerateAsync(IEnumerable<QueryData> queries, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<QueryReader2> EnumerateAsync(QueryData query, CancellationToken cancellationToken = default) => this.EnumerateAsync(query, cancellationToken);
+        public async IAsyncEnumerable<QueryReader2> EnumerateAsync(IEnumerable<QueryData> queries, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
             if (queries == null)
                 throw new ArgumentNullException(nameof(queries));
@@ -136,14 +136,14 @@ namespace Jerrycurl.Data.Queries
             foreach (Query operation in this.GetOperations(queries))
             {
                 await foreach (DbDataReader dataReader in connection.ExecuteAsync(operation, cancellationToken).ConfigureAwait(false))
-                    yield return new QueryReader(dataReader, this.Options.Schemas);
+                    yield return new QueryReader2(this.Options.Schemas, dataReader);
             }
         }
 
         public IAsyncEnumerable<TItem> EnumerateAsync<TItem>(QueryData query, CancellationToken cancellationToken = default) => this.EnumerateAsync<TItem>(new[] { query }, cancellationToken);
         public async IAsyncEnumerable<TItem> EnumerateAsync<TItem>(IEnumerable<QueryData> queries, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
-            await foreach (QueryReader queryReader in this.EnumerateAsync(queries, cancellationToken).ConfigureAwait(false))
+            await foreach (QueryReader2 queryReader in this.EnumerateAsync(queries, cancellationToken).ConfigureAwait(false))
             {
                 await foreach (TItem item in queryReader.ReadAsync<TItem>(cancellationToken).ConfigureAwait(false))
                     yield return item;
@@ -153,8 +153,8 @@ namespace Jerrycurl.Data.Queries
         public IEnumerable<TItem> Enumerate<TItem>(QueryData query) => this.Enumerate<TItem>(new[] { query });
         public IEnumerable<TItem> Enumerate<TItem>(IEnumerable<QueryData> queries) => this.Enumerate(queries).SelectMany(r => r.Read<TItem>());
 
-        public IEnumerable<QueryReader> Enumerate(QueryData query) => this.Enumerate(new[] { query });
-        public IEnumerable<QueryReader> Enumerate(IEnumerable<QueryData> queries)
+        public IEnumerable<QueryReader2> Enumerate(QueryData query) => this.Enumerate(new[] { query });
+        public IEnumerable<QueryReader2> Enumerate(IEnumerable<QueryData> queries)
         {
             if (queries == null)
                 throw new ArgumentNullException(nameof(queries));
@@ -167,7 +167,7 @@ namespace Jerrycurl.Data.Queries
             foreach (Query operation in this.GetOperations(queries))
             {
                 foreach (IDataReader reader in connection.Execute(operation))
-                    yield return new QueryReader(reader, this.Options.Schemas);
+                    yield return new QueryReader2(this.Options.Schemas, reader);
             }
         }
 

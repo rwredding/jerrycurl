@@ -7,6 +7,6 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Binders
 {
     internal abstract class NodeReader
     {
-        public IBindingMetadata Metadata { get; }
+        public IBindingMetadata Metadata { get; set; }
     }
 }

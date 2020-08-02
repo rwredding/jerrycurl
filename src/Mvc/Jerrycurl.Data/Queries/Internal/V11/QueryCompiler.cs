@@ -15,6 +15,7 @@ using Jerrycurl.Relations.Metadata;
 using Jerrycurl.Data.Queries.Internal.V11.Binders;
 using Jerrycurl.Reflection;
 using System.Diagnostics;
+using System.Data.Common;
 
 namespace Jerrycurl.Data.Queries.Internal.V11
 {
@@ -29,30 +30,37 @@ namespace Jerrycurl.Data.Queries.Internal.V11
         {
             Scope scope = new Scope();
 
+            List<Expression> initBody = new List<Expression>();
+            List<Expression> oneBody = new List<Expression>();
+            List<Expression> allBody = new List<Expression>();
+
             foreach (HelperWriter writer in tree.Helpers)
-                scope.Body.Add(this.GetWriterExpression(writer));
+            {
+                oneBody.Add(this.GetWriterExpression(writer));
+            }
+                
 
             foreach (SlotWriter writer in tree.Slots)
-                scope.Body.Add(this.GetWriterExpression(writer));
+            {
+                Expression expression = this.GetWriterExpression(writer);
+
+                initBody.Add(expression);
+            }
+                
 
             // in loop (or not)
-            foreach (ListWriter writer in tree.Lists)
-                scope.Body.Add(this.GetWriterExpression(writer));
-
             foreach (AggregateWriter writer in tree.Aggregates)
-                scope.Body.Add(this.GetWriterExpression(writer));
+                allBody.Add(this.GetWriterExpression(writer));
+
+            foreach (ListWriter writer in tree.Lists)
+                allBody.Add(this.GetWriterExpression(writer));
 
             ParameterExpression[] initArgs = new[] { Scope.Slots };
             ParameterExpression[] writeArgs = new[] { Scope.DataReader, Scope.Slots, Scope.Aggregates, Scope.Helpers, Scope.SchemaType };
 
-            Expression initBlock = Expression.Block(scope.Body);
-            BufferInternalInitializer init = this.Compile<BufferInternalInitializer>(initBlock, initArgs);
-
-            Expression writeAllBlock = Expression.Block(scope.Body);
-            BufferInternalWriter writeAll = this.Compile<BufferInternalWriter>(writeAllBlock, writeArgs);
-
-            Expression writeOneBlock = Expression.Block(scope.Body);
-            BufferInternalWriter writeOne = this.Compile<BufferInternalWriter>(writeOneBlock, writeArgs);
+            BufferInternalInitializer init = this.Compile<BufferInternalInitializer>(initBody, initArgs);
+            BufferInternalWriter writeAll = this.Compile<BufferInternalWriter>(allBody, writeArgs);
+            BufferInternalWriter writeOne = this.Compile<BufferInternalWriter>(oneBody, writeArgs);
 
             ElasticArray helpers = new ElasticArray();
             Type schemaType = tree.Schema.Model;
@@ -83,17 +91,15 @@ namespace Jerrycurl.Data.Queries.Internal.V11
 
         public EnumerateReader<TItem> Compile<TItem>(EnumerateTree tree)
         {
-            Scope scope = new Scope();
+            List<Expression> body = new List<Expression>();
 
             foreach (HelperWriter writer in tree.Helpers)
-                scope.Body.Add(this.GetWriterExpression(writer));
+                body.Add(this.GetWriterExpression(writer));
 
-            scope.Body.Add(this.GetReaderExpression(tree.Item));
+            body.Add(this.GetReaderExpression(tree.Item));
 
-            Expression block = Expression.Block(scope.Body);
-
-            ParameterExpression[] arguments = new[] { Scope.DataReader, Scope.Slots, Scope.Aggregates, Scope.SchemaType };
-            EnumerateInternalReader<TItem> reader = this.Compile<EnumerateInternalReader<TItem>>(block, arguments);
+            ParameterExpression[] arguments = new[] { Scope.DataReader, Scope.Helpers, Scope.SchemaType };
+            EnumerateInternalReader<TItem> reader = this.Compile<EnumerateInternalReader<TItem>>(body, arguments);
 
             ElasticArray helpers = this.GetHelperArray(tree.Helpers);
             Type schemaType = tree.Schema.Model;
@@ -148,7 +154,7 @@ namespace Jerrycurl.Data.Queries.Internal.V11
             List<Expression> expressions = new List<Expression>();
             List<ParameterExpression> variables = new List<ParameterExpression>();
 
-            foreach (KeyReader joinKey in joinKeys.Concat(new[] { primaryKey }.NotNull()))
+            foreach (KeyReader joinKey in joinKeys?.Concat(new[] { primaryKey }.NotNull()) ?? Array.Empty<KeyReader>())
             {
                 foreach (DataReader valueReader in joinKey.Values)
                 {
@@ -174,12 +180,10 @@ namespace Jerrycurl.Data.Queries.Internal.V11
 
                 return Expression.Condition(missingPk, Expression.Default(body.Type), block);
             }
+            else if (expressions.Count == 1)
+                return expressions[0];
             else
-            {
-                expressions.Add(body);
-
                 return Expression.Block(variables, expressions);
-            }
         }
 
         private Expression GetWriterExpression(HelperWriter writer)
@@ -254,9 +258,6 @@ namespace Jerrycurl.Data.Queries.Internal.V11
 
         private Expression GetReaderExpression(NewReader reader)
         {
-            Expression noPrimaryKey = this.GetOrConditionExpression(reader.PrimaryKey.Values, this.GetIsDbNullExpression);
-            Expression hasPrimaryKey = noPrimaryKey != null ? Expression.Not(noPrimaryKey) : null;
-
             NewExpression newExpression = reader.Metadata.Composition.Construct;
             Expression memberInit = Expression.MemberInit(newExpression, reader.Properties.Select(b =>
             {
@@ -268,10 +269,7 @@ namespace Jerrycurl.Data.Queries.Internal.V11
                 return Expression.Bind(b.Metadata.Member, value);
             }));
 
-            if (hasPrimaryKey != null)
-                return Expression.Condition(noPrimaryKey, Expression.Default(reader.Metadata.Type), memberInit);
-
-            return memberInit;
+            return this.GetBlockExpression(reader.PrimaryKey, reader.JoinKeys, memberInit);
         }
 
         #endregion
@@ -394,8 +392,24 @@ namespace Jerrycurl.Data.Queries.Internal.V11
 
         #region " Helpers "
 
+        private Expression GetDataReaderLoopExpression(Expression body)
+        {
+            LabelTarget label = Expression.Label();
+
+            Expression read = Expression.Call(ResultArgs.DataReader, typeof(IDataReader).GetMethod(nameof(IDataReader.Read)));
+            Expression ifRead = Expression.IfThenElse(read, body, Expression.Break(label));
+
+            return Expression.Loop(ifRead, label);
+        }
+
+        private TDelegate Compile<TDelegate>(IList<Expression> body, IList<ParameterExpression> arguments)
+        {
+            Expression block = body.Count == 1 ? body[0] : Expression.Block(body);
+
+            return Expression.Lambda<TDelegate>(block, arguments).Compile();
+        }
         private TDelegate Compile<TDelegate>(Expression block, params ParameterExpression[] arguments)
-            => Expression.Lambda<TDelegate>(block, arguments).Compile();
+            => this.Compile<TDelegate>(new[] { block }, arguments);
 
         private Expression GetDictionaryAddExpression(Expression dictionary, Expression key, Expression value)
         {
@@ -526,9 +540,9 @@ namespace Jerrycurl.Data.Queries.Internal.V11
         private class Scope
         {
             public static ParameterExpression DataReader { get; } = Expression.Parameter(typeof(IDataReader), "dataReader");
-            public static ParameterExpression Slots { get; } = Expression.Parameter(typeof(ExpandingArray), "slots");
-            public static ParameterExpression Aggregates { get; } = Expression.Parameter(typeof(ExpandingArray), "aggregates");
-            public static ParameterExpression Helpers { get; } = Expression.Parameter(typeof(ExpandingArray), "helpers");
+            public static ParameterExpression Slots { get; } = Expression.Parameter(typeof(ElasticArray), "slots");
+            public static ParameterExpression Aggregates { get; } = Expression.Parameter(typeof(ElasticArray), "aggregates");
+            public static ParameterExpression Helpers { get; } = Expression.Parameter(typeof(ElasticArray), "helpers");
             public static ParameterExpression SchemaType { get; } = Expression.Parameter(typeof(Type), "schemaType");
 
             public List<Expression> Body { get; } = new List<Expression>();

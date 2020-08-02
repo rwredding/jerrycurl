@@ -9,9 +9,9 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
     internal class BufferTree
     {
         public ISchema Schema { get; set; }
-        public IList<SlotWriter> Slots { get; set; }
-        public IList<AggregateWriter> Aggregates { get; set; }
-        public IList<ListWriter> Lists { get; set; }
-        public IList<HelperWriter> Helpers { get; set; }
+        public IList<SlotWriter> Slots { get; } = new List<SlotWriter>();
+        public IList<AggregateWriter> Aggregates { get; } = new List<AggregateWriter>();
+        public IList<ListWriter> Lists { get; } = new List<ListWriter>();
+        public IList<HelperWriter> Helpers { get; } = new List<HelperWriter>();
     }
 }

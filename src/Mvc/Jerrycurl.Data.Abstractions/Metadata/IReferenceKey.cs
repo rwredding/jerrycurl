@@ -9,5 +9,7 @@ namespace Jerrycurl.Data.Metadata
         string Other { get; }
         ReferenceKeyType Type { get; }
         IReadOnlyList<IReferenceMetadata> Properties { get; }
+        [Obsolete("Temporary until added to ReferenceKeyType")]
+        bool IsPrimaryKey { get; }
     }
 }

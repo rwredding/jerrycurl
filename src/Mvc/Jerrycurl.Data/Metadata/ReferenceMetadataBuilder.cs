@@ -125,6 +125,7 @@ namespace Jerrycurl.Data.Metadata
                 Type = ReferenceKeyType.CandidateKey,
                 Name = g.First().kn,
                 Properties = g.OrderBy(t => t.a.Index).Select(t => t.m).ToList(),
+                IsPrimaryKey = g.All(t => t.a.IsPrimary),
             });
 
             IEnumerable<ReferenceKey> foreignKeys = refMap.GroupBy(t => (t.rn, t.kn)).Select(g => new ReferenceKey()
