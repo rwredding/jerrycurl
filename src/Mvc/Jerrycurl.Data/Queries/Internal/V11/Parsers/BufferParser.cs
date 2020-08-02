@@ -7,6 +7,7 @@ using System.Text;
 using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Metadata.Annotations;
 using Jerrycurl.Data.Queries.Internal.V11.Binders;
+using Jerrycurl.Data.Queries.Internal.V11.Writers;
 using Jerrycurl.Relations.Metadata;
 
 namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
@@ -63,13 +64,13 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
                 ListWriter writer = new ListWriter()
                 {
                     Metadata = itemNode.Metadata.Parent,
-                    Item = this.GetReader(itemNode, valueMap),
+                    Item = this.GetBinder(itemNode, valueMap),
                 };
 
-                if (writer.Item is NewReader newReader)
+                if (writer.Item is NewBinder newbinder)
                 {
-                    writer.PrimaryKey = newReader.PrimaryKey;
-                    newReader.PrimaryKey = null;
+                    writer.PrimaryKey = newbinder.PrimaryKey;
+                    newbinder.PrimaryKey = null;
                 }
 
                 this.AddChildKey(writer);
@@ -78,11 +79,11 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
             }
         }
 
-        private NodeReader GetReader(Node node, Dictionary<MetadataIdentity, ColumnIdentity> valueMap)
+        private NodeBinder GetBinder(Node node, Dictionary<MetadataIdentity, ColumnIdentity> valueMap)
         {
             if (valueMap.TryGetValue(node.Identity, out ColumnIdentity column))
             {
-                return new DataReader()
+                return new DataBinder()
                 {
                     Metadata = node.Metadata,
                     Column = column,
@@ -91,94 +92,62 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
             }
             else
             {
-                NewReader reader = new NewReader()
+                NewBinder binder = new NewBinder()
                 {
                     Metadata = node.Metadata,
-                    Properties = node.Properties.Select(n => this.GetReader(n, valueMap)).ToList(),
-                    JoinKeys = new List<KeyReader>(),
+                    Properties = node.Properties.Select(n => this.GetBinder(n, valueMap)).ToList(),
+                    JoinKeys = new List<ValueKey>(),
                 };
 
-                this.AddPrimaryKeys(reader);
-                this.AddParentKeys(reader);
+                this.AddPrimaryKey(binder);
+                this.AddParentKeys(binder);
 
-                return reader;
+                return binder;
             }
         }
 
-        private void AddPrimaryKeys(NewReader reader)
+        private void AddPrimaryKey(NewBinder binder)
         {
-            IReferenceMetadata metadata = reader.Metadata.Identity.GetMetadata<IReferenceMetadata>();
-            IReferenceKey primaryKey = metadata.Keys.FirstOrDefault(k => k.IsPrimaryKey);
-            KeyReader key = this.GetKeyReader(reader, primaryKey?.Properties);
+            IReferenceKey primaryKey = binder.Metadata.Identity.GetMetadata<IReferenceMetadata>()?.Keys.FirstOrDefault(k => k.IsPrimaryKey);
+            ValueKey key = KeyHelper.FindKey(binder, primaryKey.Properties);
 
             if (key != null)
             {
-                reader.PrimaryKey = key;
+                binder.PrimaryKey = key;
 
-                foreach (DataReader value in key.Values)
+                foreach (ValueBinder value in key.Values)
                     value.CanBeDbNull = false;
             }
         }
 
-        private void AddParentKeys(NewReader reader)
+        private void AddParentKeys(NewBinder binder)
         {
-            IReferenceMetadata metadata = reader.Metadata.Identity.GetMetadata<IReferenceMetadata>();
+            IReferenceMetadata metadata = binder.Metadata.Identity.GetMetadata<IReferenceMetadata>();
 
             foreach (IReference reference in metadata.References.Where(r => r.HasFlag(ReferenceFlags.Parent) && r.Other.HasFlag(ReferenceFlags.Many)))
             {
-                KeyReader key = this.GetKeyReader(reader, reference.Key.Properties);
+                ValueKey key = KeyHelper.FindKey(binder, reference.Key.Properties);
 
                 if (key != null)
                 {
-                    ListReader listReader = new ListReader()
+                    ListBinder listBinder = new ListBinder()
                     {
                         Metadata = reference.Other.Metadata.Identity.GetMetadata<IBindingMetadata>().Parent,
                     };
 
-                    reader.JoinKeys.Add(key);
-                    reader.Properties.Add(listReader);
+                    binder.JoinKeys.Add(key);
+                    binder.Properties.Add(listBinder);
                 }
             }
         }
-
-
 
         private void AddChildKey(ListWriter writer)
         {
             IReferenceMetadata metadata = writer.Item.Metadata.Identity.GetMetadata<IReferenceMetadata>();
             IReferenceKey childKey = metadata.References.FirstOrDefault(r => r.HasFlag(ReferenceFlags.Child | ReferenceFlags.Many))?.Key;
 
-            if (writer.Item is NewReader newReader)
-                writer.JoinKey = this.GetKeyReader(newReader, childKey?.Properties);
-        }
-
-        private KeyReader GetKeyReader(NewReader reader, IReadOnlyList<IReferenceMetadata> properties)
-        {
-            if (properties == null)
-                return null;
-
-            List<DataReader> values = new List<DataReader>();
-
-            foreach (IReferenceMetadata metadata in properties)
-            {
-                DataReader dataReader = reader.Properties.OfType<DataReader>().FirstOrDefault(r => r.Metadata.Identity.Equals(metadata.Identity));
-
-                values.Add(dataReader);
-            }
-
-            if (values.Count == properties.Count)
-            {
-                KeyReader key = new KeyReader()
-                {
-                    Values = values,
-                    Variable = Expression.Variable(this.GetDictionaryType(values.Select(r => r.Metadata.Type))),
-                };
-
-                return key;
-            }
-
-
-            return null;
+            if (writer.Item is NewBinder binder)
+                writer.JoinKey = KeyHelper.FindKey(binder, childKey?.Properties);
         }
 
         private Type GetDictionaryType(IEnumerable<Type> keyType)

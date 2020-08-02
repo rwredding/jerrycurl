@@ -9,6 +9,6 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
     internal class AggregateTree
     {
         public ISchema Schema { get; set; }
-        public NodeReader Aggregate { get; set; }
+        public NodeBinder Aggregate { get; set; }
     }
 }

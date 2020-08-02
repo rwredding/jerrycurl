@@ -33,7 +33,7 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
         public NodeFlags Flags { get; set; }
         public int Depth => this.Metadata.Relation.Depth;
 
-        public NodeReader Reader { get; set; }
+        public NodeBinder Reader { get; set; }
 
         public bool HasFlag(NodeFlags flag) => this.Flags.HasFlag(flag);
     }

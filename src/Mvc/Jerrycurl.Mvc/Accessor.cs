@@ -52,14 +52,14 @@ namespace Jerrycurl.Mvc
         }
 
         /// <summary>
-        /// Executes an asynchronous Razor SQL query with a specified model and returns an unbuffered list of <see cref="QueryReader"/> instances each of which can enumerate items in its corresponding result set.
+        /// Executes an asynchronous Razor SQL query with a specified model and returns an unbuffered list of <see cref="QueryReader2"/> instances each of which can enumerate items in its corresponding result set.
         /// </summary>
         /// <param name="model">The concrete model to initialize to the Razor page with.</param>
         /// <param name="configure">A method for configuring query options.</param>
         /// <param name="queryName">The query name to locate the Razor page by. Defaults to the name of the calling method.</param>
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
-        /// <returns>An enumerable providing a <see cref="QueryReader"/> instance for every data set in the result.</returns>
-        protected IAsyncEnumerable<QueryReader> EnumerateAsync(object model = null, Action<SqlOptions> configure = null, [CallerMemberName]string queryName = null, CancellationToken cancellationToken = default)
+        /// <returns>An enumerable providing a <see cref="QueryReader2"/> instance for every data set in the result.</returns>
+        protected IAsyncEnumerable<QueryReader2> EnumerateAsync(object model = null, Action<SqlOptions> configure = null, [CallerMemberName]string queryName = null, CancellationToken cancellationToken = default)
         {
             IProcResult result = this.ExecuteAndGetResult(queryName, model, new ProcArgs()
             {
@@ -120,13 +120,13 @@ namespace Jerrycurl.Mvc
         }
 
         /// <summary>
-        /// Executes a Razor SQL query with a specified model and returns an unbuffered list of <see cref="QueryReader"/> instances each of which can enumerate items in its corresponding result set.
+        /// Executes a Razor SQL query with a specified model and returns an unbuffered list of <see cref="QueryReader2"/> instances each of which can enumerate items in its corresponding result set.
         /// </summary>
         /// <param name="model">A concrete model containing parameter values for the query.</param>
         /// <param name="configure">A method for configuring query options.</param>
         /// <param name="queryName">The query name to locate the Razor page by. Defaults to the name of the calling method.</param>
-        /// <returns>An enumerable providing a <see cref="QueryReader"/> instance for every data set in the result.</returns>
-        protected IEnumerable<QueryReader> Enumerate(object model = null, Action<SqlOptions> configure = null, [CallerMemberName]string queryName = null)
+        /// <returns>An enumerable providing a <see cref="QueryReader2"/> instance for every data set in the result.</returns>
+        protected IEnumerable<QueryReader2> Enumerate(object model = null, Action<SqlOptions> configure = null, [CallerMemberName]string queryName = null)
         {
             IProcResult result = this.ExecuteAndGetResult(queryName, model, new ProcArgs()
             {

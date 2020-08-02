@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Text;
 using Jerrycurl.Data.Metadata;
 
 namespace Jerrycurl.Data.Queries.Internal.V11.Binders
 {
-    internal class SlotWriter
+    internal abstract class NodeBinder
     {
-        public int BufferIndex { get; set; }
-        public IList<Type> Key { get; set; }
         public IBindingMetadata Metadata { get; set; }
-        public ParameterExpression Variable { get; set; }
     }
 }

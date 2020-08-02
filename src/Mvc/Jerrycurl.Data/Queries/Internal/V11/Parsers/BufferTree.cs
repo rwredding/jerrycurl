@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Jerrycurl.Data.Queries.Internal.V11.Binders;
+using Jerrycurl.Data.Queries.Internal.V11.Writers;
 using Jerrycurl.Relations.Metadata;
 
 namespace Jerrycurl.Data.Queries.Internal.V11.Parsers

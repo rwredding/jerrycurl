@@ -31,15 +31,15 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
             return new AggregateTree()
             {
                 Schema = this.Schema,
-                Aggregate = this.GetReader(itemNode, valueMap),
+                Aggregate = this.GetBinder(itemNode, valueMap),
             };
         }
 
-        private NodeReader GetReader(Node node, HashSet<MetadataIdentity> valueMap)
+        private NodeBinder GetBinder(Node node, HashSet<MetadataIdentity> valueMap)
         {
             if (valueMap.Contains(node.Identity))
             {
-                return new AggregateReader()
+                return new AggregateBinder()
                 {
                     Metadata = node.Metadata,
                     CanBeDbNull = true,
@@ -48,34 +48,29 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
             }
             else
             {
-                NewReader reader = new NewReader()
+                NewBinder binder = new NewBinder()
                 {
                     Metadata = node.Metadata,
-                    Properties = node.Properties.Select(n => this.GetReader(n, valueMap)).ToList(),
+                    Properties = node.Properties.Select(n => this.GetBinder(n, valueMap)).ToList(),
                 };
 
-                this.AddPrimaryKeys(reader);
+                this.AddPrimaryKey(binder);
 
-                return reader;
+                return binder;
             }
         }
 
-        private void AddPrimaryKeys(NewReader reader)
+        private void AddPrimaryKey(NewBinder binder)
         {
-            IReferenceMetadata reference = reader.Metadata.Identity.GetMetadata<IReferenceMetadata>();
-            IReferenceKey primaryKey = reference.Keys.FirstOrDefault(k => k.IsPrimaryKey);
+            IReferenceKey primaryKey = binder.Metadata.Identity.GetMetadata<IReferenceMetadata>()?.Keys.FirstOrDefault(k => k.IsPrimaryKey);
+            ValueKey key = KeyHelper.FindKey(binder, primaryKey.Properties);
 
-            if (primaryKey != null)
+            if (key != null)
             {
-                IList<AggregateReader> keyValues = primaryKey.Properties.Select(m => reader.Properties.First(p => p.Metadata.Identity.Equals(m.Identity))).OfType<AggregateReader>().ToList();
+                binder.PrimaryKey = key;
 
-                if (keyValues.Count == primaryKey.Properties.Count)
-                {
-                    reader.PrimaryKey = new KeyReader() { Values = keyValues };
-
-                    foreach (AggregateReader keyValue in keyValues)
-                        keyValue.CanBeDbNull = false;
-                }
+                foreach (ValueBinder value in key.Values)
+                    value.CanBeDbNull = false;
             }
         }
     }

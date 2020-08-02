@@ -16,6 +16,7 @@ using Jerrycurl.Data.Queries.Internal.V11.Binders;
 using Jerrycurl.Reflection;
 using System.Diagnostics;
 using System.Data.Common;
+using Jerrycurl.Data.Queries.Internal.V11.Writers;
 
 namespace Jerrycurl.Data.Queries.Internal.V11
 {
@@ -149,14 +150,14 @@ namespace Jerrycurl.Data.Queries.Internal.V11
             return this.GetBlockExpression(writer.PrimaryKey, new[] { writer.JoinKey }, addToList);
         }
 
-        private Expression GetBlockExpression(KeyReader primaryKey, IEnumerable<KeyReader> joinKeys, Expression body)
+        private Expression GetBlockExpression(ValueKey primaryKey, IEnumerable<ValueKey> joinKeys, Expression body)
         {
             List<Expression> expressions = new List<Expression>();
             List<ParameterExpression> variables = new List<ParameterExpression>();
 
-            foreach (KeyReader joinKey in joinKeys?.Concat(new[] { primaryKey }.NotNull()) ?? Array.Empty<KeyReader>())
+            foreach (ValueKey joinKey in joinKeys?.Concat(new[] { primaryKey }.NotNull()) ?? Array.Empty<ValueKey>())
             {
-                foreach (DataReader valueReader in joinKey.Values)
+                foreach (DataBinder valueReader in joinKey.Values)
                 {
                     Expression isDbNull = this.GetIsDbNullExpression(valueReader);
                     Expression value = this.GetValueExpression(valueReader);
@@ -210,16 +211,16 @@ namespace Jerrycurl.Data.Queries.Internal.V11
 
         #region " Readers "
 
-        private Expression GetReaderExpression(NodeReader reader) => reader switch
+        private Expression GetReaderExpression(NodeBinder reader) => reader switch
         {
-            DataReader b => this.GetReaderExpression(b, b.IsDbNull, b.Value, b.CanBeDbNull),
-            AggregateReader b => this.GetReaderExpression(b, b.IsDbNull, b.Value, canBeDbNull: true),
-            NewReader b => this.GetReaderExpression(b),
-            ListReader b => this.GetReaderExpression(b),
+            DataBinder b => this.GetReaderExpression(b, b.IsDbNull, b.Value, b.CanBeDbNull),
+            AggregateBinder b => this.GetReaderExpression(b, b.IsDbNull, b.Value, canBeDbNull: true),
+            NewBinder b => this.GetReaderExpression(b),
+            ListBinder b => this.GetReaderExpression(b),
             _ => throw new InvalidOperationException(),
         };
 
-        private Expression GetReaderExpression(ListReader reader)
+        private Expression GetReaderExpression(ListBinder reader)
         {
             NewExpression newExpression = reader.Metadata.Composition.Construct;
             Expression arrayIndex = this.GetElasticIndexExpression(reader.Array, reader.BufferIndex);
@@ -233,7 +234,7 @@ namespace Jerrycurl.Data.Queries.Internal.V11
             return ifNull2;
         }
 
-        private Expression GetReaderOrDbNullExpression(DataReader reader)
+        private Expression GetReaderOrDbNullExpression(DataBinder reader)
         {
             if (!reader.CanBeDbNull)
                 return this.GetReaderExpression(reader, reader.IsDbNull, reader.Value, reader.CanBeDbNull);
@@ -245,7 +246,7 @@ namespace Jerrycurl.Data.Queries.Internal.V11
             return Expression.Condition(isDbNull, dbNull, Expression.Convert(value, typeof(object)));
         }
 
-        private Expression GetReaderExpression(NodeReader reader, Expression isDbNull, Expression value, bool canBeDbNull)
+        private Expression GetReaderExpression(NodeBinder reader, Expression isDbNull, Expression value, bool canBeDbNull)
         {
             isDbNull ??= this.GetIsDbNullExpression(reader);
             value ??= this.GetValueExpression(reader);
@@ -256,7 +257,7 @@ namespace Jerrycurl.Data.Queries.Internal.V11
             return value;
         }
 
-        private Expression GetReaderExpression(NewReader reader)
+        private Expression GetReaderExpression(NewBinder reader)
         {
             NewExpression newExpression = reader.Metadata.Composition.Construct;
             Expression memberInit = Expression.MemberInit(newExpression, reader.Properties.Select(b =>
@@ -283,21 +284,21 @@ namespace Jerrycurl.Data.Queries.Internal.V11
 
         #region  " IsDbNull "
 
-        public Expression GetIsDbNullExpression(NodeReader reader) => reader switch
+        public Expression GetIsDbNullExpression(NodeBinder reader) => reader switch
         {
-            DataReader b => this.GetIsDbNullExpression(b),
-            AggregateReader b => this.GetIsDbNullExpression(b),
+            DataBinder b => this.GetIsDbNullExpression(b),
+            AggregateBinder b => this.GetIsDbNullExpression(b),
             _ => throw new InvalidOperationException(),
         };
 
-        public Expression GetIsDbNullExpression(DataReader reader)
+        public Expression GetIsDbNullExpression(DataBinder reader)
         {
             MethodInfo isDbNullMethod = typeof(IDataRecord).GetMethod(nameof(IDataRecord.IsDBNull), new[] { typeof(int) });
 
             return Expression.Call(Scope.DataReader, isDbNullMethod, Expression.Constant(reader.Column.Index));
         }
 
-        public Expression GetIsDbNullExpression(AggregateReader reader)
+        public Expression GetIsDbNullExpression(AggregateBinder reader)
         {
             Expression arrayIndex = this.GetElasticIndexExpression(Scope.Aggregates, reader.BufferIndex);
 
@@ -307,21 +308,21 @@ namespace Jerrycurl.Data.Queries.Internal.V11
         #endregion
 
         #region " Values "
-        private Expression GetValueExpression(NodeReader reader) => reader switch
+        private Expression GetValueExpression(NodeBinder reader) => reader switch
         {
-            DataReader b => this.GetValueExpression(b),
-            AggregateReader b => this.GetValueExpression(b),
+            DataBinder b => this.GetValueExpression(b),
+            AggregateBinder b => this.GetValueExpression(b),
             _ => throw new InvalidOperationException(),
         };
 
-        private Expression GetValueExpression(AggregateReader reader)
+        private Expression GetValueExpression(AggregateBinder reader)
         {
             Expression arrayIndex = this.GetElasticIndexExpression(Scope.Aggregates, reader.BufferIndex);
 
             return Expression.Convert(arrayIndex, reader.Metadata.Type);
         }
 
-        private Expression GetValueExpression(DataReader reader)
+        private Expression GetValueExpression(DataBinder reader)
         {
             MethodInfo readMethod = this.GetDataReaderMethod(reader);
 
@@ -334,7 +335,7 @@ namespace Jerrycurl.Data.Queries.Internal.V11
             return Expression.Call(dataReader, readMethod, index);
         }
 
-        private MethodInfo GetDataReaderMethod(DataReader binding)
+        private MethodInfo GetDataReaderMethod(DataBinder binding)
         {
             BindingColumnInfo bindingInfo = new BindingColumnInfo()
             {
@@ -354,7 +355,7 @@ namespace Jerrycurl.Data.Queries.Internal.V11
 
         #region " Convert "
 
-        private Expression GetConvertExpression(Expression value, DataReader reader)
+        private Expression GetConvertExpression(Expression value, DataBinder reader)
         {
             ParameterExpression variable = Expression.Variable(value.Type);
 
@@ -515,19 +516,19 @@ namespace Jerrycurl.Data.Queries.Internal.V11
             return Expression.Property(arrayExpression, indexer, Expression.Constant(index));
         }
 
-        private Expression GetOrConditionExpression(IEnumerable<NodeReader> readers, Func<NodeReader, Expression> condition, Expression emptyValue = null)
+        private Expression GetOrConditionExpression(IEnumerable<NodeBinder> readers, Func<NodeBinder, Expression> condition, Expression emptyValue = null)
             => this.GetConditionExpression(readers, condition, Expression.OrElse, emptyValue);
-        private Expression GetAndConditionExpression(IEnumerable<NodeReader> readers, Func<NodeReader, Expression> condition, Expression emptyValue = null)
+        private Expression GetAndConditionExpression(IEnumerable<NodeBinder> readers, Func<NodeBinder, Expression> condition, Expression emptyValue = null)
             => this.GetConditionExpression(readers, condition, Expression.AndAlso, emptyValue);
 
-        private Expression GetConditionExpression(IEnumerable<NodeReader> readers, Func<NodeReader, Expression> condition, Func<Expression, Expression, Expression> gateFactory, Expression emptyValue = null)
+        private Expression GetConditionExpression(IEnumerable<NodeBinder> readers, Func<NodeBinder, Expression> condition, Func<Expression, Expression, Expression> gateFactory, Expression emptyValue = null)
         {
             if (!readers.Any())
                 return emptyValue;
 
             Expression expr = condition(readers.First());
 
-            foreach (NodeReader reader in readers.Skip(1))
+            foreach (NodeBinder reader in readers.Skip(1))
                 expr = gateFactory(expr, condition(reader));
 
             return expr;

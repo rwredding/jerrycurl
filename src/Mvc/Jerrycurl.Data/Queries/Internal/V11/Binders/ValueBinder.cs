@@ -5,11 +5,10 @@ using System.Text;
 
 namespace Jerrycurl.Data.Queries.Internal.V11.Binders
 {
-    internal class AggregateReader : NodeReader
+    internal class ValueBinder : NodeBinder
     {
-        public int BufferIndex { get; set; }
+        public bool CanBeDbNull { get; set; }
         public ParameterExpression IsDbNull { get; set; }
         public ParameterExpression Value { get; set; }
-        public bool CanBeDbNull { get; set; }
     }
 }

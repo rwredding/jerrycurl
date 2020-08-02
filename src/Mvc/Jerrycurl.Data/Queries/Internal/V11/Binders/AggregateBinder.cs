@@ -5,9 +5,8 @@ using System.Text;
 
 namespace Jerrycurl.Data.Queries.Internal.V11.Binders
 {
-    internal class ListReader : NodeReader
+    internal class AggregateBinder : ValueBinder
     {
-        public ParameterExpression Array { get; set; }
         public int BufferIndex { get; set; }
     }
 }

@@ -30,15 +30,14 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
             {
                 Schema = this.Schema,
                 Item = this.GetReader(itemNode, valueMap),
-                Helpers = new List<HelperWriter>(),
             };
         }
 
-        private NodeReader GetReader(Node node, Dictionary<MetadataIdentity, ColumnIdentity> valueMap)
+        private NodeBinder GetReader(Node node, Dictionary<MetadataIdentity, ColumnIdentity> valueMap)
         {
             if (valueMap.TryGetValue(node.Identity, out ColumnIdentity column))
             {
-                return new DataReader()
+                return new DataBinder()
                 {
                     Metadata = node.Metadata,
                     Column = column,
@@ -47,35 +46,29 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
             }
             else
             {
-                NewReader reader = new NewReader()
+                NewBinder reader = new NewBinder()
                 {
                     Metadata = node.Metadata,
                     Properties = node.Properties.Select(n => this.GetReader(n, valueMap)).ToList(),
                 };
 
-                this.AddPrimaryKeys(reader);
+                this.AddPrimaryKey(reader);
 
                 return reader;
             }
         }
 
-        private void AddPrimaryKeys(NewReader reader)
+        private void AddPrimaryKey(NewBinder binder)
         {
-            IReferenceMetadata reference = reader.Metadata.Identity.GetMetadata<IReferenceMetadata>();
-            IReferenceKey primaryKey = reference.Keys.FirstOrDefault(k => k.IsPrimaryKey);
+            IReferenceKey primaryKey = binder.Metadata.Identity.GetMetadata<IReferenceMetadata>()?.Keys.FirstOrDefault(k => k.IsPrimaryKey);
+            ValueKey key = KeyHelper.FindKey(binder, primaryKey.Properties);
 
-            if (primaryKey != null)
+            if (key != null)
             {
-                IList<DataReader> keyValues = primaryKey.Properties.Select(m => reader.Properties.FirstOrDefault(p => p.Metadata.Identity.Equals(m.Identity))).OfType<DataReader>().ToList();
+                binder.PrimaryKey = key;
 
-                if (keyValues.Count == primaryKey.Properties.Count)
-                {
-                    reader.PrimaryKey = new KeyReader() { Values = keyValues };
-
-                    foreach (DataReader keyValue in keyValues)
-                        keyValue.CanBeDbNull = false;
-                }
-                    
+                foreach (ValueBinder value in key.Values)
+                    value.CanBeDbNull = false;
             }
         }
 
