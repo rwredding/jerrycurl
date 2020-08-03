@@ -22,7 +22,7 @@ namespace Jerrycurl.Data.Commands.Internal
             this.Map = fieldMap ?? throw new ArgumentNullException(nameof(fieldMap));
         }
 
-        public FieldData[] GetHeading(TableIdentity tableInfo) => tableInfo.Columns.Select(ci => this.headingMap.TryGetValue(ci.Name)).ToArray();
+        public FieldData[] GetHeading(TableIdentity tableInfo) => tableInfo.Columns.Select(ci => this.headingMap.GetValueOrDefault(ci.Name)).ToArray();
 
         public void Build(IDbCommand adoCommand)
         {
@@ -67,7 +67,7 @@ namespace Jerrycurl.Data.Commands.Internal
                     this.headingMap[columnBinding.ColumnName] = fieldData;
                 else
                 {
-                    IDbDataParameter adoParameter = adoMap.TryGetValue(parameterBinding.ParameterName);
+                    IDbDataParameter adoParameter = adoMap.GetValueOrDefault(parameterBinding.ParameterName);
 
                     if (adoParameter == null)
                     {

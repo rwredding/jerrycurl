@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 using Jerrycurl.Data.Metadata;
 
-namespace Jerrycurl.Data.Queries.Internal.V11.Writers
+namespace Jerrycurl.Data.Queries.Internal.V11.Binding
 {
     internal class SlotWriter
     {

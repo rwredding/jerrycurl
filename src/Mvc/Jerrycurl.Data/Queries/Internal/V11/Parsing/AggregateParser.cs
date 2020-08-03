@@ -1,67 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using Jerrycurl.Data.Metadata;
-using Jerrycurl.Data.Queries.Internal.V11.Binders;
+using Jerrycurl.Data.Queries.Internal.V11.Binding;
 using Jerrycurl.Relations.Metadata;
 
 namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
 {
-    internal class EnumerateParser
+    internal class AggregateParser
     {
         public ISchema Schema { get; }
+        public QueryIndexer Indexer { get; }
 
-        public EnumerateParser(ISchema schema)
+        public AggregateParser(ISchema schema, QueryIndexer indexer)
         {
             this.Schema = schema ?? throw new ArgumentNullException(nameof(schema));
+            this.Indexer = indexer ?? throw new ArgumentException(nameof(indexer));
         }
 
-        public EnumerateTree Parse(ListIdentity identity)
+        public AggregateTree Parse(AggregateIdentity identity)
         {
             NodeParser nodeParser = new NodeParser(this.Schema);
-            Dictionary<MetadataIdentity, ColumnIdentity> valueMap = this.GetValueMap(identity);
-            NodeTree nodeTree = nodeParser.Parse(valueMap.Keys);
+            HashSet<MetadataIdentity> valueMap = new HashSet<MetadataIdentity>(identity);
+            NodeTree nodeTree = nodeParser.Parse(valueMap);
 
             Node itemNode = nodeTree.Items.FirstOrDefault(n => n.Depth == 1);
 
-            return new EnumerateTree()
+            return new AggregateTree()
             {
                 Schema = this.Schema,
-                Item = this.GetReader(itemNode, valueMap),
+                Aggregate = this.GetBinder(itemNode, valueMap),
             };
         }
 
-        private NodeBinder GetReader(Node node, Dictionary<MetadataIdentity, ColumnIdentity> valueMap)
+        private NodeBinder GetBinder(Node node, HashSet<MetadataIdentity> valueMap)
         {
-            if (valueMap.TryGetValue(node.Identity, out ColumnIdentity column))
+            if (valueMap.Contains(node.Identity))
             {
-                return new DataBinder()
+                return new AggregateBinder()
                 {
                     Metadata = node.Metadata,
-                    Column = column,
                     CanBeDbNull = true,
+                    BufferIndex = this.Indexer.GetAggregateIndex(node.Identity),
                 };
             }
             else
             {
-                NewBinder reader = new NewBinder()
+                NewBinder binder = new NewBinder()
                 {
                     Metadata = node.Metadata,
-                    Properties = node.Properties.Select(n => this.GetReader(n, valueMap)).ToList(),
+                    Properties = node.Properties.Select(n => this.GetBinder(n, valueMap)).ToList(),
                 };
 
-                this.AddPrimaryKey(reader);
+                this.AddPrimaryKey(binder);
 
-                return reader;
+                return binder;
             }
         }
 
         private void AddPrimaryKey(NewBinder binder)
         {
             IReferenceKey primaryKey = binder.Metadata.Identity.GetMetadata<IReferenceMetadata>()?.Keys.FirstOrDefault(k => k.IsPrimaryKey);
-            ValueKey key = KeyHelper.FindKey(binder, primaryKey.Properties);
+            KeyBinder key = NodeHelper.FindKey(binder, primaryKey);
 
             if (key != null)
             {
@@ -71,8 +71,5 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
                     value.CanBeDbNull = false;
             }
         }
-
-        private Dictionary<MetadataIdentity, ColumnIdentity> GetValueMap(ListIdentity identity)
-            => identity.Columns.ToDictionary(c => new MetadataIdentity(this.Schema, c.Name));
     }
 }

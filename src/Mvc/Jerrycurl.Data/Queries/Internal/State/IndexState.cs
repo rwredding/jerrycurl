@@ -56,7 +56,7 @@ namespace Jerrycurl.Data.Queries.Internal.State
             {
                 if (!this.childMap.TryGetValue(childKey, out childIndex))
                 {
-                    childIndex = this.childSizes.TryGetValue(parentIndex);
+                    childIndex = this.childSizes.GetValueOrDefault(parentIndex);
 
                     this.childSizes[parentIndex] = childIndex + 1;
                     this.childMap.TryAdd(childKey, childIndex);

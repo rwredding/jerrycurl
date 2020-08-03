@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using Jerrycurl.Data.Queries.Internal.V11.Factories;
 using Jerrycurl.Data.Queries.Internal.V11.Parsers;
 using Jerrycurl.Relations.Metadata;
@@ -54,32 +51,25 @@ namespace Jerrycurl.Data.Queries.Internal.V11
         {
             ListIdentity identity = ListIdentity.FromRecord(schema, dataRecord);
 
-            return aggregrateWriters.GetOrAdd(identity, _ =>
-            {
-                QueryIndexer indexer = GetIndexer(identity.Schema);
-                BufferParser parser = new BufferParser(schema, indexer);
-                BufferTree tree = parser.Parse(identity);
-
-                QueryCompiler compiler = new QueryCompiler();
-
-                return compiler.Compile(tree);
-            });
+            return aggregrateWriters.GetOrAdd(identity, _ => GetWriter(identity, QueryType.Aggregate));
         }
 
         public static BufferWriter GetListWriter(ISchema schema, IDataRecord dataRecord)
         {
             ListIdentity identity = ListIdentity.FromRecord(schema, dataRecord);
 
-            return listWriters.GetOrAdd(identity, _ =>
-            {
-                QueryIndexer indexer = GetIndexer(identity.Schema);
-                BufferParser parser = new BufferParser(schema, indexer);
-                BufferTree tree = parser.Parse(identity);
+            return listWriters.GetOrAdd(identity, _ => GetWriter(identity, QueryType.List));
+        }
 
-                QueryCompiler compiler = new QueryCompiler();
+        private static BufferWriter GetWriter(ListIdentity identity, QueryType queryType)
+        {
+            QueryIndexer indexer = GetIndexer(identity.Schema);
+            BufferParser parser = new BufferParser(identity.Schema, indexer, queryType);
+            BufferTree tree = parser.Parse(identity);
 
-                return compiler.Compile(tree);
-            });
+            QueryCompiler compiler = new QueryCompiler();
+
+            return compiler.Compile(tree);
         }
     }
 }

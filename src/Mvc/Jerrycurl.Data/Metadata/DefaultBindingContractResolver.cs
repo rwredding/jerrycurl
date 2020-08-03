@@ -334,7 +334,7 @@ namespace Jerrycurl.Data.Metadata
             Type structLeft = targetType.IsValueType ? Nullable.GetUnderlyingType(targetType) ?? targetType : null;
             Type structRight = value.Type.IsValueType ? Nullable.GetUnderlyingType(value.Type) ?? value.Type : null;
 
-            if (this.IsNumberType(structLeft) && this.IsNumberType(structRight))
+            if (this.IsNumberType(structLeft) && this.IsNumberType(structRight) && structLeft != structRight)
                 value = this.GetConvertCheckedExpression(value, targetType);
             else if (structLeft == typeof(bool) && this.IsNumberType(structRight))
                 value = Expression.NotEqual(valueInfo.Value, Expression.Default(value.Type));

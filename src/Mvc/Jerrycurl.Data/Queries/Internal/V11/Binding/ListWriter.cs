@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics;
 using System.Linq.Expressions;
-using System.Text;
 using Jerrycurl.Data.Metadata;
-using Jerrycurl.Data.Queries.Internal.V11.Binders;
 
-namespace Jerrycurl.Data.Queries.Internal.V11.Writers
+namespace Jerrycurl.Data.Queries.Internal.V11.Binding
 {
+    [DebuggerDisplay("{GetType().Name,nq}: {Metadata.Identity.Name,nq}")]
     internal class ListWriter
     {
         public ParameterExpression Slot { get; set; }
         public int BufferIndex { get; set; }
         public NodeBinder Item { get; set; }
-        public ValueKey PrimaryKey { get; set; }
-        public ValueKey JoinKey { get; set; }
+        public KeyBinder PrimaryKey { get; set; }
+        public KeyBinder JoinKey { get; set; }
         public IBindingMetadata Metadata { get; set; }
     }
 }

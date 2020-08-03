@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Text;
+﻿using System.Linq.Expressions;
 
-namespace Jerrycurl.Data.Queries.Internal.V11.Binders
+namespace Jerrycurl.Data.Queries.Internal.V11.Binding
 {
     internal class ValueBinder : NodeBinder
     {

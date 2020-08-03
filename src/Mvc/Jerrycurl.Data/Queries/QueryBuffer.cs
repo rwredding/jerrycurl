@@ -1,5 +1,4 @@
-﻿using Jerrycurl.Data.Queries.Internal.State;
-using Jerrycurl.Data.Queries.Internal.V11;
+﻿using Jerrycurl.Data.Queries.Internal.V11;
 using Jerrycurl.Data.Queries.Internal.V11.Factories;
 using Jerrycurl.Relations.Metadata;
 using System;
@@ -13,7 +12,7 @@ namespace Jerrycurl.Data.Queries
 {
     public sealed class QueryBuffer<TItem> : IQueryBuffer
     {
-        public ISchemaStore Schemas { get; }
+        public ISchema Schema { get; }
         public QueryType QueryType { get; set; }
 
         AggregateIdentity IQueryBuffer.Aggregator => this.aggregator;
@@ -24,20 +23,18 @@ namespace Jerrycurl.Data.Queries
         private readonly ElasticArray slots = new ElasticArray();
         private readonly ElasticArray values = new ElasticArray();
         private readonly Func<IDataReader, BufferWriter> writerFactory;
-        private readonly ISchema schema;
 
         public QueryBuffer(ISchemaStore schemas, QueryType queryType)
         {
-            this.Schemas = schemas ?? throw new ArgumentNullException(nameof(schemas));
+            this.Schema = schemas?.GetSchema(typeof(IList<TItem>)) ?? throw new ArgumentNullException(nameof(schemas));
             this.QueryType = queryType;
             this.writerFactory = this.GetWriterFactory();
-            this.schema = schemas.GetSchema(typeof(IList<TItem>));
         }
 
         private Func<IDataReader, BufferWriter> GetWriterFactory() => this.QueryType switch
         {
-            QueryType.List => dr => QueryCache<TItem>.GetListWriter(this.schema, dr),
-            QueryType.Aggregate => dr => QueryCache<TItem>.GetAggregateWriter(this.schema, dr),
+            QueryType.List => dataReader => QueryCache<TItem>.GetListWriter(this.Schema, dataReader),
+            QueryType.Aggregate => dataReader => QueryCache<TItem>.GetAggregateWriter(this.Schema, dataReader),
             _ => throw new InvalidOperationException($"Invalid query type '{this.QueryType}'."),
         };
 
@@ -66,6 +63,6 @@ namespace Jerrycurl.Data.Queries
             return reader(this);
         }
 
-        public IList<TItem> ToList() => (IList<TItem>)this.slots[0];
+        public IList<TItem> ToList() => (IList<TItem>)this.slots[0] ?? new List<TItem>();
     }
 }

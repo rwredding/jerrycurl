@@ -24,7 +24,7 @@ namespace Jerrycurl.Data.Queries.Internal
 
         public ParameterExpression AddWithKey(string name, Type variableType)
         {
-            int subIndex = this.counts.TryGetValue(name);
+            int subIndex = this.counts.GetValueOrDefault(name);
 
             ParameterExpression newVariable = Expression.Parameter(variableType, name + "_" + subIndex);
 
@@ -34,7 +34,7 @@ namespace Jerrycurl.Data.Queries.Internal
             return newVariable;
         }
 
-        public ParameterExpression Get(string name, Type variableType = null) => this.cache.TryGetValue((name, variableType));
+        public ParameterExpression Get(string name, Type variableType = null) => this.cache.GetValueOrDefault((name, variableType));
 
         public IEnumerable<ParameterExpression> ToExpressions() => this.cache.Values;
         public Expression ToBlock(Expression body) => this.cache.Any() ? Expression.Block(this.ToExpressions(), body) : body;

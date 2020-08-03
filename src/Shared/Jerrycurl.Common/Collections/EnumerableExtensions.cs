@@ -53,5 +53,9 @@ namespace Jerrycurl.Collections
             foreach (T item in lazy.Value)
                 yield return item;
         }
+
+//#if !NETSTANDARD2_1 && !NETCOREAPP3_0
+//        public static IEnumerable<T> Append<T>(this IEnumerable<T> source, T value) => source.Concat(new[] { value });
+//#endif
     }
 }

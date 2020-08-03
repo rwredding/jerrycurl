@@ -9,7 +9,6 @@ using System.Threading;
 using Jerrycurl.Data.Queries.Internal;
 using System.Runtime.CompilerServices;
 using Jerrycurl.Data.Sessions;
-using Jerrycurl.Data.Queries.Internal.V11;
 
 namespace Jerrycurl.Data.Queries
 {

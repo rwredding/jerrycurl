@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Jerrycurl.Data.Queries
+﻿namespace Jerrycurl.Data.Queries
 {
     public enum QueryType
     {
