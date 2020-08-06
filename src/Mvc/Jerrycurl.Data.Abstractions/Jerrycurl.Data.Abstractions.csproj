@@ -12,9 +12,5 @@
 		<ProjectReference Include="..\Jerrycurl.Relations.Abstractions\Jerrycurl.Relations.Abstractions.csproj"></ProjectReference>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Queries\" />
-	</ItemGroup>
-
 	<Import Project="..\..\Shared\Jerrycurl.Common\Jerrycurl.Common.projitems" Label="Shared" />
 </Project>

@@ -13,20 +13,19 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
 {
     internal class BufferParser
     {
-        public ISchema Schema { get; }
-        public QueryIndexer Indexer { get; }
+        public ISchema Schema => this.Buffer.Schema;
+        public BufferCache Buffer { get; }
         public QueryType Type { get; }
 
-        public BufferParser(ISchema schema, QueryIndexer indexer, QueryType queryType)
+        public BufferParser(QueryType type, BufferCache cache)
         {
-            this.Schema = schema ?? throw new ArgumentNullException(nameof(schema));
-            this.Indexer = indexer ?? throw new ArgumentException(nameof(indexer));
-            this.Type = queryType;
+            this.Type = type;
+            this.Buffer = cache ?? throw new ArgumentException(nameof(cache));
         }
 
-        public BufferTree Parse(IEnumerable<ColumnValue> values)
+        public BufferTree Parse(IEnumerable<ColumnName> valueNames)
         {
-            NodeTree nodeTree = NodeParser.Parse(this.Schema, values);
+            NodeTree nodeTree = NodeParser.Parse(this.Schema, valueNames);
             BufferTree tree = new BufferTree()
             {
                 QueryType = this.Type,
@@ -35,8 +34,8 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
 
             this.MoveManyToOneNodes(nodeTree);
 
-            this.AddWriters(tree, nodeTree, values);
-            this.AddAggregates(tree, nodeTree, values);
+            this.AddWriters(tree, nodeTree, valueNames);
+            this.AddAggregates(tree, nodeTree, valueNames);
 
             return tree;
         }
@@ -56,32 +55,32 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
         private bool HasOneAttribute(IBindingMetadata metadata) => metadata.Annotations.OfType<OneAttribute>().Any();
         private bool HasOneAttribute(IReference reference) => reference.Metadata.Annotations.OfType<OneAttribute>().Any();
 
-        private void AddAggregates(BufferTree tree, NodeTree nodeTree, IEnumerable<ColumnValue> values)
+        private void AddAggregates(BufferTree tree, NodeTree nodeTree, IEnumerable<ColumnName> valueNames)
         {
             if (this.Type != QueryType.Aggregate)
                 return;
 
             foreach (Node node in nodeTree.Nodes.Where(n => n.Depth == 1))
             {
-                ColumnBinder binder = BindingHelper.FindValue(node, values);
+                ColumnBinder binder = BindingHelper.FindValue(node, valueNames);
 
                 if (binder != null)
                 {
                     AggregateWriter writer = new AggregateWriter()
                     {
-                        BufferIndex = this.Indexer.GetAggregateIndex(node.Identity),
+                        BufferIndex = this.Buffer.GetAggregateIndex(node.Identity),
                         Data = binder,
                     };
 
-                    AggregateValue x = new AggregateValue(binder.Metadata.Identity.Name, isPrincipal: false);
+                    AggregateName x = new AggregateName(binder.Metadata.Identity.Name, isPrincipal: false);
 
                     tree.Aggregates.Add(writer);
-                    tree.Xs.Add(x);
+                    tree.AggregateNames.Add(x);
                 }
             }
         }
 
-        private void AddWriters(BufferTree tree, NodeTree nodeTree, IEnumerable<ColumnValue> values)
+        private void AddWriters(BufferTree tree, NodeTree nodeTree, IEnumerable<ColumnName> valueNames)
         {
             IEnumerable<Node> itemNodes = this.Type == QueryType.List ? nodeTree.Items : nodeTree.Items.Where(n => n.Depth > 1);
 
@@ -90,7 +89,7 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
                 ListWriter writer = new ListWriter()
                 {
                     Metadata = itemNode.Metadata.Parent,
-                    Item = this.GetBinder(tree, itemNode, values),
+                    Item = this.GetBinder(tree, itemNode, valueNames),
                 };
 
                 if (writer.Item is NewBinder newBinder)
@@ -102,13 +101,13 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
                 if (!this.IsPrincipalList(itemNode.Metadata))
                     this.AddChildKey(writer);
                 else if (this.Type == QueryType.Aggregate)
-                    tree.Xs.Add(new AggregateValue(writer.Metadata.Identity.Name, isPrincipal: true));
+                    tree.AggregateNames.Add(new AggregateName(writer.Metadata.Identity.Name, isPrincipal: true));
 
                 writer.Slot = this.AddSlot(tree, writer.Metadata, writer.JoinKey);
 
                 if (writer.JoinKey != null)
                 {
-                    writer.BufferIndex = this.Indexer.GetChildIndex(writer.JoinKey.Metadata);
+                    writer.BufferIndex = this.Buffer.GetChildIndex(writer.JoinKey.Metadata);
                     writer.IsOneToMany = this.HasOneAttribute(writer.JoinKey.Metadata);
                 }
                     
@@ -130,12 +129,12 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
             Type variableType;
             if (joinKey == null)
             {
-                slotIndex = metadata.Relation.Depth == 0 ? this.Indexer.GetResultIndex() : this.Indexer.GetListIndex(metadata.Identity);
+                slotIndex = metadata.Relation.Depth == 0 ? this.Buffer.GetResultIndex() : this.Buffer.GetListIndex(metadata.Identity);
                 variableType = metadata.Composition.Construct.Type;
             }
             else
             {
-                slotIndex = this.Indexer.GetParentIndex(joinKey.Metadata);
+                slotIndex = this.Buffer.GetParentIndex(joinKey.Metadata);
                 variableType = this.GetDictionaryType(joinKey);
             }
 
@@ -177,9 +176,9 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
             }
         }
 
-        private NodeBinder GetBinder(BufferTree tree, Node node, IEnumerable<ColumnValue> values)
+        private NodeBinder GetBinder(BufferTree tree, Node node, IEnumerable<ColumnName> valueNames)
         {
-            ColumnBinder columnBinder = BindingHelper.FindValue(node, values);
+            ColumnBinder columnBinder = BindingHelper.FindValue(node, valueNames);
 
             if (columnBinder != null)
             {
@@ -191,7 +190,7 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
             NewBinder binder = new NewBinder()
             {
                 Metadata = node.Metadata,
-                Properties = node.Properties.Select(n => this.GetBinder(tree, n, values)).ToList(),
+                Properties = node.Properties.Select(n => this.GetBinder(tree, n, valueNames)).ToList(),
                 JoinKeys = new List<KeyBinder>(),
             };
 
@@ -227,7 +226,7 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
                     {
                         Metadata = childMetadata,
                         Array = key.Array ??= BindingHelper.Variable(typeof(ElasticArray), childMetadata.Identity),
-                        ArrayIndex = this.Indexer.GetChildIndex(reference),
+                        ArrayIndex = this.Buffer.GetChildIndex(reference),
                         IsManyToOne = this.HasOneAttribute(childMetadata),
                     };
 

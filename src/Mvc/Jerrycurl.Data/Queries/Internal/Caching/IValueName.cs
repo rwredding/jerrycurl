@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Jerrycurl.Data.Queries.Internal.Caching
 {
-    internal interface ICacheValue
+    internal interface IValueName
     {
         public string Name { get; }
     }

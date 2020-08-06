@@ -78,27 +78,27 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
 
             BufferWriter result = new BufferWriter()
             {
-                WriteAll = (buf, dr) => writeAll(dr, buf.Slots, buf.Aggregates, helpers, schemaType),
-                WriteOne = (buf, dr) => writeOne(dr, buf.Slots, buf.Aggregates, helpers, schemaType),
+                WriteAll = (buf, dr) => writeAll(dr, buf.Slots, buf.Aggregate.Values, helpers, schemaType),
+                WriteOne = (buf, dr) => writeOne(dr, buf.Slots, buf.Aggregate.Values, helpers, schemaType),
                 Initialize = buf => init(buf.Slots),
             };
 
-            if (tree.QueryType == QueryType.Aggregate && tree.Xs.Any())
+            if (tree.QueryType == QueryType.Aggregate && tree.AggregateNames.Any())
             {
-                AggregateValue[] xs = tree.Xs.ToArray();
+                AggregateName[] names = tree.AggregateNames.ToArray();
                 Action<IQueryBuffer, IDataReader> innerWrite = result.WriteAll;
                 Action<IQueryBuffer> innerInit = result.Initialize;
 
                 result.WriteAll = (buf, dr) =>
                 {
-                    buf.Aggregator.Add(xs);
+                    buf.Aggregate.Names.AddRange(names);
 
                     innerWrite(buf, dr);
                 };
 
                 result.Initialize = buf =>
                 {
-                    buf.Aggregator.Add(xs);
+                    buf.Aggregate.Names.AddRange(names);
 
                     innerInit(buf);
                 };
@@ -116,7 +116,7 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
 
             Type schemaType = tree.Schema.Model;
 
-            return buf => reader(buf.Slots, buf.Aggregates, schemaType);
+            return buf => reader(buf.Slots, buf.Aggregate.Values, schemaType);
         }
 
         public EnumerateReader<TItem> Compile<TItem>(EnumerateTree tree)

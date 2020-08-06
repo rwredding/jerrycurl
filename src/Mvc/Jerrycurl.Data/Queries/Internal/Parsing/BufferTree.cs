@@ -13,6 +13,7 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
         public IList<AggregateWriter> Aggregates { get; } = new List<AggregateWriter>();
         public IList<ListWriter> Lists { get; } = new List<ListWriter>();
         public IList<HelperWriter> Helpers { get; } = new List<HelperWriter>();
-        public IList<AggregateValue> Xs { get; set; } = new List<AggregateValue>();
+
+        public IList<AggregateName> AggregateNames { get; set; } = new List<AggregateName>();
     }
 }

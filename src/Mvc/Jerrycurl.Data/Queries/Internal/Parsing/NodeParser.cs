@@ -8,12 +8,12 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
 {
     internal static class NodeParser
     {
-        public static NodeTree Parse(ISchema schema, IEnumerable<ICacheValue> values)
+        public static NodeTree Parse(ISchema schema, IEnumerable<IValueName> valueNames)
         {
             NodeTree tree = new NodeTree();
 
-            foreach (ICacheValue value in values)
-                AddNode(tree, new MetadataIdentity(schema, value.Name));
+            foreach (IValueName name in valueNames)
+                AddNode(tree, new MetadataIdentity(schema, name.Name));
 
             return tree;
         }

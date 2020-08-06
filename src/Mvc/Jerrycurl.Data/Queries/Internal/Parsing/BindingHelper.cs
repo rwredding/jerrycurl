@@ -14,9 +14,9 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
 {
     internal static class BindingHelper
     {
-        public static ColumnBinder FindValue(Node node, IEnumerable<ColumnValue> values)
+        public static ColumnBinder FindValue(Node node, IEnumerable<ColumnName> valueNames)
         {
-            foreach (ColumnValue value in values)
+            foreach (ColumnName value in valueNames)
             {
                 MetadataIdentity metadata = new MetadataIdentity(node.Metadata.Identity.Schema, value.Name);
 

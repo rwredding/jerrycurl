@@ -5,6 +5,7 @@ using HashCode = Jerrycurl.Diagnostics.HashCode;
 
 namespace Jerrycurl.Data
 {
+    [Obsolete("Deprecated in 1.1")]
     public sealed class ColumnIdentity : IEquatable<ColumnIdentity>
     {
         public string Name { get; }

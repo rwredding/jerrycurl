@@ -8,18 +8,19 @@ namespace Jerrycurl.Data.Queries.Internal
 {
     internal class AggregateBuffer
     {
-        private readonly List<AggregateValue> xs = new List<AggregateValue>();
-        public ISchema Schema { get; set; }
+        private readonly List<AggregateName> names = new List<AggregateName>();
+
+        public ISchema Schema { get; }
+        public List<AggregateName> Names { get; } = new List<AggregateName>();
+        public ElasticArray Values { get; } = new ElasticArray();
 
         public AggregateBuffer(ISchema schema)
         {
             this.Schema = schema ?? throw new ArgumentNullException(nameof(schema));
         }
 
-        public void Add(IEnumerable<AggregateValue> xs) => this.xs.AddRange(xs);
+        public void Add(IEnumerable<AggregateName> names) => this.names.AddRange(names);
 
-        public ElasticArray Data { get; set; }
-
-        public QueryCacheKey<AggregateValue> ToCacheKey() => new QueryCacheKey<AggregateValue>(this.Schema, this.xs);
+        public QueryCacheKey<AggregateName> ToCacheKey() => new QueryCacheKey<AggregateName>(this.Schema, this.names);
     }
 }

@@ -6,8 +6,8 @@ using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Queries.Internal.Compilation;
 using Jerrycurl.Data.Queries.Internal.Parsing;
 using Jerrycurl.Relations.Metadata;
-using AggregateCacheKey = Jerrycurl.Data.Queries.Internal.Caching.QueryCacheKey<Jerrycurl.Data.Queries.Internal.Caching.AggregateValue>;
-using ColumnCacheKey = Jerrycurl.Data.Queries.Internal.Caching.QueryCacheKey<Jerrycurl.Data.Queries.Internal.Caching.ColumnValue>;
+using AggregateCacheKey = Jerrycurl.Data.Queries.Internal.Caching.QueryCacheKey<Jerrycurl.Data.Queries.Internal.Caching.AggregateName>;
+using ColumnCacheKey = Jerrycurl.Data.Queries.Internal.Caching.QueryCacheKey<Jerrycurl.Data.Queries.Internal.Caching.ColumnName>;
 
 namespace Jerrycurl.Data.Queries.Internal.Caching
 {
@@ -17,16 +17,16 @@ namespace Jerrycurl.Data.Queries.Internal.Caching
         private static readonly ConcurrentDictionary<ColumnCacheKey, BufferWriter> listWriters = new ConcurrentDictionary<ColumnCacheKey, BufferWriter>();
         private static readonly ConcurrentDictionary<ColumnCacheKey, BufferWriter> aggregrateWriters = new ConcurrentDictionary<ColumnCacheKey, BufferWriter>();
         private static readonly ConcurrentDictionary<AggregateCacheKey, AggregateReader<TItem>> aggregateReaders = new ConcurrentDictionary<AggregateCacheKey, AggregateReader<TItem>>();
-        private static readonly ConcurrentDictionary<ISchema, QueryIndexer> indexers = new ConcurrentDictionary<ISchema, QueryIndexer>();
+        private static readonly ConcurrentDictionary<ISchema, BufferCache> buffers = new ConcurrentDictionary<ISchema, BufferCache>();
 
-        private static QueryIndexer GetIndexer(ISchema schema) => indexers.GetOrAdd(schema, new QueryIndexer());
+        private static BufferCache GetBuffer(ISchema schema) => buffers.GetOrAdd(schema, s => new BufferCache(s));
 
         public static AggregateReader<TItem> GetAggregateReader(AggregateCacheKey cacheKey)
         {
-            return aggregateReaders.GetOrAdd(cacheKey, _ =>
+            return aggregateReaders.GetOrAdd(cacheKey, k =>
             {
-                QueryIndexer indexer = GetIndexer(cacheKey.Schema);
-                AggregateParser parser = new AggregateParser(cacheKey.Schema, indexer);
+                BufferCache buffer = GetBuffer(k.Schema);
+                AggregateParser parser = new AggregateParser(buffer);
                 AggregateTree tree = parser.Parse(cacheKey.Items);
 
                 QueryCompiler compiler = new QueryCompiler();
@@ -67,7 +67,7 @@ namespace Jerrycurl.Data.Queries.Internal.Caching
 
         private static ColumnCacheKey GetCacheKey(ISchema schema, IDataRecord dataRecord)
         {
-            IEnumerable<ColumnValue> columns = Enumerable.Range(0, getFieldCount()).Select(i => GetColumnValue(dataRecord, i));
+            IEnumerable<ColumnName> columns = Enumerable.Range(0, getFieldCount()).Select(i => GetColumnValue(dataRecord, i));
 
             return new ColumnCacheKey(schema, columns);
 
@@ -78,13 +78,13 @@ namespace Jerrycurl.Data.Queries.Internal.Caching
             }
         }
 
-        public static ColumnValue GetColumnValue(IDataRecord dataRecord, int i)
-            => new ColumnValue(new ColumnInfo(dataRecord.GetName(i), dataRecord.GetFieldType(i), dataRecord.GetDataTypeName(i), i));
+        public static ColumnName GetColumnValue(IDataRecord dataRecord, int i)
+            => new ColumnName(new ColumnInfo(dataRecord.GetName(i), dataRecord.GetFieldType(i), dataRecord.GetDataTypeName(i), i));
 
         private static BufferWriter GetWriter(ColumnCacheKey cacheKey, QueryType queryType)
         {
-            QueryIndexer indexer = GetIndexer(cacheKey.Schema);
-            BufferParser parser = new BufferParser(cacheKey.Schema, indexer, queryType);
+            BufferCache buffer = GetBuffer(cacheKey.Schema);
+            BufferParser parser = new BufferParser(queryType, buffer);
             BufferTree tree = parser.Parse(cacheKey.Items);
 
             QueryCompiler compiler = new QueryCompiler();

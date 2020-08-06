@@ -16,20 +16,18 @@ namespace Jerrycurl.Data.Queries
         public ISchema Schema { get; }
         public QueryType QueryType { get; set; }
 
-        AggregateBuffer IQueryBuffer.Aggregator => this.aggregator;
+        AggregateBuffer IQueryBuffer.Aggregate => this.aggregate;
         ElasticArray IQueryBuffer.Slots => this.slots;
-        ElasticArray IQueryBuffer.Aggregates => this.values;
 
-        private readonly AggregateBuffer aggregator;
+        private readonly AggregateBuffer aggregate;
         private readonly ElasticArray slots = new ElasticArray();
-        private readonly ElasticArray values = new ElasticArray();
         private readonly Func<IDataReader, BufferWriter> writerFactory;
 
         public QueryBuffer(ISchemaStore schemas, QueryType queryType)
         {
             this.Schema = schemas?.GetSchema(typeof(IList<TItem>)) ?? throw new ArgumentNullException(nameof(schemas));
             this.QueryType = queryType;
-            this.aggregator = new AggregateBuffer(this.Schema);
+            this.aggregate = new AggregateBuffer(this.Schema);
             this.writerFactory = this.GetWriterFactory();
         }
 
@@ -59,7 +57,7 @@ namespace Jerrycurl.Data.Queries
 
         public TItem ToAggregate()
         {
-            QueryCacheKey<AggregateValue> cacheKey = this.aggregator.ToCacheKey();
+            QueryCacheKey<AggregateName> cacheKey = this.aggregate.ToCacheKey();
             AggregateReader<TItem> reader = QueryCache<TItem>.GetAggregateReader(cacheKey);
 
             return reader(this);

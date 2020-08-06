@@ -17,7 +17,7 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
             this.Schema = schema ?? throw new ArgumentNullException(nameof(schema));
         }
 
-        public EnumerateTree Parse(IEnumerable<ColumnValue> values)
+        public EnumerateTree Parse(IEnumerable<ColumnName> values)
         {
             NodeTree nodeTree = NodeParser.Parse(this.Schema, values);
             Node itemNode = nodeTree.Items.FirstOrDefault(n => n.Depth == 1);
@@ -29,7 +29,7 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
             };
         }
 
-        private NodeBinder GetReader(Node node, IEnumerable<ColumnValue> values)
+        private NodeBinder GetReader(Node node, IEnumerable<ColumnName> values)
         {
             ColumnBinder columnBinder = BindingHelper.FindValue(node, values);
 

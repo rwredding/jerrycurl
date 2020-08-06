@@ -7,6 +7,7 @@ using HashCode = Jerrycurl.Diagnostics.HashCode;
 
 namespace Jerrycurl.Data
 {
+    [Obsolete("deprecated in 1.1")]
     public sealed class TableIdentity : IEquatable<TableIdentity>
     {
         public IReadOnlyList<ColumnIdentity> Columns { get; }
