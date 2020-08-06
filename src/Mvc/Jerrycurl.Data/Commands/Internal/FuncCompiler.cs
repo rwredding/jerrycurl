@@ -77,7 +77,7 @@ namespace Jerrycurl.Data.Commands.Internal
             BindingColumnInfo bindingInfo = new BindingColumnInfo()
             {
                 Metadata = this.attributes[index].GetMetadata<IBindingMetadata>(),
-                Column = this.columns[index],
+                Column = new ColumnInfo(this.columns[index].Name, this.columns[index].Type, this.columns[index].TypeName, this.columns[index].Index),
             };
 
             MethodInfo readMethod = bindingInfo.Metadata?.Value?.Read?.Invoke(bindingInfo);

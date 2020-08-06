@@ -1,5 +1,6 @@
-﻿using Jerrycurl.Data.Queries.Internal.V11;
-using Jerrycurl.Data.Queries.Internal.V11.Factories;
+﻿using Jerrycurl.Data.Queries.Internal;
+using Jerrycurl.Data.Queries.Internal.Caching;
+using Jerrycurl.Data.Queries.Internal.Compilation;
 using Jerrycurl.Relations.Metadata;
 using System;
 using System.Collections.Generic;

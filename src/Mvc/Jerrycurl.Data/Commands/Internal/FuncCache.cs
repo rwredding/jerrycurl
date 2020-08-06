@@ -50,7 +50,7 @@ namespace Jerrycurl.Data.Commands.Internal
                 {
                     BindingColumnInfo columnInfo = new BindingColumnInfo()
                     {
-                        Column = column,
+                        Column = new ColumnInfo(column.Name, column.Type, column.TypeName, column.Index),
                         CanBeNull = true,
                         Metadata = binding,
                     };
