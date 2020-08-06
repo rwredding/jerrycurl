@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
 
 namespace Jerrycurl.Data.Queries.Internal.V11.Binding
 {
@@ -6,6 +7,7 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Binding
     {
         public bool CanBeDbNull { get; set; }
         public ParameterExpression IsDbNull { get; set; }
-        public ParameterExpression Value { get; set; }
+        public ParameterExpression Variable { get; set; }
+        public Type KeyType { get; set; }
     }
 }

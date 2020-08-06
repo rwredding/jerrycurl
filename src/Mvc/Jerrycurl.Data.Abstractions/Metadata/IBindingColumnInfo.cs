@@ -2,7 +2,7 @@
 {
     public interface IBindingColumnInfo
     {
-        ColumnIdentity Column { get; }
+        ColumnInfo Column { get; }
         IBindingMetadata Metadata { get; }
         bool CanBeNull { get; }
     }

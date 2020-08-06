@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Queries.Internal.V11.Binding;
+using Jerrycurl.Data.Queries.Internal.V11.Caching;
 using Jerrycurl.Relations.Metadata;
 
 namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
@@ -15,49 +17,35 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
             this.Schema = schema ?? throw new ArgumentNullException(nameof(schema));
         }
 
-        public EnumerateTree Parse(ListIdentity identity)
+        public EnumerateTree Parse(IEnumerable<ColumnValue> values)
         {
-            NodeParser nodeParser = new NodeParser(this.Schema);
-            NodeTree nodeTree = nodeParser.Parse(identity.Columns.Select(c => new MetadataIdentity(this.Schema, c.Name)));
+            NodeTree nodeTree = NodeParser.Parse(this.Schema, values);
             Node itemNode = nodeTree.Items.FirstOrDefault(n => n.Depth == 1);
 
             return new EnumerateTree()
             {
                 Schema = this.Schema,
-                Item = this.GetReader(itemNode, identity),
+                Item = this.GetReader(itemNode, values),
             };
         }
 
-        private NodeBinder GetReader(Node node, ListIdentity identity)
+        private NodeBinder GetReader(Node node, IEnumerable<ColumnValue> values)
         {
-            DataBinder dataBinder = NodeHelper.FindData(node, identity);
+            ColumnBinder columnBinder = BindingHelper.FindValue(node, values);
 
-            if (dataBinder != null)
-                return dataBinder;
+            if (columnBinder != null)
+                return columnBinder;
 
-            NewBinder reader = new NewBinder()
+            NewBinder newBinder = new NewBinder()
             {
                 Metadata = node.Metadata,
-                Properties = node.Properties.Select(n => this.GetReader(n, identity)).ToList(),
+                Properties = node.Properties.Select(n => this.GetReader(n, values)).ToList(),
+                IsDynamic = node.HasFlag(NodeFlags.Dynamic),
             };
 
-            this.AddPrimaryKey(reader);
+            BindingHelper.AddPrimaryKey(newBinder);
 
-            return reader;
-        }
-
-        private void AddPrimaryKey(NewBinder binder)
-        {
-            IReferenceKey primaryKey = binder.Metadata.Identity.GetMetadata<IReferenceMetadata>()?.Keys.FirstOrDefault(k => k.IsPrimaryKey);
-            KeyBinder key = NodeHelper.FindKey(binder, primaryKey);
-
-            if (key != null)
-            {
-                binder.PrimaryKey = key;
-
-                foreach (ValueBinder value in key.Values)
-                    value.CanBeDbNull = false;
-            }
+            return newBinder;
         }
     }
 }

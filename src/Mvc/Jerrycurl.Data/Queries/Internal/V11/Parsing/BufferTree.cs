@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Jerrycurl.Data.Queries.Internal.V11.Binding;
+using Jerrycurl.Data.Queries.Internal.V11.Caching;
 using Jerrycurl.Relations.Metadata;
 
 namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
@@ -12,5 +13,6 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
         public IList<AggregateWriter> Aggregates { get; } = new List<AggregateWriter>();
         public IList<ListWriter> Lists { get; } = new List<ListWriter>();
         public IList<HelperWriter> Helpers { get; } = new List<HelperWriter>();
+        public IList<AggregateValue> Xs { get; set; } = new List<AggregateValue>();
     }
 }

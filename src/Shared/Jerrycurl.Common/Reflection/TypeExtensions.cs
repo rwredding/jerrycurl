@@ -35,6 +35,13 @@ namespace Jerrycurl.Reflection
             return false;
         }
 
+        public static bool IsNullable(this Type type, out Type underlyingType)
+        {
+            underlyingType = Nullable.GetUnderlyingType(type);
+
+            return (underlyingType != null);
+        }
+
         public static bool HasParameters(this MethodInfo methodInfo, params Type[] parameterTypes)
         {
             return methodInfo.GetParameters().Select(pi => pi.ParameterType).SequenceEqual(parameterTypes);
@@ -58,6 +65,9 @@ namespace Jerrycurl.Reflection
             Type[] generics = type.GetGenericArguments();
 
             string typeName = type.Name;
+
+            if (type.IsNullable(out Type underlyingType))
+                return underlyingType.Name + "?";
 
             int pingdex;
             if ((pingdex = typeName.LastIndexOf('`')) > -1)

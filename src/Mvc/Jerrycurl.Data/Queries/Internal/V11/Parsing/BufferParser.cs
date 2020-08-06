@@ -5,6 +5,8 @@ using System.Linq.Expressions;
 using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Metadata.Annotations;
 using Jerrycurl.Data.Queries.Internal.V11.Binding;
+using Jerrycurl.Data.Queries.Internal.V11.Caching;
+using Jerrycurl.Data.Queries.Internal.V11.Extensions;
 using Jerrycurl.Relations.Metadata;
 
 namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
@@ -22,10 +24,9 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
             this.Type = queryType;
         }
 
-        public BufferTree Parse(ListIdentity identity)
+        public BufferTree Parse(IEnumerable<ColumnValue> values)
         {
-            NodeParser nodeParser = new NodeParser(this.Schema);
-            NodeTree nodeTree = nodeParser.Parse(identity.Columns.Select(c => new MetadataIdentity(this.Schema, c.Name)));
+            NodeTree nodeTree = NodeParser.Parse(this.Schema, values);
             BufferTree tree = new BufferTree()
             {
                 QueryType = this.Type,
@@ -34,63 +35,62 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
 
             this.MoveManyToOneNodes(nodeTree);
 
-            this.AddWriters(tree, nodeTree, identity);
-            this.AddAggregates(tree, nodeTree, identity);
+            this.AddWriters(tree, nodeTree, values);
+            this.AddAggregates(tree, nodeTree, values);
 
             return tree;
         }
 
         private void MoveManyToOneNodes(NodeTree nodeTree)
         {
-            foreach (Node node in nodeTree.Nodes)
+            foreach (Node node in nodeTree.Nodes.Where(n => this.HasOneAttribute(n.Metadata)))
             {
-                if (node.Metadata.Annotations.OfType<OneAttribute>().Any())
-                {
-                    Node parentNode = nodeTree.FindNode(node.Metadata.Parent);
+                Node parentNode = nodeTree.FindNode(node.Metadata.Parent);
 
-                    parentNode.Properties.Remove(node);
+                parentNode.Properties.Remove(node);
 
-                    nodeTree.Items.Add(node);
-                }
+                nodeTree.Items.Add(node);
             }
         }
 
-        private void AddAggregates(BufferTree tree, NodeTree nodeTree, ListIdentity identity)
+        private bool HasOneAttribute(IBindingMetadata metadata) => metadata.Annotations.OfType<OneAttribute>().Any();
+        private bool HasOneAttribute(IReference reference) => reference.Metadata.Annotations.OfType<OneAttribute>().Any();
+
+        private void AddAggregates(BufferTree tree, NodeTree nodeTree, IEnumerable<ColumnValue> values)
         {
             if (this.Type != QueryType.Aggregate)
                 return;
 
             foreach (Node node in nodeTree.Nodes.Where(n => n.Depth == 1))
             {
-                DataBinder dataBinder = NodeHelper.FindData(node, identity);
+                ColumnBinder binder = BindingHelper.FindValue(node, values);
 
-                if (dataBinder != null)
+                if (binder != null)
                 {
                     AggregateWriter writer = new AggregateWriter()
                     {
                         BufferIndex = this.Indexer.GetAggregateIndex(node.Identity),
-                        Data = dataBinder,
+                        Data = binder,
                     };
 
+                    AggregateValue x = new AggregateValue(binder.Metadata.Identity.Name, isPrincipal: false);
+
                     tree.Aggregates.Add(writer);
+                    tree.Xs.Add(x);
                 }
             }
         }
 
-        private void AddWriters(BufferTree tree, NodeTree nodeTree, ListIdentity identity)
+        private void AddWriters(BufferTree tree, NodeTree nodeTree, IEnumerable<ColumnValue> values)
         {
-            IEnumerable<Node> itemNodes = nodeTree.Items;
-
-            if (this.Type == QueryType.Aggregate)
-                itemNodes = itemNodes.Where(n => n.Depth != 1);
+            IEnumerable<Node> itemNodes = this.Type == QueryType.List ? nodeTree.Items : nodeTree.Items.Where(n => n.Depth > 1);
 
             foreach (Node itemNode in itemNodes)
             {
                 ListWriter writer = new ListWriter()
                 {
                     Metadata = itemNode.Metadata.Parent,
-                    Item = this.GetBinder(tree, itemNode, identity),
-                    BufferIndex = 0,
+                    Item = this.GetBinder(tree, itemNode, values),
                 };
 
                 if (writer.Item is NewBinder newBinder)
@@ -99,21 +99,30 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
                     newBinder.PrimaryKey = null;
                 }
 
-                if (this.Type == QueryType.Aggregate && itemNode.Depth > 2)
+                if (!this.IsPrincipalList(itemNode.Metadata))
                     this.AddChildKey(writer);
-                else if (this.Type == QueryType.List && itemNode.Depth > 1)
-                    this.AddChildKey(writer);
+                else if (this.Type == QueryType.Aggregate)
+                    tree.Xs.Add(new AggregateValue(writer.Metadata.Identity.Name, isPrincipal: true));
 
                 writer.Slot = this.AddSlot(tree, writer.Metadata, writer.JoinKey);
 
                 if (writer.JoinKey != null)
-                    writer.BufferIndex = this.Indexer.GetListIndex(writer.Metadata.Identity, writer.JoinKey.Metadata.Key, writer.JoinKey.Metadata.Other.Key);
+                {
+                    writer.BufferIndex = this.Indexer.GetChildIndex(writer.JoinKey.Metadata);
+                    writer.IsOneToMany = this.HasOneAttribute(writer.JoinKey.Metadata);
+                }
+                    
 
                 tree.Lists.Add(writer);
             }
         }
 
-        private Type GetListType(IBindingMetadata metadata) => metadata.Composition.Construct.Type;
+        private bool IsPrincipalList(IBindingMetadata metadata)
+        {
+            bool isPrincipal = metadata.Relation.Depth == (this.Type == QueryType.Aggregate ? 2 : 1);
+
+            return (isPrincipal && !this.HasOneAttribute(metadata));
+        }
 
         private ParameterExpression AddSlot(BufferTree tree, IBindingMetadata metadata, KeyBinder joinKey)
         {
@@ -121,14 +130,12 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
             Type variableType;
             if (joinKey == null)
             {
-                slotIndex = metadata.Relation.Depth == 0 ? this.Indexer.GetResultIndex() : this.Indexer.GetSlotIndex(metadata.Identity);
-                variableType = this.GetListType(metadata);
+                slotIndex = metadata.Relation.Depth == 0 ? this.Indexer.GetResultIndex() : this.Indexer.GetListIndex(metadata.Identity);
+                variableType = metadata.Composition.Construct.Type;
             }
             else
             {
-                IReferenceKey parentKey = joinKey.Metadata.HasFlag(ReferenceFlags.Parent) ? joinKey.Metadata.Key : joinKey.Metadata.Other.Key;
-
-                slotIndex = this.Indexer.GetSlotIndex(metadata.Identity, parentKey);
+                slotIndex = this.Indexer.GetParentIndex(joinKey.Metadata);
                 variableType = this.GetDictionaryType(joinKey);
             }
 
@@ -139,17 +146,21 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
                 slotWriter = new SlotWriter()
                 {
                     BufferIndex = slotIndex,
-                    Variable = Expression.Variable(variableType),
+                    Variable = BindingHelper.Variable(variableType, metadata.Identity),
                     Metadata = metadata,
+                    KeyType = joinKey?.KeyType,
                 };
 
                 tree.Slots.Add(slotWriter);
             }
 
+            if (joinKey != null)
+                joinKey.Slot = slotWriter.Variable;
+
             return slotWriter.Variable;
         }
 
-        private void AddHelper(BufferTree tree, DataBinder binder)
+        private void AddHelper(BufferTree tree, ColumnBinder binder)
         {
             if (binder.Metadata.Helper != null)
             {
@@ -157,7 +168,7 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
                 {
                     Object = binder.Metadata.Helper.Object,
                     BufferIndex = tree.Helpers.Count,
-                    Variable = Expression.Variable(binder.Metadata.Helper.Type),
+                    Variable = BindingHelper.Variable(binder.Metadata.Helper.Type, binder),
                 };
 
                 binder.Helper = writer.Variable;
@@ -166,9 +177,9 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
             }
         }
 
-        private NodeBinder GetBinder(BufferTree tree, Node node, ListIdentity identity)
+        private NodeBinder GetBinder(BufferTree tree, Node node, IEnumerable<ColumnIdentity> valueSpan)
         {
-            DataBinder dataBinder = NodeHelper.FindData(node, identity);
+            ColumnBinder dataBinder = BindingHelper.FindData(node, valueSpan);
 
             if (dataBinder != null)
             {
@@ -180,115 +191,84 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
             NewBinder binder = new NewBinder()
             {
                 Metadata = node.Metadata,
-                Properties = node.Properties.Select(n => this.GetBinder(tree, n, identity)).ToList(),
+                Properties = node.Properties.Select(n => this.GetBinder(tree, n, valueSpan)).ToList(),
                 JoinKeys = new List<KeyBinder>(),
             };
 
-            this.AddPrimaryKey(binder);
+            BindingHelper.AddPrimaryKey(binder);
 
-            if (this.Type == QueryType.List && node.Depth > 1)
-                this.AddParentKeys(tree, binder);
-            else if (this.Type == QueryType.Aggregate && node.Depth > 2)
-                this.AddParentKeys(tree, binder);
+            this.AddParentKeys(tree, binder);
 
             return binder;
-        }
-
-        private void AddPrimaryKey(NewBinder binder)
-        {
-            IReferenceKey primaryKey = binder.Metadata.Identity.GetMetadata<IReferenceMetadata>()?.Keys.FirstOrDefault(k => k.IsPrimaryKey);
-            KeyBinder key = NodeHelper.FindKey(binder, primaryKey);
-
-            if (key != null)
-            {
-                binder.PrimaryKey = key;
-
-                foreach (ValueBinder valueBinder in key.Values)
-                    valueBinder.CanBeDbNull = false;
-            }
         }
 
         private void InitializeKeyVariables(KeyBinder key)
         {
             foreach (ValueBinder value in key.Values)
             {
-                value.IsDbNull ??= Expression.Variable(typeof(bool));
-                value.Value ??= Expression.Variable(value.Metadata.Type);
+                value.IsDbNull ??= BindingHelper.Variable(typeof(bool), value);
+                value.Variable ??= BindingHelper.Variable(value.KeyType, value);
             }
         }
+
         private void AddParentKeys(BufferTree tree, NewBinder binder)
         {
             IReferenceMetadata metadata = binder.Metadata.Identity.GetMetadata<IReferenceMetadata>();
 
-            foreach (IReference reference in metadata.References.Where(r => r.HasFlag(ReferenceFlags.Parent) && r.Other.HasFlag(ReferenceFlags.Many)))
+            foreach (IReference reference in metadata.References.Where(this.IsValidReference))
             {
-                KeyBinder key = NodeHelper.FindKey(binder, reference.Key);
+                KeyBinder key = BindingHelper.FindParentKey(binder, reference);
 
                 if (key != null)
                 {
-                    IBindingMetadata joinMetadata = reference.Other.Metadata.Identity.GetMetadata<IBindingMetadata>().Parent;
+                    IBindingMetadata childMetadata = reference.Other.Metadata.To<IBindingMetadata>();
 
                     JoinBinder joinBinder = new JoinBinder()
                     {
-                        Metadata = joinMetadata,
-                        Array = Expression.Variable(typeof(ElasticArray)),
-                        BufferIndex = this.Indexer.GetListIndex(joinMetadata.Identity, reference.Key, reference.Other.Key),
+                        Metadata = childMetadata,
+                        Array = key.Array ??= BindingHelper.Variable(typeof(ElasticArray), childMetadata.Identity),
+                        ArrayIndex = this.Indexer.GetChildIndex(reference),
+                        IsManyToOne = this.HasOneAttribute(childMetadata),
                     };
+
+                    if (!joinBinder.IsManyToOne)
+                        joinBinder.Metadata = joinBinder.Metadata.Parent;
 
                     binder.JoinKeys.Add(key);
                     binder.Properties.Add(joinBinder);
 
                     this.InitializeKeyVariables(key);
-                    this.AddSlot(tree, joinMetadata, key);
+                    this.AddSlot(tree, childMetadata, key);
                 }
             }
         }
 
         private void AddChildKey(ListWriter writer)
         {
-            IReferenceMetadata metadata = writer.Item.Metadata.Identity.GetMetadata<IReferenceMetadata>();
-            IReferenceKey childKey = metadata.References.FirstOrDefault(r => r.HasFlag(ReferenceFlags.Child | ReferenceFlags.Many))?.Key;
-
             if (writer.Item is NewBinder binder)
             {
-                writer.JoinKey = NodeHelper.FindKey(binder, childKey);
+                IReferenceMetadata metadata = writer.Item.Metadata.To<IReferenceMetadata>();
+                IReference reference = metadata.References.FirstOrDefault(this.IsValidReference);
+
+                writer.JoinKey = BindingHelper.FindChildKey(binder, reference);
 
                 if (writer.JoinKey != null)
                 {
                     this.InitializeKeyVariables(writer.JoinKey);
 
-                    writer.JoinKey.Variable = Expression.Variable(this.GetCompositeKeyType(writer.JoinKey.Values.Select(v => v.Metadata.Type)));
+                    writer.JoinKey.Array ??= BindingHelper.Variable(typeof(ElasticArray), writer.JoinKey.Metadata.Metadata.Identity);
                 }
             }
-                
+        }
+
+        private bool IsValidReference(IReference reference)
+        {
+            IReference childReference = reference.HasFlag(ReferenceFlags.Child) ? reference : reference.Other;
+
+            return (childReference.HasFlag(ReferenceFlags.Many) || this.HasOneAttribute(childReference));
         }
 
         private Type GetDictionaryType(KeyBinder key)
-            => this.GetDictionaryType(key.Values.Select(v => v.Metadata.Type));
-
-        private Type GetDictionaryType(IEnumerable<Type> keyType)
-            => typeof(Dictionary<,>).MakeGenericType(this.GetCompositeKeyType(keyType), typeof(ElasticArray));
-
-        private Type GetCompositeKeyType(IEnumerable<Type> keyType)
-        {
-            Type[] typeArray = keyType.ToArray();
-
-            if (typeArray.Length == 0)
-                return null;
-            else if (typeArray.Length == 1)
-                return typeof(CompositeKey<>).MakeGenericType(typeArray[0]);
-            else if (typeArray.Length == 2)
-                return typeof(CompositeKey<,>).MakeGenericType(typeArray[0], typeArray[1]);
-            else if (typeArray.Length == 3)
-                return typeof(CompositeKey<,,>).MakeGenericType(typeArray[0], typeArray[1], typeArray[2]);
-            else if (typeArray.Length == 4)
-                return typeof(CompositeKey<,,,>).MakeGenericType(typeArray[0], typeArray[1], typeArray[2], typeArray[3]);
-            else
-            {
-                Type restType = this.GetCompositeKeyType(keyType.Skip(4));
-
-                return typeof(CompositeKey<,,,,>).MakeGenericType(typeArray[0], typeArray[1], typeArray[2], typeArray[3], restType);
-            }
-        }
+            => typeof(Dictionary<,>).MakeGenericType(key.KeyType, typeof(ElasticArray));
     }
 }

@@ -24,7 +24,7 @@ namespace Jerrycurl.Diagnostics
                 this.equals = comparer.Equals(left, right);
         }
 
-        public void AddCollection<T>(IReadOnlyCollection<T> left, IReadOnlyCollection<T> right)
+        public void AddRange<T>(IReadOnlyCollection<T> left, IReadOnlyCollection<T> right)
         {
             if (this.equals ?? true)
             {
@@ -52,7 +52,7 @@ namespace Jerrycurl.Diagnostics
             else if (left == null)
                 return true;
 
-            foreach (var (l, r) in left.ZipOuter(right))
+            foreach (var (l, r) in left.ZipAll(right))
             {
                 if (l == null ^ r == null)
                     return false;

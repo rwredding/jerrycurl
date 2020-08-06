@@ -1,45 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 using Jerrycurl.Data.Metadata;
+using Jerrycurl.Data.Queries.Internal.V11.Caching;
 using Jerrycurl.Relations.Metadata;
 
 namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
 {
-    internal class NodeParser
+    internal static class NodeParser
     {
-        public ISchema Schema { get; }
-
-        public NodeParser(ISchema schema)
-        {
-            this.Schema = schema ?? throw new ArgumentNullException(nameof(schema));
-        }
-
-        public NodeTree Parse(IEnumerable<MetadataIdentity> metadata)
+        public static NodeTree Parse(ISchema schema, IEnumerable<ICacheValue> values)
         {
             NodeTree tree = new NodeTree();
 
-            foreach (MetadataIdentity identity in metadata)
-                this.AddNode(tree, identity);
+            foreach (ICacheValue value in values)
+                AddNode(tree, new MetadataIdentity(schema, value.Name));
 
             return tree;
         }
 
-        private void AddNode(NodeTree tree, MetadataIdentity identity)
+        private static void AddNode(NodeTree tree, MetadataIdentity identity)
         {
-            IBindingMetadata metadata = identity.GetMetadata<IBindingMetadata>() ?? this.FindDynamicMetadata(identity);
+            IBindingMetadata metadata = identity.GetMetadata<IBindingMetadata>() ?? FindDynamicMetadata(identity);
 
-            if (this.IsValidMetadata(metadata))
+            if (IsValidMetadata(metadata))
             {
                 if (metadata.HasFlag(BindingMetadataFlags.Dynamic))
-                    this.AddDynamicNode(tree, identity, metadata);
+                    AddDynamicNode(tree, identity, metadata);
                 else
-                    this.AddStaticNode(tree, metadata);
+                    AddStaticNode(tree, metadata);
             }
         }
 
-        private Node AddDynamicNode(NodeTree tree, MetadataIdentity identity, IBindingMetadata metadata)
+        private static Node AddDynamicNode(NodeTree tree, MetadataIdentity identity, IBindingMetadata metadata)
         {
-            this.AddStaticNode(tree, metadata);
+            AddStaticNode(tree, metadata);
 
             Node thisNode = tree.FindNode(identity);
             MetadataIdentity parentIdentity = identity.Pop();
@@ -48,7 +42,7 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
                 return thisNode;
             else if (parentIdentity != null)
             {
-                Node parentNode = tree.FindNode(parentIdentity) ?? this.AddDynamicNode(tree, parentIdentity, metadata);
+                Node parentNode = tree.FindNode(parentIdentity) ?? AddDynamicNode(tree, parentIdentity, metadata);
 
                 if (parentNode != null)
                 {
@@ -65,7 +59,7 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
             return thisNode;
         }
 
-        private Node AddStaticNode(NodeTree tree, IBindingMetadata metadata)
+        private static Node AddStaticNode(NodeTree tree, IBindingMetadata metadata)
         {
             Node thisNode = tree.FindNode(metadata);
 
@@ -89,7 +83,7 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
             }
             else
             {
-                Node parentNode = tree.FindNode(metadata.Parent) ?? this.AddStaticNode(tree, metadata.Parent);
+                Node parentNode = tree.FindNode(metadata.Parent) ?? AddStaticNode(tree, metadata.Parent);
 
                 if (parentNode != null)
                 {
@@ -106,9 +100,8 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
             return thisNode;
         }
 
-        private bool IsValidMetadata(IBindingMetadata metadata) => (metadata != null && !metadata.MemberOf.HasFlag(BindingMetadataFlags.Model));
-
-        private IBindingMetadata FindDynamicMetadata(MetadataIdentity identity)
+        private static bool IsValidMetadata(IBindingMetadata metadata) => (metadata != null && !metadata.MemberOf.HasFlag(BindingMetadataFlags.Model));
+        private static IBindingMetadata FindDynamicMetadata(MetadataIdentity identity)
         {
             IBindingMetadata metadata = identity.GetMetadata<IBindingMetadata>();
 

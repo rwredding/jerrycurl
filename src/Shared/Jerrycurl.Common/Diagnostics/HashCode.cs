@@ -317,13 +317,13 @@ namespace Jerrycurl.Diagnostics
             Add(comparer != null ? comparer.GetHashCode(value) : (value?.GetHashCode() ?? 0));
         }
 
-        public void Add<T>(IEnumerable<T> values, IEqualityComparer<T> comparer)
+        public void AddRange<T>(IEnumerable<T> values, IEqualityComparer<T> comparer)
         {
             foreach (T value in values)
                 this.Add(value, comparer);
         }
 
-        public void Add<T>(IEnumerable<T> values)
+        public void AddRange<T>(IEnumerable<T> values)
         {
             foreach (T value in values)
                 this.Add(value);

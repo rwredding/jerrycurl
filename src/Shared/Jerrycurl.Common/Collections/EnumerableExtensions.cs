@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,13 +15,16 @@ namespace Jerrycurl.Collections
         public static HashSet<T> ToSet<T>(this IEnumerable<T> source) => new HashSet<T>(source);
         public static HashSet<T> ToSet<T>(this IEnumerable<T> source, IEqualityComparer<T> comparer) => new HashSet<T>(source, comparer);
 
+        public static T FirstOfType<T>(this IEnumerable source) => source.OfType<T>().FirstOrDefault();
+        public static T FirstOfType<T>(this IEnumerable source, Func<T, bool> predicate) => source.OfType<T>().FirstOrDefault(predicate);
+
 #if !NETCOREAPP3_0
-        public static IEnumerable<(TFirst l, TSecond r)> Zip<TFirst, TSecond>(this IEnumerable<TFirst> source, IEnumerable<TSecond> second) => source.Zip(second, (l, r) => (l, r));
+        public static IEnumerable<(TFirst First, TSecond Second)> Zip<TFirst, TSecond>(this IEnumerable<TFirst> first, IEnumerable<TSecond> second) => first.Zip(second, (First, Second) => (First, Second));
 #endif
-        public static IEnumerable<(TFirst l, TSecond r)> ZipOuter<TFirst, TSecond>(this IEnumerable<TFirst> source, IEnumerable<TSecond> second)
+        public static IEnumerable<(TFirst First, TSecond Second)> ZipAll<TFirst, TSecond>(this IEnumerable<TFirst> first, IEnumerable<TSecond> second)
         {
 #pragma warning disable IDE0063
-            using (IEnumerator<TFirst> e1 = source.GetEnumerator())
+            using (IEnumerator<TFirst> e1 = first.GetEnumerator())
             {
                 using (IEnumerator<TSecond> e2 = second.GetEnumerator())
                 {

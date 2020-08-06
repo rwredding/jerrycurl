@@ -19,7 +19,7 @@ namespace Jerrycurl.Data.Commands.Internal
             if (heading == null)
                 throw new ArgumentNullException(nameof(heading));
 
-            this.Columns = metadata.Zip(heading.Columns).Select(t => new FuncColumnKey(t.l, t.r)).ToArray();
+            this.Columns = metadata.Zip(heading.Columns).Select(t => new FuncColumnKey(t.First, t.Second)).ToArray();
         }
 
         public bool Equals(FuncTableKey other) => Equality.CombineAll(this.Columns, other?.Columns);

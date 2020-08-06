@@ -7,5 +7,6 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Binding
         public KeyBinder PrimaryKey { get; set; }
         public IList<KeyBinder> JoinKeys { get; set; } = new List<KeyBinder>();
         public IList<NodeBinder> Properties { get; set; } = new List<NodeBinder>();
+        public bool IsDynamic { get; set; }
     }
 }

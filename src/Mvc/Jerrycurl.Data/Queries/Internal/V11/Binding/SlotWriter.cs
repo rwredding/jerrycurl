@@ -8,7 +8,7 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Binding
     internal class SlotWriter
     {
         public int BufferIndex { get; set; }
-        public IList<Type> Key { get; set; }
+        public Type KeyType { get; set; }
         public IBindingMetadata Metadata { get; set; }
         public ParameterExpression Variable { get; set; }
     }

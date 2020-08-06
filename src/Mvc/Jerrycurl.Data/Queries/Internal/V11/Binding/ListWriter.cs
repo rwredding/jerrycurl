@@ -9,6 +9,7 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Binding
     {
         public ParameterExpression Slot { get; set; }
         public int BufferIndex { get; set; }
+        public bool IsOneToMany { get; set; }
         public NodeBinder Item { get; set; }
         public KeyBinder PrimaryKey { get; set; }
         public KeyBinder JoinKey { get; set; }

@@ -499,7 +499,7 @@ namespace Jerrycurl.Data.Queries.Internal
         {
             IEnumerable<Expression> keyValues = keyNode.Value.Zip(keyNode.Type).Select(t =>
             {
-                Expression value = this.GetValueExpression(t.l, t.r, false);
+                Expression value = this.GetValueExpression(t.First, t.Second, false);
 
                 return this.GetTryCatchKeyExpression(keyNode, value);
             });

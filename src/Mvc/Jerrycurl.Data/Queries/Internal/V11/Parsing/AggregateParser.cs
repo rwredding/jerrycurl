@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Queries.Internal.V11.Binding;
+using Jerrycurl.Data.Queries.Internal.V11.Caching;
 using Jerrycurl.Relations.Metadata;
 
 namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
@@ -18,58 +19,56 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Parsers
             this.Indexer = indexer ?? throw new ArgumentException(nameof(indexer));
         }
 
-        public AggregateTree Parse(AggregateIdentity identity)
+        public AggregateTree Parse(IEnumerable<AggregateValue> values)
         {
-            NodeParser nodeParser = new NodeParser(this.Schema);
-            HashSet<MetadataIdentity> valueMap = new HashSet<MetadataIdentity>(identity);
-            NodeTree nodeTree = nodeParser.Parse(valueMap);
+            NodeTree nodeTree = NodeParser.Parse(this.Schema, values);
 
             Node itemNode = nodeTree.Items.FirstOrDefault(n => n.Depth == 1);
 
             return new AggregateTree()
             {
                 Schema = this.Schema,
-                Aggregate = this.GetBinder(itemNode, valueMap),
+                Aggregate = this.GetBinder(itemNode, values),
             };
         }
 
-        private NodeBinder GetBinder(Node node, HashSet<MetadataIdentity> valueMap)
+        private AggregateBinder FindValue(Node node, IEnumerable<AggregateValue> values)
         {
-            if (valueMap.Contains(node.Identity))
+            foreach (AggregateValue value in values)
             {
-                return new AggregateBinder()
-                {
-                    Metadata = node.Metadata,
-                    CanBeDbNull = true,
-                    BufferIndex = this.Indexer.GetAggregateIndex(node.Identity),
-                };
-            }
-            else
-            {
-                NewBinder binder = new NewBinder()
-                {
-                    Metadata = node.Metadata,
-                    Properties = node.Properties.Select(n => this.GetBinder(n, valueMap)).ToList(),
-                };
+                MetadataIdentity metadata = new MetadataIdentity(node.Metadata.Identity.Schema, value.Name);
 
-                this.AddPrimaryKey(binder);
-
-                return binder;
+                if (metadata.Equals(node.Identity))
+                {
+                    return new AggregateBinder()
+                    {
+                        Metadata = node.Metadata,
+                        BufferIndex = value.IsPrincipal ? this.Indexer.GetListIndex(metadata) : this.Indexer.GetAggregateIndex(node.Identity),
+                        CanBeDbNull = true,
+                        IsPrincipal = value.IsPrincipal,
+                    };
+                }
             }
+
+            return null;
         }
 
-        private void AddPrimaryKey(NewBinder binder)
+        private NodeBinder GetBinder(Node node, IEnumerable<AggregateValue> valueSpan)
         {
-            IReferenceKey primaryKey = binder.Metadata.Identity.GetMetadata<IReferenceMetadata>()?.Keys.FirstOrDefault(k => k.IsPrimaryKey);
-            KeyBinder key = NodeHelper.FindKey(binder, primaryKey);
+            AggregateBinder binder = this.FindValue(node, valueSpan);
 
-            if (key != null)
+            if (binder != null)
+                return binder;
+
+            NewBinder newBinder = new NewBinder()
             {
-                binder.PrimaryKey = key;
+                Metadata = node.Metadata,
+                Properties = node.Properties.Select(n => this.GetBinder(n, valueSpan)).ToList(),
+            };
 
-                foreach (ValueBinder value in key.Values)
-                    value.CanBeDbNull = false;
-            }
+            BindingHelper.AddPrimaryKey(newBinder);
+
+            return newBinder;
         }
     }
 }

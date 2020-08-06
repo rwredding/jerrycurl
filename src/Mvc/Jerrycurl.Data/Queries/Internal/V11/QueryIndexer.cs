@@ -1,5 +1,6 @@
 ﻿using Jerrycurl.Collections;
 using Jerrycurl.Data.Metadata;
+using Jerrycurl.Data.Queries.Internal.V11.Extensions;
 using Jerrycurl.Diagnostics;
 using Jerrycurl.Relations.Metadata;
 using System;
@@ -13,8 +14,8 @@ namespace Jerrycurl.Data.Queries.Internal.V11
 {
     internal class QueryIndexer
     {
-        private readonly Dictionary<JoinKey, int> slotMap = new Dictionary<JoinKey, int>();
-        private readonly Dictionary<int, Dictionary<JoinKey, int>> listMap = new Dictionary<int, Dictionary<JoinKey, int>>();
+        private readonly Dictionary<JoinEntry, int> parentMap = new Dictionary<JoinEntry, int>();
+        private readonly Dictionary<int, Dictionary<JoinEntry, int>> childMap = new Dictionary<int, Dictionary<JoinEntry, int>>();
         private readonly Dictionary<MetadataIdentity, int> aggregateMap = new Dictionary<MetadataIdentity, int>();
         private readonly object state = new object();
 
@@ -25,72 +26,83 @@ namespace Jerrycurl.Data.Queries.Internal.V11
                 return this.aggregateMap.GetOrAdd(metadata, this.aggregateMap.Count);
         }
 
-        public int GetSlotIndex(MetadataIdentity metadata)
-            => this.GetSlotIndex(new JoinKey(metadata));
-
-        public int GetSlotIndex(MetadataIdentity metadata, IReferenceKey parentKey)
-            => this.GetSlotIndex(new JoinKey(metadata, parentKey));
-
-        public int GetListIndex(MetadataIdentity metadata, IReferenceKey parentKey, IReferenceKey childKey)
+        public int GetListIndex(MetadataIdentity metadata) => this.GetParentIndex(new JoinEntry(metadata));
+        public int GetParentIndex(IReference reference)
         {
+            IReference parentReference = reference.Find(ReferenceFlags.Parent);
+            JoinEntry joinKey = new JoinEntry(parentReference.Other.Metadata.Identity, parentReference.Key);
+
+            return this.GetParentIndex(joinKey);
+        }
+
+        public int GetChildIndex(IReference reference)
+        {
+            IReference childReference = reference.Find(ReferenceFlags.Child);
+            int parentIndex = this.GetParentIndex(reference);
+
             lock (this.state)
             {
-                int slotIndex = this.GetSlotIndex(metadata, parentKey);
-                Dictionary<JoinKey, int> innerMap = this.listMap.GetOrAdd(slotIndex);
+                Dictionary<JoinEntry, int> innerMap = this.childMap.GetOrAdd(parentIndex);
+                JoinEntry joinKey = new JoinEntry(childReference.Metadata.Identity, childReference.Other.Key, childReference.Key);
 
-                return innerMap.GetOrAdd(new JoinKey(metadata, parentKey, childKey), innerMap.Count);
+                return innerMap.GetOrAdd(joinKey, innerMap.Count);
             }
         }
 
-        private int GetSlotIndex(JoinKey key)
+
+        private int GetParentIndex(JoinEntry key)
         {
             lock (this.state)
-                return this.slotMap.GetOrAdd(key, this.slotMap.Count + 1);
+                return this.parentMap.GetOrAdd(key, this.parentMap.Count + 1);
         }
 
 
         #region " Key "
-        private class JoinKey : IEquatable<JoinKey>
+        private class JoinEntry : IEquatable<JoinEntry>
         {
             public MetadataIdentity Metadata { get; }
             public IReadOnlyList<MetadataIdentity> ParentKey { get; set; }
             public IReadOnlyList<MetadataIdentity> ChildKey { get; set; }
 
-            public JoinKey(MetadataIdentity metadata)
+            public JoinEntry(MetadataIdentity metadata)
             {
                 this.Metadata = metadata ?? throw new ArgumentNullException(nameof(metadata));
             }
 
-            public JoinKey(MetadataIdentity metadata, IReferenceKey parentKey)
+            public JoinEntry(MetadataIdentity metadata, IReferenceKey parentKey)
                 : this(metadata)
             {
                 this.ParentKey = parentKey.Properties.Select(m => m.Identity).ToList() ?? throw new ArgumentNullException(nameof(parentKey));
             }
 
-            public JoinKey(MetadataIdentity metadata, IReferenceKey parentKey, IReferenceKey childKey)
+            public JoinEntry(MetadataIdentity metadata, IReferenceKey parentKey, IReferenceKey childKey)
                 : this(metadata, parentKey)
             {
                 this.ChildKey = childKey?.Properties.Select(m => m.Identity).ToList() ?? throw new ArgumentNullException(nameof(childKey));
             }
 
-            public bool Equals(JoinKey other)
+            public bool Equals(JoinEntry other)
             {
                 Equality eq = new Equality();
 
                 eq.Add(this.Metadata, other?.Metadata);
-                eq.AddCollection(this.ParentKey, other?.ParentKey);
-                eq.AddCollection(this.ChildKey, other?.ChildKey);
+                eq.AddRange(this.ParentKey, other?.ParentKey);
+                eq.AddRange(this.ChildKey, other?.ChildKey);
 
                 return eq.ToEquals();
             }
-            public override bool Equals(object obj) => (obj is JoinKey other && this.Equals(other));
+            public override bool Equals(object obj) => (obj is JoinEntry other && this.Equals(other));
             public override int GetHashCode()
             {
                 HashCode hashCode = new HashCode();
 
                 hashCode.Add(this.Metadata);
-                hashCode.Add(this.ParentKey);
-                hashCode.Add(this.ChildKey);
+
+                if (this.ParentKey != null)
+                    hashCode.AddRange(this.ParentKey);
+
+                if (this.ChildKey != null)
+                    hashCode.AddRange(this.ChildKey);
 
                 return hashCode.ToHashCode();
             }

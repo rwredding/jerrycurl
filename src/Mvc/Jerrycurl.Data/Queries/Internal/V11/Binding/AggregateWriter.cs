@@ -6,6 +6,6 @@ namespace Jerrycurl.Data.Queries.Internal.V11.Binding
     internal class AggregateWriter
     {
         public int BufferIndex { get; set; }
-        public DataBinder Data { get; set; }
+        public ColumnBinder Data { get; set; }
     }
 }

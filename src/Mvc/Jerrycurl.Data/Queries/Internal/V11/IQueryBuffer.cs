@@ -2,7 +2,8 @@
 {
     internal interface IQueryBuffer
     {
-        public AggregateIdentity Aggregator { get; }
+        public AggregateBuffer Aggregator { get; }
+
         public ElasticArray Slots { get; }
         public ElasticArray Aggregates { get; }
     }

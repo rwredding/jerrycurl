@@ -9,8 +9,4 @@
 		<ProjectReference Include="..\Jerrycurl.Relations.Abstractions\Jerrycurl.Relations.Abstractions.csproj" />
 		<ProjectReference Include="..\Jerrycurl.Relations\Jerrycurl.Relations.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Queries\Internal\V11\Cache\" />
-	</ItemGroup>
 </Project>
