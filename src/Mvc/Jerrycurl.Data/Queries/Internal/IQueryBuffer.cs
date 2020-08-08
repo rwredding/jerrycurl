@@ -1,8 +1,11 @@
-﻿namespace Jerrycurl.Data.Queries.Internal
+﻿using Jerrycurl.Data.Sessions;
+
+namespace Jerrycurl.Data.Queries.Internal
 {
     internal interface IQueryBuffer
     {
         public AggregateBuffer Aggregate { get; }
         public ElasticArray Slots { get; }
+        public IOperation Read(QueryData queryData);
     }
 }

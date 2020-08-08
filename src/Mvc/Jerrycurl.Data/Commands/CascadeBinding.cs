@@ -3,12 +3,12 @@ using Jerrycurl.Relations;
 
 namespace Jerrycurl.Data.Commands
 {
-    public class FieldBinding : ICommandBinding
+    public class CascadeBinding : ICommandBinding
     {
         public IField Source { get; }
         public IField Target { get; }
 
-        public FieldBinding(IField source, IField target)
+        public CascadeBinding(IField source, IField target)
         {
             this.Source = source ?? throw new ArgumentNullException(nameof(source));
             this.Target = target ?? throw new ArgumentNullException(nameof(target));

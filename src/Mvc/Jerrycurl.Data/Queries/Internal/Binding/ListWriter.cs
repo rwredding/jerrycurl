@@ -14,5 +14,6 @@ namespace Jerrycurl.Data.Queries.Internal.Binding
         public KeyBinder PrimaryKey { get; set; }
         public KeyBinder JoinKey { get; set; }
         public IBindingMetadata Metadata { get; set; }
+        public int Priority { get; set; }
     }
 }

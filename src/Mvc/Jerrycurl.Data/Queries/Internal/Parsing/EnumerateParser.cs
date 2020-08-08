@@ -25,27 +25,25 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
             return new EnumerateTree()
             {
                 Schema = this.Schema,
-                Item = this.GetReader(itemNode, values),
+                Item = this.CreateBinder(itemNode, values),
             };
         }
 
-        private NodeBinder GetReader(Node node, IEnumerable<ColumnName> values)
+        private NodeBinder CreateBinder(Node node, IEnumerable<ColumnName> valueNames)
         {
-            ColumnBinder columnBinder = BindingHelper.FindValue(node, values);
+            ColumnBinder value = BindingHelper.FindValue(node, valueNames);
 
-            if (columnBinder != null)
-                return columnBinder;
+            if (value != null)
+                return value;
 
-            NewBinder newBinder = new NewBinder()
+            NewBinder binder = new NewBinder(node)
             {
-                Metadata = node.Metadata,
-                Properties = node.Properties.Select(n => this.GetReader(n, values)).ToList(),
-                IsDynamic = node.IsDynamic,
+                Properties = node.Properties.Select(n => this.CreateBinder(n, valueNames)).ToList(),
             };
 
-            BindingHelper.AddPrimaryKey(newBinder);
+            BindingHelper.AddPrimaryKey(binder);
 
-            return newBinder;
+            return binder;
         }
     }
 }

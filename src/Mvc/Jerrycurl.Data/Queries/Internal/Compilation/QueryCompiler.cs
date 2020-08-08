@@ -16,6 +16,7 @@ using System.Xml.XPath;
 using System.Xml;
 using System.Diagnostics;
 using Jerrycurl.Data.Queries.Internal.Caching;
+using System.Net.Http.Headers;
 
 namespace Jerrycurl.Data.Queries.Internal.Compilation
 {
@@ -26,85 +27,97 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
         private delegate TItem AggregateInternalReader<TItem>(ElasticArray slots, ElasticArray aggregates, Type schemaType);
         private delegate TItem EnumerateInternalReader<TItem>(IDataReader dataReader, ElasticArray helpers, Type schemaType);
 
+        private BufferWriter CompileBuffer(BufferTree tree, Expression initialize, Expression writeOne, Expression writeAll)
+        {
+            ParameterExpression[] initArgs = new[] { Arguments.Slots };
+            ParameterExpression[] writeArgs = new[] { Arguments.DataReader, Arguments.Slots, Arguments.Aggregates, Arguments.Helpers, Arguments.SchemaType };
+
+            BufferInternalInitializer initializeFunc = this.Compile<BufferInternalInitializer>(initialize, initArgs);
+            BufferInternalWriter writeOneFunc = this.Compile<BufferInternalWriter>(writeOne, writeArgs);
+            BufferInternalWriter writeAllFunc = this.Compile<BufferInternalWriter>(writeAll, writeArgs);
+
+            ElasticArray helpers = this.GetHelperArray(tree.Helpers);
+            Type schemaType = tree.Schema.Model;
+
+            if (tree.QueryType == QueryType.Aggregate && tree.AggregateNames.Any())
+            {
+                AggregateName[] names = tree.AggregateNames.ToArray();
+
+                return new BufferWriter()
+                {
+                    Initialize = buf =>
+                    {
+                        buf.Aggregate.Names.AddRange(names);
+
+                        initializeFunc(buf.Slots);
+                    },
+                    WriteOne = (buf, dr) => writeOneFunc(dr, buf.Slots, buf.Aggregate.Values, helpers, schemaType),
+                    WriteAll = (buf, dr) =>
+                    {
+                        buf.Aggregate.Names.AddRange(names);
+
+                        writeAllFunc(dr, buf.Slots, buf.Aggregate.Values, helpers, schemaType);
+                    },
+                };
+            }
+            else
+            {
+                return new BufferWriter()
+                {
+                    WriteAll = (buf, dr) => writeAllFunc(dr, buf.Slots, buf.Aggregate.Values, helpers, schemaType),
+                    WriteOne = (buf, dr) => writeOneFunc(dr, buf.Slots, buf.Aggregate.Values, helpers, schemaType),
+                    Initialize = buf => initializeFunc(buf.Slots),
+                };
+            }
+        }
+
         public BufferWriter Compile(BufferTree tree)
         {
-            List<Expression> allInit = new List<Expression>();
-            List<Expression> allBody = new List<Expression>();
+            List<ParameterExpression> variables = new List<ParameterExpression>();
 
-            List<Expression> oneInit = new List<Expression>();
-            List<Expression> oneBody = new List<Expression>();
+            List<Expression> initList = new List<Expression>();
+            List<Expression> oneList = new List<Expression>();
+            List<Expression> allList = new List<Expression>();
+
             List<Expression> body = new List<Expression>();
 
             foreach (SlotWriter writer in tree.Slots)
             {
-                Expression writeSlot = this.GetWriterExpression(writer);
+                Expression initExpression = this.GetInitializeExpression(writer);
+                Expression writeExpresssion = this.GetWriterExpression(writer);
 
-                allInit.Add(writeSlot);
-                oneInit.Add(writeSlot);
+                initList.Add(writeExpresssion);
+                oneList.Add(initExpression);
+                allList.Add(writeExpresssion);
+                allList.Add(initExpression);
+
+                variables.Add(writer.Variable);
             }
 
             foreach (HelperWriter writer in tree.Helpers)
             {
-                Expression writeHelper = this.GetWriterExpression(writer);
+                Expression writeExpression = this.GetWriterExpression(writer);
 
-                allInit.Add(writeHelper);
-                oneBody.Add(writeHelper);
+                oneList.Add(writeExpression);
+                allList.Add(writeExpression);
+
+                variables.Add(writer.Variable);
             }
 
             foreach (AggregateWriter writer in tree.Aggregates)
                 body.Add(this.GetWriterExpression(writer));
 
-            foreach (ListWriter writer in tree.Lists.OrderByDescending(w => w.Metadata.Relation.Depth))
+            foreach (ListWriter writer in tree.Lists.OrderBy(w => w.Priority))
                 body.Add(this.GetWriterExpression(writer));
 
-            List<ParameterExpression> variables = new List<ParameterExpression>();
+            oneList.AddRange(body);
+            allList.Add(this.GetDataReaderLoopExpression(body));
 
-            variables.AddRange(tree.Slots.Select(w => w.Variable).NotNull());
-            variables.AddRange(tree.Helpers.Select(w => w.Variable).NotNull());
+            Expression initialize = this.GetBlockOrExpression(initList);
+            Expression writeOne = this.GetBlockOrExpression(oneList, variables);
+            Expression writeAll = this.GetBlockOrExpression(allList, variables);
 
-            List<Expression> loopBody = allInit.Concat(body).ToList();
-            Expression loopBlock = this.GetBlockOrExpression(allInit.Concat(new[] { this.GetDataReaderLoopExpression(body) }).ToList(), variables);
-
-
-            ParameterExpression[] initArgs = new[] { Arguments.Slots };
-            ParameterExpression[] writeArgs = new[] { Arguments.DataReader, Arguments.Slots, Arguments.Aggregates, Arguments.Helpers, Arguments.SchemaType };
-
-            BufferInternalInitializer init = null; // this.Compile<BufferInternalInitializer>(initBody, initArgs);
-            BufferInternalWriter writeAll = this.Compile<BufferInternalWriter>(loopBlock, writeArgs);
-            BufferInternalWriter writeOne = null; // this.Compile<BufferInternalWriter>(body, writeArgs);
-
-            ElasticArray helpers = this.GetHelperArray(tree.Helpers);
-            Type schemaType = tree.Schema.Model;
-
-            BufferWriter result = new BufferWriter()
-            {
-                WriteAll = (buf, dr) => writeAll(dr, buf.Slots, buf.Aggregate.Values, helpers, schemaType),
-                WriteOne = (buf, dr) => writeOne(dr, buf.Slots, buf.Aggregate.Values, helpers, schemaType),
-                Initialize = buf => init(buf.Slots),
-            };
-
-            if (tree.QueryType == QueryType.Aggregate && tree.AggregateNames.Any())
-            {
-                AggregateName[] names = tree.AggregateNames.ToArray();
-                Action<IQueryBuffer, IDataReader> innerWrite = result.WriteAll;
-                Action<IQueryBuffer> innerInit = result.Initialize;
-
-                result.WriteAll = (buf, dr) =>
-                {
-                    buf.Aggregate.Names.AddRange(names);
-
-                    innerWrite(buf, dr);
-                };
-
-                result.Initialize = buf =>
-                {
-                    buf.Aggregate.Names.AddRange(names);
-
-                    innerInit(buf);
-                };
-            }
-
-            return result;
+            return this.CompileBuffer(tree, initialize, writeOne, writeAll);
         }
 
         public AggregateReader<TItem> Compile<TItem>(AggregateTree tree)
@@ -137,6 +150,17 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
             return dr => reader(dr, helpers, schemaType);
         }
 
+        #region " Initialize "
+        private Expression GetInitializeExpression(SlotWriter writer)
+        {
+            Expression slotIndex = this.GetElasticIndexExpression(Arguments.Slots, writer.BufferIndex);
+            Expression convertIndex = Expression.Convert(slotIndex, writer.Variable.Type);
+
+            return Expression.Assign(writer.Variable, convertIndex);
+        }
+
+        #endregion
+
         #region " Writers "
         private Expression GetWriterExpression(SlotWriter writer)
         {
@@ -152,13 +176,13 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
                 newList = Expression.New(dictionaryType);
             }
 
-            Expression oldList = Expression.Convert(slotIndex, newList.Type);
-            Expression assignNew = Expression.Assign(slotIndex, Expression.Assign(writer.Variable, newList));
-            Expression assignOld = Expression.Assign(writer.Variable, oldList);
+            Expression assignNew = Expression.Assign(slotIndex, newList);
             Expression isNull = Expression.ReferenceEqual(slotIndex, Expression.Constant(null));
 
-            return Expression.IfThenElse(isNull, assignNew, assignOld);
+            return Expression.IfThen(isNull, assignNew);
         }
+
+
 
         private Expression GetWriterExpression(ListWriter writer)
         {
@@ -362,8 +386,6 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
             return this.GetKeyBlockExpression(binder.PrimaryKey, binder.JoinKeys, memberInit);
         }
 
-
-
         #endregion
 
         #region " Dynamic "
@@ -379,11 +401,11 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
 
             foreach (NodeBinder propertyBinder in binder.Properties)
             {
-                string memberName = binder.Metadata.Identity.Schema.Notation.Member(propertyBinder.Metadata.Identity.Name);
+                string propertyName = propertyBinder.Identity.Schema.Notation.Member(propertyBinder.Identity.Name);
 
                 Expression propertyValue = this.GetBinderExpression(propertyBinder);
                 Expression objectValue = propertyValue.Type.IsValueType ? Expression.Convert(propertyValue, typeof(object)) : propertyValue;
-                Expression addDynamic = Expression.Call(variable, binder.Metadata.Composition.AddDynamic, Expression.Constant(memberName), objectValue);
+                Expression addDynamic = Expression.Call(variable, binder.Metadata.Composition.AddDynamic, Expression.Constant(propertyName), objectValue);
 
                 body.Add(addDynamic);
             }
@@ -392,8 +414,8 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
 
             return Expression.Block(new[] { variable }, body);
         }
-        #endregion
 
+        #endregion
         #region  " IsDbNull "
 
         private Expression GetIsDbNullExpression(ValueBinder binder) => binder switch
@@ -563,7 +585,7 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
             else if (variables == null)
                 return Expression.Block(expressions);
             else
-                return Expression.Block(variables, expressions);
+                return Expression.Block(variables.NotNull(), expressions);
         }
 
         private Expression GetNewCompositeKeyExpression(KeyBinder key)

@@ -28,7 +28,7 @@ namespace Jerrycurl.Vendors.Oracle.Test
                 Parameters = new IParameter[] { new Refcursor("P0"), new Refcursor("P1") },
             };
 
-            QueryHandler handler = new QueryHandler(options);
+            QueryEngine handler = new QueryEngine(options);
 
             IList<int> result1 = handler.List<int>(query);
             IList<int> result2 = await handler.ListAsync<int>(query);

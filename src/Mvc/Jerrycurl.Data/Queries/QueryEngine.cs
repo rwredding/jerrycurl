@@ -32,17 +32,17 @@ namespace Jerrycurl.Data.Queries
             if (this.Options.Schemas == null)
                 throw new InvalidOperationException("No schema store found.");
 
-            QueryBuffer<T> result = new QueryBuffer<T>(this.Options.Schemas, QueryType.Aggregate);
+            QueryBuffer<T> buffer = new QueryBuffer<T>(this.Options.Schemas, QueryType.Aggregate);
 
             using ISyncSession connection = this.Options.GetSyncSession();
 
-            foreach (Query operation in this.GetOperations(queries))
+            foreach (Query operation in this.GetOperations(buffer, queries))
             {
                 foreach (IDataReader dataReader in connection.Execute(operation))
-                    result.Write(dataReader);
+                    buffer.Write(dataReader);
             }
 
-            return result.ToAggregate();
+            return buffer.ToAggregate();
         }
 
         public Task<T> AggregateAsync<T>(QueryData query, CancellationToken cancellationToken = default) => this.AggregateAsync<T>(new[] { query }, cancellationToken);
@@ -55,17 +55,17 @@ namespace Jerrycurl.Data.Queries
             if (this.Options.Schemas == null)
                 throw new InvalidOperationException("No schema builder found.");
 
-            QueryBuffer<T> result = new QueryBuffer<T>(this.Options.Schemas, QueryType.Aggregate);
+            QueryBuffer<T> buffer = new QueryBuffer<T>(this.Options.Schemas, QueryType.Aggregate);
 
             await using IAsyncSession connection = this.Options.GetAsyncSession();
 
-            foreach (Query operation in this.GetOperations(queries))
+            foreach (Query operation in this.GetOperations(buffer, queries))
             {
                 await foreach (DbDataReader dataReader in connection.ExecuteAsync(operation, cancellationToken).ConfigureAwait(false))
-                    await result.WriteAsync(dataReader, cancellationToken).ConfigureAwait(false);
+                    await buffer.WriteAsync(dataReader, cancellationToken).ConfigureAwait(false);
             }
 
-            return result.ToAggregate();
+            return buffer.ToAggregate();
         }
 
         #endregion
@@ -85,7 +85,7 @@ namespace Jerrycurl.Data.Queries
 
             using ISyncSession connection = this.Options.GetSyncSession();
 
-            foreach (Query operation in this.GetOperations(queries))
+            foreach (Query operation in this.GetOperations(buffer, queries))
             { 
                 foreach (IDataReader dataReader in connection.Execute(operation))
                     buffer.Write(dataReader);
@@ -104,17 +104,17 @@ namespace Jerrycurl.Data.Queries
             if (this.Options.Schemas == null)
                 throw new InvalidOperationException("No schema builder found.");
 
-            QueryBuffer<TItem> result = new QueryBuffer<TItem>(this.Options.Schemas, QueryType.List);
+            QueryBuffer<TItem> buffer = new QueryBuffer<TItem>(this.Options.Schemas, QueryType.List);
 
             await using IAsyncSession connection = this.Options.GetAsyncSession();
 
-            foreach (Query operation in this.GetOperations(queries))
+            foreach (Query operation in this.GetOperations(buffer, queries))
             {
                 await foreach (DbDataReader dataReader in connection.ExecuteAsync(operation, cancellationToken).ConfigureAwait(false))
-                    await result.WriteAsync(dataReader, cancellationToken).ConfigureAwait(false);
+                    await buffer.WriteAsync(dataReader, cancellationToken).ConfigureAwait(false);
             }
 
-            return result.ToList();
+            return buffer.ToList();
         }
 
         #endregion
@@ -163,7 +163,7 @@ namespace Jerrycurl.Data.Queries
 
             using ISyncSession connection = this.Options.GetSyncSession();
 
-            foreach (Query operation in this.GetOperations(queries))
+            foreach (IOperation operation in this.GetOperations(queries))
             {
                 foreach (IDataReader reader in connection.Execute(operation))
                     yield return new QueryReader(this.Options.Schemas, reader);
@@ -172,7 +172,10 @@ namespace Jerrycurl.Data.Queries
 
         #endregion
 
-        private IEnumerable<Query> GetOperations(IEnumerable<QueryData> queries)
+        private IEnumerable<IOperation> GetOperations(IQueryBuffer buffer, IEnumerable<QueryData> queries)
+            => queries.NotNull().Where(d => !string.IsNullOrWhiteSpace(d.QueryText)).Select(buffer.Read);
+
+        private IEnumerable<IOperation> GetOperations(IEnumerable<QueryData> queries)
             => queries.NotNull().Where(d => !string.IsNullOrWhiteSpace(d.QueryText)).Select(d => new Query(d));
     }
 }

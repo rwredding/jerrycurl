@@ -30,5 +30,25 @@ namespace Jerrycurl.Collections
         public static TValue GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> d, TKey key)
             where TValue : new()
             => d.GetOrAdd(key, new TValue());
+
+        public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> d, TKey key, TValue value)
+        {
+            if (d.ContainsKey(key))
+                return false;
+
+            d.Add(key, value);
+
+            return true;
+        }
+
+        public static bool TryRemove<TKey, TValue>(this IDictionary<TKey, TValue> d, TKey key)
+        {
+            if (!d.ContainsKey(key))
+                return false;
+
+            d.Remove(key);
+
+            return true;
+        }
     }
 }

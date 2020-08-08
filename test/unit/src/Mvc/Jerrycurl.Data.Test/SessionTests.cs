@@ -137,8 +137,8 @@ namespace Jerrycurl.Data.Test
                     Schemas = DatabaseHelper.Default.Schemas,
                 };
 
-                QueryHandler handler1 = new QueryHandler(options1);
-                QueryHandler handler2 = new QueryHandler(options2);
+                QueryEngine handler1 = new QueryEngine(options1);
+                QueryEngine handler2 = new QueryEngine(options2);
 
                 handler1.List<int>(new QueryData() { QueryText = "SELECT 0 AS [Item];" });
                 await handler2.ListAsync<int>(new QueryData() { QueryText = "SELECT 0 AS [Item];" });

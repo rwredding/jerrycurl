@@ -279,9 +279,9 @@ namespace Jerrycurl.Mvc
                 Filters = options.Filters,
             };
 
-            CommandHandler handler = new CommandHandler(commandOptions);
+            CommandEngine engine = new CommandEngine(commandOptions);
 
-            handler.Execute(commands);
+            engine.Execute(commands);
         }
 
         /// <summary>
@@ -322,9 +322,9 @@ namespace Jerrycurl.Mvc
                 Filters = options.Filters,
             };
 
-            CommandHandler handler = new CommandHandler(commandOptions);
+            CommandEngine engine = new CommandEngine(commandOptions);
 
-            await handler.ExecuteAsync(commands, cancellationToken).ConfigureAwait(false);
+            await engine.ExecuteAsync(commands, cancellationToken).ConfigureAwait(false);
         }
 
         private IProcResult ExecuteAndGetResult(string procName, object model, ProcArgs args)

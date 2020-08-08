@@ -22,9 +22,8 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
 
                 if (metadata.Equals(node.Identity))
                 {
-                    return new ColumnBinder()
+                    return new ColumnBinder(node)
                     {
-                        Metadata = node.Metadata,
                         Column = value.ColumnInfo,
                         CanBeDbNull = true,
                     };

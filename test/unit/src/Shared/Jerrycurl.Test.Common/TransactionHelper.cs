@@ -55,7 +55,7 @@ namespace Jerrycurl.Test
             };
 
             QueryData query = new QueryData() { QueryText = this.selectSql };
-            QueryHandler handler = new QueryHandler(options);
+            QueryEngine handler = new QueryEngine(options);
 
             return handler.List<int>(query);
         }

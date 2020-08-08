@@ -75,14 +75,14 @@ namespace Jerrycurl.Data.Test
                 new object[] { 2 }
             };
 
-            IList<BigAggregate> result1 = DatabaseHelper.Default.Query<BigAggregate>(table);
-            IList<BigAggregate> result2 = await DatabaseHelper.Default.QueryAsync<BigAggregate>(table);
+            BigAggregate result1 = DatabaseHelper.Default.Aggregate<BigAggregate>(table);
+            BigAggregate result2 = await DatabaseHelper.Default.AggregateAsync<BigAggregate>(table);
             IList<BigModel> result3 = DatabaseHelper.Default.Query<BigModel>(table);
             IList<BigModel> result4 = await DatabaseHelper.Default.QueryAsync<BigModel>(table);
             IList<BigModel> result5 = DatabaseHelper.Default.Enumerate<BigModel>(table).ToList();
 
-            result1.ShouldBeEmpty();
-            result2.ShouldBeEmpty();
+            result1.ShouldNotBeNull();
+            result2.ShouldNotBeNull();
             result3.ShouldBeEmpty();
             result4.ShouldBeEmpty();
             result5.ShouldBe(new[] { (BigModel)null, null });
@@ -139,25 +139,24 @@ namespace Jerrycurl.Data.Test
                 new object[] { 3, 35, 3, 24 },
             };
 
-            IList<BigAggregate> result1 = DatabaseHelper.Default.Query<BigAggregate>(table1, table2, table3, table4);
-            IList<BigAggregate> result2 = await DatabaseHelper.Default.QueryAsync<BigAggregate>(table1, table2, table3, table4);
+            BigAggregate result1 = DatabaseHelper.Default.Aggregate<BigAggregate>(table1, table2, table3, table4);
+            BigAggregate result2 = await DatabaseHelper.Default.AggregateAsync<BigAggregate>(table1, table2, table3, table4);
 
-            static void verifyResult(IList<BigAggregate> result)
+            static void verifyResult(BigAggregate result)
             {
                 result.ShouldNotBeNull();
-                result.Count.ShouldBe(1);
 
-                result[0].Scalar.ShouldBe(2);
-                result[0].None.ShouldBeNull();
-                result[0].One.ShouldNotBeNull();
-                result[0].One.Value.ShouldBe(22);
+                result.Scalar.ShouldBe(2);
+                result.None.ShouldBeNull();
+                result.One.ShouldNotBeNull();
+                result.One.Value.ShouldBe(22);
 
-                result[0].Many.ShouldNotBeNull();
-                result[0].Many.Select(m => m.Value).ShouldBe(new[] { 33, 35 });
+                result.Many.ShouldNotBeNull();
+                result.Many.Select(m => m.Value).ShouldBe(new[] { 33, 35 });
 
-                result[0].Many[0].OneToMany.ShouldBeEmpty();
-                result[0].Many[1].OneToMany.ShouldNotBeNull();
-                result[0].Many[1].OneToMany.Select(m => m.Value).ShouldBe(new[] { 22, 24 });
+                result.Many[0].OneToMany.ShouldBeEmpty();
+                result.Many[1].OneToMany.ShouldNotBeNull();
+                result.Many[1].OneToMany.Select(m => m.Value).ShouldBe(new[] { 22, 24 });
             }
 
             verifyResult(result1);
@@ -471,20 +470,17 @@ namespace Jerrycurl.Data.Test
                               SELECT 1 AS `Item.NotUsedMany.Item.Value` FROM sqlite_master WHERE 0 = 1",
             };
 
-            IList<BigAggregate> result1 = DatabaseHelper.Default.Query<BigAggregate>(query);
-            IList<BigAggregate> result2 = await DatabaseHelper.Default.QueryAsync<BigAggregate>(query);
+            BigAggregate result1 = DatabaseHelper.Default.Aggregate<BigAggregate>(query);
+            BigAggregate result2 = await DatabaseHelper.Default.AggregateAsync<BigAggregate>(query);
 
-            result1.ShouldNotBeEmpty();
-            result2.ShouldNotBeEmpty();
+            result1.ShouldNotBeNull();
+            result2.ShouldNotBeNull();
 
-            result1.Count.ShouldBe(1);
-            result2.Count.ShouldBe(1);
+            result1.NotUsedOne.ShouldBeNull();
+            result2.NotUsedOne.ShouldBeNull();
 
-            result1[0].NotUsedOne.ShouldBeNull();
-            result2[0].NotUsedOne.ShouldBeNull();
-
-            result1[0].NotUsedMany.ShouldBeEmpty();
-            result2[0].NotUsedMany.ShouldBeEmpty();
+            result1.NotUsedMany.ShouldBeEmpty();
+            result2.NotUsedMany.ShouldBeEmpty();
         }
 
         public async Task Test_Binding_UsingPrimaryHashJoins()

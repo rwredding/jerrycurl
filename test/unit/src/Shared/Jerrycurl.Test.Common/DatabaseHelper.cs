@@ -76,7 +76,15 @@ namespace Jerrycurl.Test
         public IList<TItem> Query<TItem>(params SqliteTable[] tables) => this.Queries.List<TItem>(tables.Select(t => t.ToQuery()));
         public IList<TItem> Query<TItem>(params QueryData[] queries) => this.Queries.List<TItem>(queries);
         public IList<TItem> Query<TItem>(string sql) => this.Queries.List<TItem>(new QueryData() { QueryText = sql });
-        
+
+        public TItem Aggregate<TItem>(params SqliteTable[] tables) => this.Queries.Aggregate<TItem>(tables.Select(t => t.ToQuery()));
+        public TItem Aggregate<TItem>(params QueryData[] queries) => this.Queries.Aggregate<TItem>(queries);
+        public TItem Aggregate<TItem>(string sql) => this.Queries.Aggregate<TItem>(new QueryData() { QueryText = sql });
+
+        public async Task<TItem> AggregateAsync<TItem>(params SqliteTable[] tables) => await this.Queries.AggregateAsync<TItem>(tables.Select(t => t.ToQuery()));
+        public async Task<TItem> AggregateAsync<TItem>(params QueryData[] queries) => await this.Queries.AggregateAsync<TItem>(queries);
+        public async Task<TItem> AggregateAsync<TItem>(string sql) => await this.Queries.AggregateAsync<TItem>(new QueryData() { QueryText = sql });
+
 
         public IEnumerable<TItem> Enumerate<TItem>(params SqliteTable[] tables) => this.Queries.Enumerate<TItem>(tables.Select(t => t.ToQuery()));
         public IEnumerable<TItem> Enumerate<TItem>(params QueryData[] queries) => this.Queries.Enumerate<TItem>(queries);

@@ -1,6 +1,7 @@
 ﻿using Jerrycurl.Data.Queries.Internal;
 using Jerrycurl.Data.Queries.Internal.Caching;
 using Jerrycurl.Data.Queries.Internal.Compilation;
+using Jerrycurl.Data.Sessions;
 using Jerrycurl.Relations.Metadata;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,8 @@ namespace Jerrycurl.Data.Queries
             QueryType.Aggregate => dataReader => QueryCache<TItem>.GetAggregateWriter(this.Schema, dataReader),
             _ => throw new InvalidOperationException($"Invalid query type '{this.QueryType}'."),
         };
+
+        public IOperation Read(QueryData queryData) => new Query(queryData);
 
         public void Write(IDataReader dataReader)
         {

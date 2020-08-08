@@ -36,6 +36,7 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
 
             this.AddWriters(tree, nodeTree, valueNames);
             this.AddAggregates(tree, nodeTree, valueNames);
+            this.PrioritizeWriters(tree);
 
             return tree;
         }
@@ -55,41 +56,54 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
         private bool HasOneAttribute(IBindingMetadata metadata) => metadata.Annotations.OfType<OneAttribute>().Any();
         private bool HasOneAttribute(IReference reference) => reference.Metadata.Annotations.OfType<OneAttribute>().Any();
 
+        private void PrioritizeWriters(BufferTree tree)
+        {
+            foreach (ListWriter writer in tree.Lists)
+                writer.Priority = -writer.Metadata.Relation.Depth;
+
+            int priorityBump = 0;
+
+            foreach (ListWriter writer in tree.Lists.OrderByDescending(w => w.Priority))
+            {
+                if (writer.IsOneToMany)
+                    priorityBump++;
+
+                writer.Priority -= priorityBump;
+            }
+        }
+
         private void AddAggregates(BufferTree tree, NodeTree nodeTree, IEnumerable<ColumnName> valueNames)
         {
-            if (this.Type != QueryType.Aggregate)
-                return;
-
-            foreach (Node node in nodeTree.Nodes.Where(n => n.Depth == 1))
+            foreach (Node node in nodeTree.Nodes.Where(n => this.IsAggregateSet(n.Metadata)))
             {
-                ColumnBinder binder = BindingHelper.FindValue(node, valueNames);
+                ColumnBinder value = BindingHelper.FindValue(node, valueNames);
 
-                if (binder != null)
+                if (value != null)
                 {
                     AggregateWriter writer = new AggregateWriter()
                     {
                         BufferIndex = this.Buffer.GetAggregateIndex(node.Identity),
-                        Data = binder,
+                        Data = value,
                     };
 
-                    AggregateName x = new AggregateName(binder.Metadata.Identity.Name, isPrincipal: false);
+                    AggregateName name = new AggregateName(value.Identity.Name, isPrincipal: false);
 
                     tree.Aggregates.Add(writer);
-                    tree.AggregateNames.Add(x);
+                    tree.AggregateNames.Add(name);
                 }
             }
         }
 
         private void AddWriters(BufferTree tree, NodeTree nodeTree, IEnumerable<ColumnName> valueNames)
         {
-            IEnumerable<Node> itemNodes = this.Type == QueryType.List ? nodeTree.Items : nodeTree.Items.Where(n => n.Depth > 1);
+            IEnumerable<Node> itemNodes = nodeTree.Items.Where(n => !this.IsAggregateSet(n.Metadata));
 
             foreach (Node itemNode in itemNodes)
             {
                 ListWriter writer = new ListWriter()
                 {
                     Metadata = itemNode.Metadata.Parent,
-                    Item = this.GetBinder(tree, itemNode, valueNames),
+                    Item = this.CreateBinder(tree, itemNode, valueNames),
                 };
 
                 if (writer.Item is NewBinder newBinder)
@@ -98,9 +112,9 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
                     newBinder.PrimaryKey = null;
                 }
 
-                if (!this.IsPrincipalList(itemNode.Metadata))
+                if (!this.IsPrincipalSet(itemNode.Metadata))
                     this.AddChildKey(writer);
-                else if (this.Type == QueryType.Aggregate)
+                else if (this.IsAggregateSet(writer.Metadata))
                     tree.AggregateNames.Add(new AggregateName(writer.Metadata.Identity.Name, isPrincipal: true));
 
                 writer.Slot = this.AddSlot(tree, writer.Metadata, writer.JoinKey);
@@ -116,12 +130,14 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
             }
         }
 
-        private bool IsPrincipalList(IBindingMetadata metadata)
+        private bool IsPrincipalSet(IBindingMetadata metadata)
         {
             bool isPrincipal = metadata.Relation.Depth == (this.Type == QueryType.Aggregate ? 2 : 1);
 
             return (isPrincipal && !this.HasOneAttribute(metadata));
         }
+
+        private bool IsAggregateSet(IBindingMetadata metadata) => (this.Type == QueryType.Aggregate && metadata.Relation.Depth == 1);
 
         private ParameterExpression AddSlot(BufferTree tree, IBindingMetadata metadata, KeyBinder joinKey)
         {
@@ -176,7 +192,7 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
             }
         }
 
-        private NodeBinder GetBinder(BufferTree tree, Node node, IEnumerable<ColumnName> valueNames)
+        private NodeBinder CreateBinder(BufferTree tree, Node node, IEnumerable<ColumnName> valueNames)
         {
             ColumnBinder columnBinder = BindingHelper.FindValue(node, valueNames);
 
@@ -186,12 +202,10 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
 
                 return columnBinder;
             }
-                
-            NewBinder binder = new NewBinder()
+
+            NewBinder binder = new NewBinder(node)
             {
-                Metadata = node.Metadata,
-                Properties = node.Properties.Select(n => this.GetBinder(tree, n, valueNames)).ToList(),
-                JoinKeys = new List<KeyBinder>(),
+                Properties = node.Properties.Select(n => this.CreateBinder(tree, n, valueNames)).ToList(),
             };
 
             BindingHelper.AddPrimaryKey(binder);
@@ -212,32 +226,30 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
 
         private void AddParentKeys(BufferTree tree, NewBinder binder)
         {
-            IReferenceMetadata metadata = binder.Metadata.Identity.GetMetadata<IReferenceMetadata>();
+            IReferenceMetadata newMetadata = binder.Metadata.Identity.GetMetadata<IReferenceMetadata>();
 
-            foreach (IReference reference in metadata.References.Where(this.IsValidReference))
+            foreach (IReference reference in newMetadata.References.Where(r => r.HasFlag(ReferenceFlags.Parent) && this.IsValidReference(r)))
             {
                 KeyBinder key = BindingHelper.FindParentKey(binder, reference);
 
                 if (key != null)
                 {
-                    IBindingMetadata childMetadata = reference.Other.Metadata.To<IBindingMetadata>();
+                    IBindingMetadata metadata = reference.Other.Metadata.To<IBindingMetadata>();
 
-                    JoinBinder joinBinder = new JoinBinder()
+                    metadata = reference.Other.HasFlag(ReferenceFlags.Many) ? metadata.Parent : metadata;
+
+                    JoinBinder joinBinder = new JoinBinder(metadata)
                     {
-                        Metadata = childMetadata,
-                        Array = key.Array ??= BindingHelper.Variable(typeof(ElasticArray), childMetadata.Identity),
+                        Array = key.Array ??= BindingHelper.Variable(typeof(ElasticArray), metadata.Identity),
                         ArrayIndex = this.Buffer.GetChildIndex(reference),
-                        IsManyToOne = this.HasOneAttribute(childMetadata),
+                        IsManyToOne = reference.Other.HasFlag(ReferenceFlags.One),
                     };
-
-                    if (!joinBinder.IsManyToOne)
-                        joinBinder.Metadata = joinBinder.Metadata.Parent;
 
                     binder.JoinKeys.Add(key);
                     binder.Properties.Add(joinBinder);
 
                     this.InitializeKeyVariables(key);
-                    this.AddSlot(tree, childMetadata, key);
+                    this.AddSlot(tree, metadata, key);
                 }
             }
         }
@@ -247,7 +259,7 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
             if (writer.Item is NewBinder binder)
             {
                 IReferenceMetadata metadata = writer.Item.Metadata.To<IReferenceMetadata>();
-                IReference reference = metadata.References.FirstOrDefault(this.IsValidReference);
+                IReference reference = metadata.References.FirstOrDefault(r => r.HasFlag(ReferenceFlags.Child) && this.IsValidReference(r));
 
                 writer.JoinKey = BindingHelper.FindChildKey(binder, reference);
 
@@ -262,7 +274,7 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
 
         private bool IsValidReference(IReference reference)
         {
-            IReference childReference = reference.HasFlag(ReferenceFlags.Child) ? reference : reference.Other;
+            IReference childReference = reference.Find(ReferenceFlags.Child);
 
             return (childReference.HasFlag(ReferenceFlags.Many) || this.HasOneAttribute(childReference));
         }
