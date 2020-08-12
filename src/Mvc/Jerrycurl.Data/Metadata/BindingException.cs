@@ -3,7 +3,7 @@ using Jerrycurl.Reflection;
 using System;
 using System.Runtime.Serialization;
 
-namespace Jerrycurl.Data
+namespace Jerrycurl.Data.Metadata
 {
     [Serializable]
     public class BindingException : Exception

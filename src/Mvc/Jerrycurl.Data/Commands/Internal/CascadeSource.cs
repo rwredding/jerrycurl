@@ -10,11 +10,11 @@ namespace Jerrycurl.Data.Commands.Internal
     {
         public CascadeBinding Binding { get; }
         public CommandBuffer Buffer { get; }
-        public bool HasChanged => false;
+        public bool HasChanged => this.GetNonCascadeSource()?.HasChanged ?? false;
 
         public object Value
         {
-            get => null;
+            get => this.GetNonCascadeSource()?.Value;
             set { }
         }
 
@@ -24,20 +24,20 @@ namespace Jerrycurl.Data.Commands.Internal
             this.Buffer = buffer;
         }
 
-        /*private IFieldSource GetNonCascadingSource()
+        private IFieldSource GetNonCascadeSource()
         {
-            IFieldSource source = this.Buffer.GetSources(this.Binding.Source).FirstOrDefault(s => s.HasChanged);
+            IFieldSource source = this.Buffer.GetSources(this.Binding.Source).FirstOrDefault();
             IFieldSource nextSource = source;
 
             while (nextSource is CascadeSource cascade)
             {
-                nextSource = this.Buffer.GetSource(cascade.Binding.Source);
+                nextSource = this.Buffer.GetSources(cascade.Binding.Source).FirstOrDefault();
 
                 if (nextSource == source)
                     throw new InvalidOperationException("Cycle detected.");
             }
 
             return nextSource;
-        }*/
+        }
     }
 }

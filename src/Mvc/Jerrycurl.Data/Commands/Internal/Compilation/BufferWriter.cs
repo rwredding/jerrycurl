@@ -5,5 +5,5 @@ using System.Text;
 
 namespace Jerrycurl.Data.Commands.Internal.Compilation
 {
-    internal delegate void BufferWriter(IDataReader dataReader, FieldPipe[] pipes);
+    internal delegate void BufferWriter(IDataReader dataReader, FieldBuffer[] buffers);
 }

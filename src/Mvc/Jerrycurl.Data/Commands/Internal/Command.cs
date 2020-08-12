@@ -22,24 +22,11 @@ namespace Jerrycurl.Data.Commands.Internal
 
         public void Build(IDbCommand adoCommand)
         {
-            foreach (IParameter parameter in this.Data.Parameters)
+            foreach (IParameter parameter in this.Data.Parameters ?? Array.Empty<IParameter>())
                 this.Buffer.Add(parameter);
 
-            foreach (var g in this.Data.Bindings.GroupBy(b => b.Target).Select(g => g.ToArray()))
-            {
-                ParameterBinding paramBinding = g.FirstOfType<ParameterBinding>();
-                ColumnBinding columnBinding = g.FirstOfType<ColumnBinding>();
-                CascadeBinding cascadeBinding = g.FirstOfType<CascadeBinding>();
-
-                if (columnBinding != null)
-                    this.Buffer.Add(columnBinding);
-                else if (paramBinding != null)
-                    this.Buffer.Add(paramBinding);
-                else if (cascadeBinding != null)
-                    this.Buffer.Add(cascadeBinding);
-                else
-                    throw new CommandException("ICommandBinding must be a ColumnBinding, ParameterBinding or CascadeBinding instance.");
-            }
+            foreach (ICommandBinding binding in this.Data.Bindings ?? Array.Empty<ICommandBinding>())
+                this.Buffer.Add(binding);
 
             adoCommand.CommandText = this.Data.CommandText;
 

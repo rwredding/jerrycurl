@@ -146,12 +146,9 @@ namespace Jerrycurl.Relations.Metadata
             };
 
             metadata.MemberOf = metadata;
-            metadata.Item = this.CreateItem(context, metadata);
+            metadata.Item = this.CreateItem(context, metadata) ?? this.CreateRecursor(context, metadata);
             metadata.Properties = this.CreateLazy(() => this.CreateProperties(context, metadata));
             metadata.Annotations = this.CreateAnnotations(metadata).ToList();
-
-            if (this.IsMetadataRecursive(metadata))
-                metadata.Flags |= RelationMetadataFlags.Recursive;
 
             if (contract.ReadIndex != null)
                 metadata.Flags |= RelationMetadataFlags.Readable;
@@ -161,6 +158,34 @@ namespace Jerrycurl.Relations.Metadata
 
             if (metadata.Item != null)
                 metadata.Flags |= RelationMetadataFlags.List;
+
+            context.AddMetadata<IRelationMetadata>(metadata);
+
+            return metadata;
+        }
+
+        private RelationMetadata CreateRecursor(IMetadataBuilderContext context, RelationMetadata parent)
+        {
+            if (parent.HasFlag(RelationMetadataFlags.List))
+                return null;
+
+            IRelationMetadata recursor = this.FindRecursor(parent);
+
+            if (recursor == null)
+                return null;
+
+            MetadataIdentity itemIdentity = parent.Identity.Push("Item");
+            RelationMetadata metadata = new RelationMetadata(itemIdentity)
+            {
+                Parent = recursor,
+                Type = recursor.Type,
+                Flags = recursor.Flags | RelationMetadataFlags.Item | RelationMetadataFlags.Recursive,
+                Depth = recursor.Depth + 1,
+            };
+
+            metadata.MemberOf = metadata;
+            metadata.Properties = this.CreateLazy(() => this.CreateProperties(context, metadata));
+            metadata.Annotations = recursor.Annotations;
 
             context.AddMetadata<IRelationMetadata>(metadata);
 
@@ -181,14 +206,14 @@ namespace Jerrycurl.Relations.Metadata
                 Depth = parent.Depth,
             };
 
-            metadata.Item = this.CreateItem(context, metadata);
+            metadata.Item = this.CreateItem(context, metadata) ?? this.CreateRecursor(context, metadata);
             metadata.Properties = this.CreateLazy(() => this.CreateProperties(context, metadata));
             metadata.Annotations = this.CreateAnnotations(metadata).ToList();
 
             if (metadata.Item != null)
                 metadata.Flags |= RelationMetadataFlags.List;
 
-            if (this.IsMetadataRecursive(metadata))
+            if (metadata.Item != null && metadata.Item.HasFlag(RelationMetadataFlags.Recursive))
                 metadata.Flags |= RelationMetadataFlags.Recursive;
 
             if (memberInfo is PropertyInfo pi)
@@ -207,33 +232,20 @@ namespace Jerrycurl.Relations.Metadata
             return metadata;
         }
 
-        private bool IsMetadataRecursive(IRelationMetadata metadata)
+        private IRelationMetadata FindRecursor(IRelationMetadata metadata)
         {
-            List<RecurseNode> path = new List<RecurseNode>();
+            if (metadata.HasFlag(RelationMetadataFlags.List))
+                return null;
 
-            while (metadata != null)
+            Type propertyType = metadata.Type;
+
+            while ((metadata = metadata.Parent) != null)
             {
-                path.Add(new RecurseNode(metadata.Member, metadata.Type));
-
-                metadata = metadata.Parent;
+                if (metadata.Type.Equals(propertyType))
+                    return metadata;
             }
 
-            return !path.Distinct().SequenceEqual(path);
-        }
-
-        private bool IsMetadataRecursive2(IRelationMetadata metadata)
-        {
-            List<MemberInfo> propertyPath = new List<MemberInfo>();
-
-            while (metadata != null)
-            {
-                if (metadata.Member != null)
-                    propertyPath.Add(metadata.Member);
-
-                metadata = metadata.Parent;
-            }
-
-            return !propertyPath.Distinct().SequenceEqual(propertyPath);
+            return null;
         }
 
         private bool IsFieldOrNonIndexedProperty(MemberInfo memberInfo)

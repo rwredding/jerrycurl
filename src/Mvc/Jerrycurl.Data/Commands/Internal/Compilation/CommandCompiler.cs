@@ -15,7 +15,7 @@ namespace Jerrycurl.Data.Commands.Internal.Compilation
 {
     internal class CommandCompiler
     {
-        private delegate void BufferInternalWriter(IDataReader dataReader, FieldPipe[] pipes, ElasticArray helpers, Type schemaType);
+        private delegate void BufferInternalWriter(IDataReader dataReader, FieldBuffer[] buffers, ElasticArray helpers, Type schemaType);
         private delegate void BufferInternalConverter(IField field, object value, ElasticArray helpers, Type schemaType);
 
         public BufferConverter Compile(MetadataIdentity metadata, ColumnInfo columnInfo)
@@ -108,7 +108,7 @@ namespace Jerrycurl.Data.Commands.Internal.Compilation
 
         private Expression GetWriterExpression(int index, Expression value)
         {
-            MethodInfo writeMethod = typeof(FieldPipe).GetMethod(nameof(FieldPipe.Write));
+            MethodInfo writeMethod = typeof(FieldBuffer).GetMethod(nameof(FieldBuffer.Write));
 
             Expression pipeIndex = Expression.ArrayAccess(Arguments.Pipes, Expression.Constant(index));
 
@@ -142,7 +142,7 @@ namespace Jerrycurl.Data.Commands.Internal.Compilation
         private static class Arguments
         {
             public static ParameterExpression DataReader { get; } = Expression.Parameter(typeof(IDataReader), "dataReader");
-            public static ParameterExpression Pipes { get; } = Expression.Parameter(typeof(FieldPipe[]), "pipes");
+            public static ParameterExpression Pipes { get; } = Expression.Parameter(typeof(FieldBuffer[]), "pipes");
             public static ParameterExpression Helpers { get; } = Expression.Parameter(typeof(ElasticArray), "helpers");
             public static ParameterExpression SchemaType { get; } = Expression.Parameter(typeof(Type), "schemaType");
         }

@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 using Jerrycurl.Collections;
 using Jerrycurl.Data.Commands.Internal;
 using Jerrycurl.Data.Commands.Internal.Caching;
@@ -22,77 +23,98 @@ namespace Jerrycurl.Data.Commands
 {
     public sealed class CommandBuffer
     {
-        private readonly Dictionary<IField, FieldPipe> targetPipes = new Dictionary<IField, FieldPipe>();
-        private readonly Dictionary<string, FieldPipe> columnHeader = new Dictionary<string, FieldPipe>();
-        private readonly Dictionary<string, FieldPipe> paramHeader = new Dictionary<string, FieldPipe>();
+        private readonly Dictionary<IField, FieldBuffer> fieldBuffers = new Dictionary<IField, FieldBuffer>();
+        private readonly Dictionary<string, FieldBuffer> columnHeader = new Dictionary<string, FieldBuffer>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, FieldBuffer> paramHeader = new Dictionary<string, FieldBuffer>(StringComparer.OrdinalIgnoreCase);
 
-        public IOperation Read(CommandData commandData) => new Command(commandData, this);
+        public IOperation Read(CommandData commandData)
+        {
+            this.ClearState();
+
+            return new Command(commandData, this);
+        }
 
         public void Write(IDataReader dataReader)
         {
             List<ColumnName> names = new List<ColumnName>();
-            List<FieldPipe> pipes = new List<FieldPipe>();
+            List<FieldBuffer> buffers = new List<FieldBuffer>();
 
             for (int i = 0; i < this.GetFieldCount(dataReader); i++)
             {
                 string columnName = dataReader.GetName(i);
 
-                if (this.columnHeader.TryGetValue(columnName, out FieldPipe pipe))
+                if (this.columnHeader.TryGetValue(columnName, out FieldBuffer buffer))
                 {
-                    MetadataIdentity metadata = pipe.Target.Identity.Metadata;
-                    ColumnInfo columnInfo = this.GetColumnInfo(dataReader, i);
+                    MetadataIdentity metadata = buffer.Target.Identity.Metadata;
+                    ColumnInfo columnInfo = GetColumnInfo(i);
 
                     names.Add(new ColumnName(metadata, columnInfo));
-                    pipes.Add(pipe);
+                    buffers.Add(buffer);
 
-                    pipe.Column.Info = columnInfo;
+                    buffer.Column.Info = columnInfo;
                 }
             }
 
             BufferWriter writer = CommandCache.GetWriter(names);
 
-            writer(dataReader, pipes.ToArray());
+            writer(dataReader, buffers.ToArray());
+
+            ColumnInfo GetColumnInfo(int i) => new ColumnInfo(dataReader.GetName(i), dataReader.GetFieldType(i), dataReader.GetDataTypeName(i), i);
         }
 
-        private ColumnInfo GetColumnInfo(IDataRecord dataRecord, int i)
-            => new ColumnInfo(dataRecord.GetName(i), dataRecord.GetFieldType(i), dataRecord.GetDataTypeName(i), i);
+
 
         internal IEnumerable<IDbDataParameter> GetParameters(IDbCommand adoCommand)
         {
-            foreach (FieldPipe pipe in this.paramHeader.Values)
+            foreach (FieldBuffer buffer in this.paramHeader.Values)
             {
                 IDbDataParameter adoParam = adoCommand.CreateParameter();
 
-                pipe.Parameter.AdoParameter = adoParam;
-                pipe.Parameter.Parameter?.Build(adoParam);
+                adoParam.ParameterName = buffer.Parameter.Parameter.Name;
+                buffer.Parameter.Parameter?.Build(adoParam);
 
-                if (pipe.Parameter.HasSource && pipe.Parameter.HasTarget)
-                    this.SetParameterDirection(adoParam, ParameterDirection.InputOutput);
-                else if (pipe.Parameter.HasTarget)
+                if (buffer.Parameter.HasSource && buffer.Parameter.HasTarget)
+                    SetParameterDirection(adoParam, ParameterDirection.InputOutput);
+                else if (buffer.Parameter.HasTarget)
                 {
                     adoParam.Value = DBNull.Value;
 
-                    this.SetParameterDirection(adoParam, ParameterDirection.InputOutput);
+                    SetParameterDirection(adoParam, ParameterDirection.InputOutput);
                 }
 
-                if (pipe.Parameter.Parameter.Field != null && this.targetPipes.TryGetValue(pipe.Parameter.Parameter.Field, out FieldPipe targetPipe) && targetPipe.HasChanged)
-                    adoParam.Value = targetPipe.Read();
+                if (this.TryReadValue(buffer.Parameter.Parameter.Field, out object newValue))
+                    adoParam.Value = newValue;
+
+                buffer.Parameter.AdoParameter = adoParam;
 
                 yield return adoParam;
             }
-        }
 
-        internal FieldPipe GetPipe(IField target) => this.targetPipes.GetValueOrDefault(target);
-        internal IEnumerable<IFieldSource> GetSources(IField target) => null;
-
-        private void SetParameterDirection(IDbDataParameter adoParameter, ParameterDirection direction)
-        {
-            try
+            static void SetParameterDirection(IDbDataParameter adoParameter, ParameterDirection direction)
             {
-                adoParameter.Direction = direction;
+                try
+                {
+                    adoParameter.Direction = direction;
+                }
+                catch (ArgumentException) { }
             }
-            catch (ArgumentException) { }
         }
+
+        private bool TryReadValue(IField field, out object value)
+        {
+            value = null;
+
+            if (field == null)
+                return false;
+            else if (this.fieldBuffers.TryGetValue(field, out FieldBuffer buffer))
+                return buffer.Read(out value);
+
+            return false;
+        }
+
+        internal FieldBuffer GetBuffer(IField target) => this.fieldBuffers.GetValueOrDefault(target);
+        internal IEnumerable<IFieldSource> GetSources(IField target) => this.GetBuffer(target)?.GetSources() ?? Array.Empty<IFieldSource>();
+        internal IEnumerable<IFieldSource> GetChanges(IField target) => this.GetBuffer(target)?.GetChanges() ?? Array.Empty<IFieldSource>();
 
         private void ClearState()
         {
@@ -108,8 +130,8 @@ namespace Jerrycurl.Data.Commands
 
         public void Commit()
         {
-            foreach (FieldPipe pipe in this.targetPipes.Values.Where(v => v.HasChanged))
-                pipe.Bind();
+            foreach (FieldBuffer buffer in this.fieldBuffers.Values)
+                buffer.Bind();
         }
 
         public void Add(IParameter parameter)
@@ -117,12 +139,32 @@ namespace Jerrycurl.Data.Commands
             if (parameter == null)
                 throw new ArgumentNullException(nameof(parameter));
 
-            FieldPipe pipe = this.paramHeader.GetOrAdd(parameter.Name, new FieldPipe(this));
+            FieldBuffer buffer = this.paramHeader.GetOrAdd(parameter.Name);
 
-            pipe.Parameter ??= new ParameterSource();
-            pipe.Parameter.Parameter = parameter;
+            buffer.Parameter ??= new ParameterSource();
+            buffer.Parameter.Parameter = parameter;
 
-            this.paramHeader.TryAdd(parameter.Name, pipe);
+            this.paramHeader.TryAdd(parameter.Name, buffer);
+        }
+
+        public void Add(ICommandBinding binding)
+        {
+            switch (binding)
+            {
+                case ColumnBinding columnBinding:
+                    this.Add(columnBinding);
+                    break;
+                case ParameterBinding paramBinding:
+                    this.Add(paramBinding);
+                    break;
+                case CascadeBinding cascadeBinding:
+                    this.Add(cascadeBinding);
+                    break;
+                case null:
+                    throw new ArgumentNullException(nameof(binding));
+                default:
+                    throw new CommandException("ICommandBinding must be a ColumnBinding, ParameterBinding or CascadeBinding instance.");
+            }
         }
 
         public void Add(CascadeBinding binding)
@@ -130,9 +172,10 @@ namespace Jerrycurl.Data.Commands
             if (binding == null)
                 throw new ArgumentNullException(nameof(binding));
 
-            FieldPipe pipe = this.targetPipes.GetOrAdd(binding.Target, new FieldPipe(this));
+            FieldBuffer buffer = this.fieldBuffers.GetOrAdd(binding.Target);
 
-            pipe.Cascade ??= new CascadeSource(binding, this);
+            buffer.Cascade = new CascadeSource(binding, this);
+            buffer.Target = binding.Target;
         }
 
         public void Add(ColumnBinding binding)
@@ -140,12 +183,12 @@ namespace Jerrycurl.Data.Commands
             if (binding == null)
                 throw new ArgumentNullException(nameof(binding));
 
-            FieldPipe pipe = this.targetPipes.GetOrAdd(binding.Target, new FieldPipe(this));
+            FieldBuffer buffer = this.fieldBuffers.GetOrAdd(binding.Target);
 
-            pipe.Column ??= new ColumnSource();
-            pipe.Target = binding.Target;
+            buffer.Column ??= new ColumnSource();
+            buffer.Target = binding.Target;
 
-            this.columnHeader.TryAdd(binding.ColumnName, pipe);
+            this.columnHeader.TryAdd(binding.ColumnName, buffer);
         }
 
         public void Add(ParameterBinding binding)
@@ -153,11 +196,13 @@ namespace Jerrycurl.Data.Commands
             if (binding == null)
                 throw new ArgumentNullException(nameof(binding));
 
-            FieldPipe pipe = this.targetPipes.GetOrAdd(binding.Target, () => this.paramHeader.GetOrAdd(binding.ParameterName, new FieldPipe(this)));
+            FieldBuffer buffer = this.paramHeader.GetOrAdd(binding.ParameterName, () => this.fieldBuffers.GetOrAdd(binding.Target));
 
-            pipe.Parameter ??= new ParameterSource();
-            pipe.Parameter.HasTarget = true;
-            pipe.Target = binding.Target;
+            buffer.Parameter ??= new ParameterSource();
+            buffer.Parameter.HasTarget = true;
+            buffer.Target = binding.Target;
+
+            this.paramHeader.TryAdd(binding.ParameterName, buffer);
         }
     }
 }

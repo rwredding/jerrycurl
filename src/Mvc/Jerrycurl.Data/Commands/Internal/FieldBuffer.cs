@@ -11,19 +11,31 @@ using Jerrycurl.Relations.Metadata;
 
 namespace Jerrycurl.Data.Commands.Internal
 {
-    internal class FieldPipe
+    internal class FieldBuffer
     {
         public IField Target { get; set; }
-        public CommandBuffer Buffer { get; }
         public ParameterSource Parameter { get; set; }
         public ColumnSource Column { get; set; }
         public CascadeSource Cascade { get; set; }
 
-        public bool HasChanged => this.GetSources().Any(s => s.HasChanged);
+        public bool HasChanges() => this.GetChanges().Any();
+        public IEnumerable<IFieldSource> GetSources() => new IFieldSource[] { this.Column, this.Parameter, this.Cascade }.NotNull();
+        public IEnumerable<IFieldSource> GetChanges() => this.GetSources().Where(s => s.HasChanged);
 
-        public FieldPipe(CommandBuffer buffer)
+        public bool Read(out object value)
         {
-            this.Buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
+            IFieldSource changedSource = this.GetSources().FirstOrDefault(f => f.HasChanged);
+
+            if (changedSource != null)
+            {
+                value = changedSource.Value;
+
+                return true;
+            }
+
+            value = null;
+
+            return false;
         }
 
         public void Write(object value)
@@ -32,27 +44,15 @@ namespace Jerrycurl.Data.Commands.Internal
                 this.Column.Value = value;
         }
 
-        private IEnumerable<IFieldSource> GetSources() => new IFieldSource[] { this.Column, this.Parameter, this.Cascade }.NotNull();
-
-        public object Read()
-        {
-            IFieldSource changedSource = this.GetSources().FirstOrDefault(f => f.HasChanged);
-
-            if (changedSource != null)
-                return changedSource.Value;
-
-            return DBNull.Value;
-        }
-
         public void Bind()
         {
-            if (this.Target != null)
+            if (this.Target != null && this.Read(out object value))
             {
                 MetadataIdentity metadata = this.Target.Identity.Metadata;
                 ColumnInfo columnInfo = this.Column?.Info;
                 BufferConverter converter = CommandCache.GetConverter(metadata, columnInfo);
 
-                this.Target.Bind(converter(this.Read()));
+                this.Target.Bind(converter(value));
             }
         }
     }
