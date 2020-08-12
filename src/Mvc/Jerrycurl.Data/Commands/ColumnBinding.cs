@@ -20,6 +20,6 @@ namespace Jerrycurl.Data.Commands
             this.ColumnName = this.Target.Identity.Name;
         }
 
-        public override string ToString() => this.ColumnName;
+        public override string ToString() => $"ColumnBinding: {this.ColumnName} -> {this.Target.Identity.Name}";
     }
 }

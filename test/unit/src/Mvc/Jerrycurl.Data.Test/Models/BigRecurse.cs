@@ -14,7 +14,7 @@ namespace Jerrycurl.Data.Test.Models
 
         public class One : BigRecurse
         {
-            [Many]
+            [One]
             public One Parent { get; set; }
         }
 

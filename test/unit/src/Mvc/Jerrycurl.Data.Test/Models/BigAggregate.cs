@@ -3,7 +3,6 @@ using Jerrycurl.Data.Metadata.Annotations;
 
 namespace Jerrycurl.Data.Test.Models
 {
-    [Aggregate]
     public class BigAggregate
     {
         public int Scalar { get; set; }

@@ -24,9 +24,9 @@ namespace Jerrycurl.Test
             this.selectSql = selectSql;
         }
 
-        public CommandHandler GetCommandHandler(params IFilter[] filters)
+        public CommandEngine GetCommandEngine(params IFilter[] filters)
         {
-            return new CommandHandler(new CommandOptions()
+            return new CommandEngine(new CommandOptions()
             {
                 ConnectionFactory = this.Factory,
                 Filters = filters,
@@ -38,7 +38,7 @@ namespace Jerrycurl.Test
         public void CreateTable()
         {
             CommandData command = new CommandData() { CommandText = this.createSql };
-            CommandHandler handler = this.GetCommandHandler();
+            CommandEngine handler = this.GetCommandEngine();
 
             handler.Execute(command);
         }

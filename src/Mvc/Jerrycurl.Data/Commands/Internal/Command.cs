@@ -10,93 +10,41 @@ namespace Jerrycurl.Data.Commands.Internal
 {
     internal class Command : IOperation
     {
-        private readonly Dictionary<string, FieldData> headingMap = new Dictionary<string, FieldData>(StringComparer.OrdinalIgnoreCase);
-
         public CommandData Data { get; }
-        public FieldMap Map { get; }
+        public CommandBuffer Buffer { get; }
         public object Source => this.Data;
 
-        public Command(CommandData commandData, FieldMap fieldMap)
+        public Command(CommandData commandData, CommandBuffer buffer)
         {
             this.Data = commandData ?? throw new ArgumentNullException(nameof(commandData));
-            this.Map = fieldMap ?? throw new ArgumentNullException(nameof(fieldMap));
+            this.Buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
         }
-
-        public FieldData[] GetHeading(TableIdentity tableInfo) => tableInfo.Columns.Select(ci => this.headingMap.GetValueOrDefault(ci.Name)).ToArray();
 
         public void Build(IDbCommand adoCommand)
         {
-            adoCommand.CommandText = this.Data.CommandText;
-
-            Dictionary<string, IDbDataParameter> adoMap = new Dictionary<string, IDbDataParameter>();
-
-            foreach (IParameter parameter in this.Data.Parameters.Where(p => !adoMap.ContainsKey(p.Name)))
-            {
-                IDbDataParameter adoParameter = adoCommand.CreateParameter();
-
-                parameter.Build(adoParameter);
-
-                if (parameter.Field != null)
-                {
-                    FieldData fieldData = this.Map.Get(parameter.Field);
-
-                    if (fieldData != null)
-                        adoParameter.Value = fieldData.GetValue();
-                }
-
-                adoMap.Add(parameter.Name, adoParameter);
-                adoCommand.Parameters.Add(adoParameter);
-            }
+            foreach (IParameter parameter in this.Data.Parameters)
+                this.Buffer.Add(parameter);
 
             foreach (var g in this.Data.Bindings.GroupBy(b => b.Target).Select(g => g.ToArray()))
             {
-                ParameterBinding parameterBinding = g.OfType<ParameterBinding>().FirstOrDefault();
-                ColumnBinding columnBinding = g.OfType<ColumnBinding>().FirstOrDefault();
-
-                if (parameterBinding == null && columnBinding == null)
-                    throw new CommandException("ICommandBinding must be a ColumnBinding or ParameterBinding instance.");
-
-                IField field = columnBinding?.Target ?? parameterBinding.Target;
-
-                FieldData fieldData = this.Map.Get(field);
-
-                if (fieldData == null)
-                    fieldData = this.Map.Add(field);
+                ParameterBinding paramBinding = g.FirstOfType<ParameterBinding>();
+                ColumnBinding columnBinding = g.FirstOfType<ColumnBinding>();
+                CascadeBinding cascadeBinding = g.FirstOfType<CascadeBinding>();
 
                 if (columnBinding != null)
-                    this.headingMap[columnBinding.ColumnName] = fieldData;
+                    this.Buffer.Add(columnBinding);
+                else if (paramBinding != null)
+                    this.Buffer.Add(paramBinding);
+                else if (cascadeBinding != null)
+                    this.Buffer.Add(cascadeBinding);
                 else
-                {
-                    IDbDataParameter adoParameter = adoMap.GetValueOrDefault(parameterBinding.ParameterName);
-
-                    if (adoParameter == null)
-                    {
-                        adoParameter = adoCommand.CreateParameter();
-
-                        adoParameter.ParameterName = parameterBinding.ParameterName;
-                        adoParameter.Value = DBNull.Value;
-
-                        this.SetParameterDirection(adoParameter, ParameterDirection.Output);
-
-                        adoMap.Add(parameterBinding.ParameterName, adoParameter);
-                        adoCommand.Parameters.Add(adoParameter);
-                    }
-
-                    fieldData.SetValue(adoParameter);
-
-                    if (adoParameter.Direction == ParameterDirection.Input)
-                        this.SetParameterDirection(adoParameter, ParameterDirection.InputOutput);
-                }
+                    throw new CommandException("ICommandBinding must be a ColumnBinding, ParameterBinding or CascadeBinding instance.");
             }
-        }
 
-        private void SetParameterDirection(IDbDataParameter adoParameter, ParameterDirection direction)
-        {
-            try
-            {
-                adoParameter.Direction = direction;
-            }
-            catch (ArgumentException) { }
+            adoCommand.CommandText = this.Data.CommandText;
+
+            foreach (IDbDataParameter parameter in this.Buffer.GetParameters(adoCommand))
+                adoCommand.Parameters.Add(parameter);
         }
     }
 }

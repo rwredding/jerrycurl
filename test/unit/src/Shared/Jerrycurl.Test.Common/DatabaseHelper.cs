@@ -62,9 +62,8 @@ namespace Jerrycurl.Test
             };
         }
 
-        //public QueryHandler Queries => new QueryHandler(this.QueryOptions);
         public QueryEngine Queries => new QueryEngine(this.QueryOptions);
-        public CommandHandler Commands => new CommandHandler(this.CommandOptions);
+        public CommandEngine Commands => new CommandEngine(this.CommandOptions);
 
         public async Task ExecuteAsync(params CommandData[] commands) => await this.Commands.ExecuteAsync(commands);
         public void Execute(params CommandData[] commands) => this.Commands.Execute(commands);

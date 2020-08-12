@@ -24,6 +24,6 @@ namespace Jerrycurl.Data.Commands
             this.Target = parameter.Field;
         }
 
-        public override string ToString() => this.ParameterName;
+        public override string ToString() => $"ParameterBinding: {this.ParameterName} -> {this.Target.Identity.Name}";
     }
 }

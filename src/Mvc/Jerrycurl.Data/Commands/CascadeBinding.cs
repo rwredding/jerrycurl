@@ -14,6 +14,6 @@ namespace Jerrycurl.Data.Commands
             this.Target = target ?? throw new ArgumentNullException(nameof(target));
         }
 
-        public override string ToString() => this.Source.Identity.Name;
+        public override string ToString() => $"ParameterBinding: {this.Source.Identity.Name} -> {this.Target.Identity.Name}";
     }
 }

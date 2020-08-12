@@ -101,11 +101,11 @@ namespace Jerrycurl.Data.Test
                     ConnectionFactory = () => connection2,
                 };
 
-                CommandHandler handler1 = new CommandHandler(options1);
-                CommandHandler handler2 = new CommandHandler(options2);
+                CommandEngine engine1 = new CommandEngine(options1);
+                CommandEngine engine2 = new CommandEngine(options2);
 
-                handler1.Execute(new CommandData() { CommandText = "SELECT 0;" });
-                await handler2.ExecuteAsync(new CommandData() { CommandText = "SELECT 0;" });
+                engine1.Execute(new CommandData() { CommandText = "SELECT 0;" });
+                await engine2.ExecuteAsync(new CommandData() { CommandText = "SELECT 0;" });
 
                 connection1.State.ShouldBe(ConnectionState.Closed);
                 connection2.State.ShouldBe(ConnectionState.Closed);

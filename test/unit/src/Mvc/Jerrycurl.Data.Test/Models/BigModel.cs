@@ -17,7 +17,7 @@ namespace Jerrycurl.Data.Test.Models
         public IList<SubModel> OneToMany { get; set; }
         public IList<BigRecurse.Many> OneToManySelf { get; set; }
         public SubModel OneToOne { get; set; }
-        [Many]
+        [One]
         public SubModel OneToManyAsOne { get; set; }
         public Many<SubModel> ManyType { get; set; }
         

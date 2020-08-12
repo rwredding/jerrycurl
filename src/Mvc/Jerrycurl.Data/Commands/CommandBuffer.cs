@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Jerrycurl.Collections;
 using Jerrycurl.Data.Commands.Internal;
-using Jerrycurl.Data.Commands.Internal.V11;
-using Jerrycurl.Data.Commands.Internal.V11.Caching;
-using Jerrycurl.Data.Commands.Internal.V11.Compilation;
+using Jerrycurl.Data.Commands.Internal.Caching;
+using Jerrycurl.Data.Commands.Internal.Compilation;
 using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Sessions;
 using Jerrycurl.Relations;
@@ -23,11 +23,10 @@ namespace Jerrycurl.Data.Commands
     public sealed class CommandBuffer
     {
         private readonly Dictionary<IField, FieldPipe> targetPipes = new Dictionary<IField, FieldPipe>();
-        private readonly Dictionary<IField, FieldPipe> sourcePipes = new Dictionary<IField, FieldPipe>();
         private readonly Dictionary<string, FieldPipe> columnHeader = new Dictionary<string, FieldPipe>();
         private readonly Dictionary<string, FieldPipe> paramHeader = new Dictionary<string, FieldPipe>();
 
-        public IOperation Read(CommandData commandData) => new Command2(commandData, this);
+        public IOperation Read(CommandData commandData) => new Command(commandData, this);
 
         public void Write(IDataReader dataReader)
         {
@@ -40,50 +39,51 @@ namespace Jerrycurl.Data.Commands
 
                 if (this.columnHeader.TryGetValue(columnName, out FieldPipe pipe))
                 {
-                    MetadataIdentity metadata = pipe.Targets.First().Identity.Metadata;
+                    MetadataIdentity metadata = pipe.Target.Identity.Metadata;
                     ColumnInfo columnInfo = this.GetColumnInfo(dataReader, i);
-                    ColumnSource source = pipe.Source as ColumnSource;
 
                     names.Add(new ColumnName(metadata, columnInfo));
+                    pipes.Add(pipe);
 
-                    source.Column = columnInfo;
+                    pipe.Column.Info = columnInfo;
                 }
             }
 
-            BufferWriter writer = CommandCache.GetWriter(null, names);
+            BufferWriter writer = CommandCache.GetWriter(names);
 
             writer(dataReader, pipes.ToArray());
         }
 
-        private IEnumerable<FieldPipe> GetChangeSet() => this.targetPipes.Values.Where(p => p.Source.HasChanged);
-
         private ColumnInfo GetColumnInfo(IDataRecord dataRecord, int i)
             => new ColumnInfo(dataRecord.GetName(i), dataRecord.GetFieldType(i), dataRecord.GetDataTypeName(i), i);
 
-        public IEnumerable<IDbDataParameter> GetParameters(IDbCommand adoCommand)
+        internal IEnumerable<IDbDataParameter> GetParameters(IDbCommand adoCommand)
         {
             foreach (FieldPipe pipe in this.paramHeader.Values)
             {
                 IDbDataParameter adoParam = adoCommand.CreateParameter();
-                
-                if (pipe.Source is ParameterSource source)
+
+                pipe.Parameter.AdoParameter = adoParam;
+                pipe.Parameter.Parameter?.Build(adoParam);
+
+                if (pipe.Parameter.HasSource && pipe.Parameter.HasTarget)
+                    this.SetParameterDirection(adoParam, ParameterDirection.InputOutput);
+                else if (pipe.Parameter.HasTarget)
                 {
-                    source.AdoParameter = adoParam;
-                    source.Parameter?.Build(adoParam);
+                    adoParam.Value = DBNull.Value;
 
-                    if (source.Parameter == null && pipe.Targets.Any())
-                    {
-                        source.AdoParameter.Value = DBNull.Value;
-
-                        this.SetParameterDirection(adoParam, ParameterDirection.Output);
-                    }
-                    else if (pipe.Targets.Any())
-                        this.SetParameterDirection(adoParam, ParameterDirection.InputOutput);
+                    this.SetParameterDirection(adoParam, ParameterDirection.InputOutput);
                 }
+
+                if (pipe.Parameter.Parameter.Field != null && this.targetPipes.TryGetValue(pipe.Parameter.Parameter.Field, out FieldPipe targetPipe) && targetPipe.HasChanged)
+                    adoParam.Value = targetPipe.Read();
 
                 yield return adoParam;
             }
         }
+
+        internal FieldPipe GetPipe(IField target) => this.targetPipes.GetValueOrDefault(target);
+        internal IEnumerable<IFieldSource> GetSources(IField target) => null;
 
         private void SetParameterDirection(IDbDataParameter adoParameter, ParameterDirection direction)
         {
@@ -108,41 +108,56 @@ namespace Jerrycurl.Data.Commands
 
         public void Commit()
         {
-            foreach (FieldPipe pipe in this.GetChangeSet())
+            foreach (FieldPipe pipe in this.targetPipes.Values.Where(v => v.HasChanged))
                 pipe.Bind();
         }
 
         public void Add(IParameter parameter)
         {
-            FieldPipe pipe = this.sourcePipes.GetOrAdd(parameter.Field, new FieldPipe(this));
-            ParameterSource source = pipe.Source as ParameterSource ?? new ParameterSource();
+            if (parameter == null)
+                throw new ArgumentNullException(nameof(parameter));
 
-            source.Parameter = parameter;
-            pipe.Source = source;
+            FieldPipe pipe = this.paramHeader.GetOrAdd(parameter.Name, new FieldPipe(this));
 
-            this.paramHeader[parameter.Name] = pipe;
+            pipe.Parameter ??= new ParameterSource();
+            pipe.Parameter.Parameter = parameter;
+
+            this.paramHeader.TryAdd(parameter.Name, pipe);
+        }
+
+        public void Add(CascadeBinding binding)
+        {
+            if (binding == null)
+                throw new ArgumentNullException(nameof(binding));
+
+            FieldPipe pipe = this.targetPipes.GetOrAdd(binding.Target, new FieldPipe(this));
+
+            pipe.Cascade ??= new CascadeSource(binding, this);
         }
 
         public void Add(ColumnBinding binding)
         {
-            FieldPipe pipe = this.columnHeader.GetOrAdd(binding.ColumnName, new FieldPipe(this));
+            if (binding == null)
+                throw new ArgumentNullException(nameof(binding));
 
-            pipe.Source = new ColumnSource();
-            pipe.Targets.Add(binding.Target);
+            FieldPipe pipe = this.targetPipes.GetOrAdd(binding.Target, new FieldPipe(this));
 
-            this.columnHeader[binding.ColumnName] = pipe;
-            this.targetPipes[binding.Target] = pipe;
+            pipe.Column ??= new ColumnSource();
+            pipe.Target = binding.Target;
+
+            this.columnHeader.TryAdd(binding.ColumnName, pipe);
         }
 
         public void Add(ParameterBinding binding)
         {
-            FieldPipe pipe = this.paramHeader.GetOrAdd(binding.ParameterName, new FieldPipe(this));
-            ParameterSource source = pipe.Source as ParameterSource ?? new ParameterSource();
+            if (binding == null)
+                throw new ArgumentNullException(nameof(binding));
 
-            pipe.Targets.Add(binding.Target);
-            pipe.Source = source;
+            FieldPipe pipe = this.targetPipes.GetOrAdd(binding.Target, () => this.paramHeader.GetOrAdd(binding.ParameterName, new FieldPipe(this)));
 
-            this.targetPipes[binding.Target] = pipe;
+            pipe.Parameter ??= new ParameterSource();
+            pipe.Parameter.HasTarget = true;
+            pipe.Target = binding.Target;
         }
     }
 }

@@ -5,19 +5,58 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using Jerrycurl.Data.Commands.Internal.V11.Caching;
+using Jerrycurl.Data.Commands.Internal.Caching;
 using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Queries.Internal;
+using Jerrycurl.Relations;
+using Jerrycurl.Relations.Metadata;
 
-namespace Jerrycurl.Data.Commands.Internal.V11.Compilation
+namespace Jerrycurl.Data.Commands.Internal.Compilation
 {
     internal class CommandCompiler
     {
         private delegate void BufferInternalWriter(IDataReader dataReader, FieldPipe[] pipes, ElasticArray helpers, Type schemaType);
+        private delegate void BufferInternalConverter(IField field, object value, ElasticArray helpers, Type schemaType);
 
-        public FieldWriter Compile(IEnumerable<FieldPipe> pipes)
+        public BufferConverter Compile(MetadataIdentity metadata, ColumnInfo columnInfo)
         {
-            return null;
+            IBindingMetadata binding = metadata.GetMetadata<IBindingMetadata>();
+
+            ParameterExpression inputParam = Expression.Parameter(typeof(object));
+            Expression value = inputParam;
+
+            if (metadata != null)
+            {
+                Type sourceType = null;
+
+                if (columnInfo != null)
+                {
+                    BindingColumnInfo bindingColumnInfo = new BindingColumnInfo()
+                    {
+                        Column = columnInfo,
+                        CanBeNull = true,
+                        Metadata = binding,
+                    };
+
+                    sourceType = binding.Value?.Read(bindingColumnInfo)?.ReturnType;
+                }
+
+                BindingValueInfo valueInfo = new BindingValueInfo()
+                {
+                    CanBeNull = true,
+                    CanBeDbNull = true,
+                    Metadata = binding,
+                    Value = value,
+                    SourceType = sourceType,
+                    TargetType = binding.Type,
+                };
+
+                value = binding.Value?.Convert?.Invoke(valueInfo) ?? inputParam;
+            }
+
+            value = this.GetObjectExpression(value);
+
+            return Expression.Lambda<BufferConverter>(value, inputParam).Compile();
         }
 
         public BufferWriter Compile(IEnumerable<ColumnName> columnNames)
@@ -25,11 +64,12 @@ namespace Jerrycurl.Data.Commands.Internal.V11.Compilation
             List<Expression> body = new List<Expression>();
 
             int index = 0;
+
             foreach (ColumnName columnName in columnNames)
             {
                 IBindingMetadata metadata = columnName.Metadata.GetMetadata<IBindingMetadata>();
 
-                Expression value = this.GetValueExpression(metadata, columnName.ColumnInfo);
+                Expression value = this.GetValueExpression(metadata, columnName.Info);
                 Expression writer = this.GetWriterExpression(index++, value);
 
                 body.Add(writer);

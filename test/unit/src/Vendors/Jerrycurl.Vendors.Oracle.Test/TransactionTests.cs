@@ -34,11 +34,11 @@ namespace Jerrycurl.Vendors.Oracle.Test
             this.helper.CreateTable();
 
             CommandData command = this.helper.GetInsert();
-            CommandHandler handler = this.helper.GetCommandHandler();
+            CommandEngine engine = this.helper.GetCommandEngine();
 
             try
             {
-                handler.Execute(command);
+                engine.Execute(command);
             }
             catch (DbException) { }
 
@@ -50,11 +50,11 @@ namespace Jerrycurl.Vendors.Oracle.Test
             this.helper.CreateTable();
 
             CommandData command = this.helper.GetInsert();
-            CommandHandler handler = this.helper.GetCommandHandler();
+            CommandEngine engine = this.helper.GetCommandEngine();
 
             try
             {
-                await handler.ExecuteAsync(command);
+                await engine.ExecuteAsync(command);
             }
             catch (DbException) { }
 
@@ -67,11 +67,11 @@ namespace Jerrycurl.Vendors.Oracle.Test
             this.helper.CreateTable();
 
             CommandData[] commands = this.GetMultiInsertCommands();
-            CommandHandler handler = this.helper.GetCommandHandler();
+            CommandEngine engine = this.helper.GetCommandEngine();
 
             try
             {
-                handler.Execute(commands);
+                engine.Execute(commands);
             }
             catch (DbException) { }
 
@@ -83,11 +83,11 @@ namespace Jerrycurl.Vendors.Oracle.Test
             this.helper.CreateTable();
 
             CommandData[] commands = this.GetMultiInsertCommands();
-            CommandHandler handler = this.helper.GetCommandHandler();
+            CommandEngine engine = this.helper.GetCommandEngine();
 
             try
             {
-                await handler.ExecuteAsync(commands);
+                await engine.ExecuteAsync(commands);
             }
             catch (DbException) { }
 
@@ -99,11 +99,11 @@ namespace Jerrycurl.Vendors.Oracle.Test
             this.helper.CreateTable();
 
             CommandData[] commands = this.GetMultiInsertCommands();
-            CommandHandler handler = this.helper.GetCommandHandler(new TransactionFilter());
+            CommandEngine engine = this.helper.GetCommandEngine(new TransactionFilter());
 
             try
             {
-                handler.Execute(commands);
+                engine.Execute(commands);
             }
             catch (DbException) { }
 
@@ -115,11 +115,11 @@ namespace Jerrycurl.Vendors.Oracle.Test
             this.helper.CreateTable();
 
             CommandData[] commands = this.GetMultiInsertCommands();
-            CommandHandler handler = this.helper.GetCommandHandler(new TransactionFilter());
+            CommandEngine engine = this.helper.GetCommandEngine(new TransactionFilter());
 
             try
             {
-                await handler.ExecuteAsync(commands);
+                await engine.ExecuteAsync(commands);
             }
             catch (DbException) { }
 
@@ -131,11 +131,11 @@ namespace Jerrycurl.Vendors.Oracle.Test
             this.helper.CreateTable();
 
             CommandData[] commands = this.GetMultiInsertCommands();
-            CommandHandler handler = this.helper.GetCommandHandler(new TransactionScopeFilter());
+            CommandEngine engine = this.helper.GetCommandEngine(new TransactionScopeFilter());
 
             try
             {
-                await handler.ExecuteAsync(commands);
+                await engine.ExecuteAsync(commands);
             }
             catch (DbException) { }
 
@@ -147,11 +147,11 @@ namespace Jerrycurl.Vendors.Oracle.Test
             this.helper.CreateTable();
 
             CommandData[] commands = this.GetMultiInsertCommands();
-            CommandHandler handler = this.helper.GetCommandHandler(new TransactionScopeFilter());
+            CommandEngine engine = this.helper.GetCommandEngine(new TransactionScopeFilter());
 
             try
             {
-                handler.Execute(commands);
+                engine.Execute(commands);
             }
             catch (DbException) { }
 

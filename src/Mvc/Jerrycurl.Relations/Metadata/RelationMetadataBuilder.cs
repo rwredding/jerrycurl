@@ -4,8 +4,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using Jerrycurl.Collections;
+using Jerrycurl.Diagnostics;
 using Jerrycurl.Reflection;
 using Jerrycurl.Relations.Metadata.Contracts;
+using HashCode = Jerrycurl.Diagnostics.HashCode;
 
 namespace Jerrycurl.Relations.Metadata
 {
@@ -115,22 +117,13 @@ namespace Jerrycurl.Relations.Metadata
             IEnumerable<MemberInfo> members = parent.Type.GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
             foreach (MemberInfo member in members.Where(m => this.IsFieldOrNonIndexedProperty(m)))
-                yield return this.CreateProperty(context, parent, member);
-        }
-
-        private bool IsMetadataRecursive(IRelationMetadata metadata)
-        {
-            List<MemberInfo> propertyPath = new List<MemberInfo>();
-
-            while (metadata != null)
             {
-                if (metadata.Member != null)
-                    propertyPath.Add(metadata.Member);
+                RelationMetadata property = this.CreateProperty(context, parent, member);
 
-                metadata = metadata.Parent;
+                if (property != null)
+                    yield return property;
             }
-
-            return !propertyPath.Distinct().SequenceEqual(propertyPath);
+                
         }
 
         private RelationMetadata CreateItem(IMetadataBuilderContext context, RelationMetadata parent)
@@ -214,6 +207,35 @@ namespace Jerrycurl.Relations.Metadata
             return metadata;
         }
 
+        private bool IsMetadataRecursive(IRelationMetadata metadata)
+        {
+            List<RecurseNode> path = new List<RecurseNode>();
+
+            while (metadata != null)
+            {
+                path.Add(new RecurseNode(metadata.Member, metadata.Type));
+
+                metadata = metadata.Parent;
+            }
+
+            return !path.Distinct().SequenceEqual(path);
+        }
+
+        private bool IsMetadataRecursive2(IRelationMetadata metadata)
+        {
+            List<MemberInfo> propertyPath = new List<MemberInfo>();
+
+            while (metadata != null)
+            {
+                if (metadata.Member != null)
+                    propertyPath.Add(metadata.Member);
+
+                metadata = metadata.Parent;
+            }
+
+            return !propertyPath.Distinct().SequenceEqual(propertyPath);
+        }
+
         private bool IsFieldOrNonIndexedProperty(MemberInfo memberInfo)
         {
             if (memberInfo is PropertyInfo pi)
@@ -232,6 +254,22 @@ namespace Jerrycurl.Relations.Metadata
                 return ((FieldInfo)member).FieldType;
 
             return null;
+        }
+
+        private class RecurseNode : IEquatable<RecurseNode>
+        {
+            public MemberInfo Member { get; }
+            public Type Type { get; }
+
+            public RecurseNode(MemberInfo member, Type type)
+            {
+                this.Member = member;
+                this.Type = type;
+            }
+
+            public bool Equals(RecurseNode other) => Equality.Combine(this, other, m => m.Member, m => m.Type);
+            public override bool Equals(object obj) => (obj is RecurseNode other && this.Equals(other));
+            public override int GetHashCode() => HashCode.Combine(this.Member, this.Type);
         }
     }
 }
