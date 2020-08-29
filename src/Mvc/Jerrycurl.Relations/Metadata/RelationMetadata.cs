@@ -13,6 +13,7 @@ namespace Jerrycurl.Relations.Metadata
         public IRelationMetadata MemberOf { get; set; }
         public RelationMetadata Item { get; set; }
         public Lazy<IReadOnlyList<RelationMetadata>> Properties { get; set; }
+        public IRelationMetadata Recursor { get; set; }
         public RelationMetadataFlags Flags { get; set; }
         public int Depth { get; set; }
 

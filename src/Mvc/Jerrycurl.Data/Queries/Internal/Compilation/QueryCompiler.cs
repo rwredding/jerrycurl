@@ -182,8 +182,6 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
             return Expression.IfThen(isNull, assignNew);
         }
 
-
-
         private Expression GetWriterExpression(ListWriter writer)
         {
             Expression value = this.GetBinderExpression(writer.Item);
@@ -220,7 +218,7 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
         private Expression GetWriterExpression(AggregateWriter writer)
         {
             Expression arrayIndex = this.GetElasticIndexExpression(Arguments.Aggregates, writer.BufferIndex);
-            Expression value = this.GetBinderOrDbNullExpression(writer.Data);
+            Expression value = this.GetBinderOrNullExpression(writer.Data);
 
             return Expression.Assign(arrayIndex, value);
         }
@@ -312,7 +310,7 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
         private Expression GetBinderExpression(NodeBinder binder) => binder switch
         {
             ColumnBinder b => this.GetBinderExpression(b, b.IsDbNull, b.Variable, b.CanBeDbNull),
-            AggregateBinder b => this.GetBinderExpression(b, b.IsDbNull, b.Variable, canBeDbNull: true),
+            AggregateBinder b => this.GetBinderExpression(b, b.IsDbNull, b.Variable, b.CanBeDbNull),
             NewBinder b => this.GetBinderExpression(b),
             JoinBinder b => this.GetBinderExpression(b),
             _ => throw new InvalidOperationException(),
@@ -341,25 +339,33 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
             }
         }
 
-        private Expression GetBinderOrDbNullExpression(ColumnBinder binder)
+        private Expression GetBinderOrNullExpression(ColumnBinder binder)
         {
             if (!binder.CanBeDbNull)
                 return this.GetBinderExpression(binder, binder.IsDbNull, binder.Variable, binder.CanBeDbNull);
 
             Expression isDbNull = binder.IsDbNull ?? this.GetIsDbNullExpression(binder);
-            Expression value = binder.Variable ?? this.GetValueExpression(binder);
-            Expression dbNull = Expression.Convert(Expression.Constant(DBNull.Value), typeof(object));
-            
-            return Expression.Condition(isDbNull, dbNull, Expression.Convert(this.GetConvertExpression(value, binder), typeof(object)));
+            Expression nullValue = Expression.Constant(null);
+            Expression value = binder.Variable;
+
+            if (value == null)
+            {
+                value = this.GetValueExpression(binder);
+                value = this.GetConvertExpression(value, binder);
+            }
+
+            return Expression.Condition(isDbNull, nullValue, Expression.Convert(value, typeof(object)));
         }
 
         private Expression GetBinderExpression(ValueBinder binder, Expression isDbNull, Expression value, bool canBeDbNull)
         {
             isDbNull ??= this.GetIsDbNullExpression(binder);
-            value ??= this.GetValueExpression(binder);
 
-            if (value.Type != binder.Metadata.Type)
-                value = Expression.Convert(value, binder.Metadata.Type);
+            if (value == null)
+            {
+                value = this.GetValueExpression(binder);
+                value = this.GetConvertExpression(value, binder);
+            }
 
             if (canBeDbNull)
                 return Expression.Condition(isDbNull, Expression.Default(binder.Metadata.Type), value);
@@ -416,6 +422,7 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
         }
 
         #endregion
+
         #region  " IsDbNull "
 
         private Expression GetIsDbNullExpression(ValueBinder binder) => binder switch
@@ -605,16 +612,16 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
             return array;
         }
 
-        private Expression GetTryCatchPropertyExpression(Node node, Expression propertyExpression)
+        private Expression GetTryCatchPropertyExpression(NodeBinder binder, Expression propertyExpression)
         {
-            if (this.IsRunningNetFramework() && node.Metadata.Type.IsValueType)
+            if (this.IsRunningNetFramework() && binder.Metadata.Type.IsValueType)
                 return propertyExpression;
 
             ParameterExpression ex = Expression.Variable(typeof(Exception));
 
             MethodInfo constructor = typeof(BindingException).GetStaticMethod(nameof(BindingException.FromProperty), typeof(Type), typeof(string), typeof(string), typeof(Exception));
 
-            Expression newException = Expression.Call(constructor, Arguments.SchemaType, Expression.Constant(node.Identity.Name), Expression.Default(typeof(string)), ex);
+            Expression newException = Expression.Call(constructor, Arguments.SchemaType, Expression.Constant(binder.Identity.Name), Expression.Default(typeof(string)), ex);
             CatchBlock catchBlock = Expression.Catch(ex, Expression.Throw(newException, propertyExpression.Type));
 
             return Expression.TryCatch(propertyExpression, catchBlock);
@@ -647,7 +654,7 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
 
         private Expression GetConditionExpression(IEnumerable<Expression> conditions, Func<Expression, Expression, Expression> gateFactory, Expression emptyValue = null)
         {
-            if (!conditions.Any())
+            if (conditions == null || !conditions.Any())
                 return emptyValue;
 
             Expression expr = conditions.First();
@@ -657,9 +664,6 @@ namespace Jerrycurl.Data.Queries.Internal.Compilation
 
             return expr;
         }
-
-        private Expression GetConditionExpression(Expression test, Expression ifTrue, Expression ifFalse, Expression ifNull = null)
-            => test != null ? Expression.Condition(test, ifTrue, ifFalse) : ifNull;
 
         private bool IsRunningNetFramework() => RuntimeInformation.FrameworkDescription.StartsWith(".NET Framework");
 

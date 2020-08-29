@@ -12,6 +12,7 @@ namespace Jerrycurl.Relations.Metadata
         IRelationMetadata Item { get; }
         RelationMetadataFlags Flags { get; }
         IReadOnlyList<Attribute> Annotations { get; }
+        IRelationMetadata Recursor { get; }
         int Depth { get; set; }
 
         MethodInfo WriteIndex { get; }
