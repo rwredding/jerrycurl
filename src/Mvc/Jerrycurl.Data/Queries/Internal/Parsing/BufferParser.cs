@@ -141,26 +141,26 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
 
         private ParameterExpression AddSlot(BufferTree tree, IBindingMetadata metadata, KeyBinder joinKey)
         {
-            int slotIndex;
+            int bufferIndex;
             Type variableType;
             if (joinKey == null)
             {
-                slotIndex = metadata.Relation.Depth == 0 ? this.Buffer.GetResultIndex() : this.Buffer.GetListIndex(metadata.Identity);
+                bufferIndex = metadata.Relation.Depth == 0 ? this.Buffer.GetResultIndex() : this.Buffer.GetListIndex(metadata.Identity);
                 variableType = metadata.Composition.Construct.Type;
             }
             else
             {
-                slotIndex = this.Buffer.GetParentIndex(joinKey.Metadata);
+                bufferIndex = this.Buffer.GetParentIndex(joinKey.Metadata);
                 variableType = this.GetDictionaryType(joinKey);
             }
 
-            SlotWriter slotWriter = tree.Slots.FirstOrDefault(w => w.BufferIndex == slotIndex);
+            SlotWriter slotWriter = tree.Slots.FirstOrDefault(w => w.BufferIndex == bufferIndex);
 
             if (slotWriter == null)
             {
                 slotWriter = new SlotWriter()
                 {
-                    BufferIndex = slotIndex,
+                    BufferIndex = bufferIndex,
                     Variable = BindingHelper.Variable(variableType, metadata.Identity),
                     Metadata = metadata,
                     KeyType = joinKey?.KeyType,
@@ -230,26 +230,24 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
 
             foreach (IReference reference in newMetadata.References.Where(r => r.HasFlag(ReferenceFlags.Parent) && this.IsValidReference(r)))
             {
-                KeyBinder key = BindingHelper.FindParentKey(binder, reference);
+                KeyBinder joinKey = BindingHelper.FindParentKey(binder, reference);
 
-                if (key != null)
+                if (joinKey != null)
                 {
-                    IBindingMetadata metadata = reference.Other.Metadata.To<IBindingMetadata>();
-
-                    metadata = reference.Other.HasFlag(ReferenceFlags.Many) ? metadata.Parent : metadata;
+                    IBindingMetadata metadata = (reference.List ?? reference.Other.Metadata).To<IBindingMetadata>();
 
                     JoinBinder joinBinder = new JoinBinder(metadata)
                     {
-                        Array = key.Array ??= BindingHelper.Variable(typeof(ElasticArray), metadata.Identity),
+                        Array = joinKey.Array ??= BindingHelper.Variable(typeof(ElasticArray), metadata.Identity),
                         ArrayIndex = this.Buffer.GetChildIndex(reference),
                         IsManyToOne = reference.Other.HasFlag(ReferenceFlags.One),
                     };
 
-                    binder.JoinKeys.Add(key);
+                    binder.JoinKeys.Add(joinKey);
                     binder.Properties.Add(joinBinder);
 
-                    this.InitializeKeyVariables(key);
-                    this.AddSlot(tree, metadata, key);
+                    this.InitializeKeyVariables(joinKey);
+                    this.AddSlot(tree, metadata, joinKey);
                 }
             }
         }
@@ -261,13 +259,13 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
                 IReferenceMetadata metadata = writer.Item.Metadata.To<IReferenceMetadata>();
                 IReference reference = metadata.References.FirstOrDefault(r => r.HasFlag(ReferenceFlags.Child) && this.IsValidReference(r));
 
-                writer.JoinKey = BindingHelper.FindChildKey(binder, reference);
+                KeyBinder joinKey = writer.JoinKey = BindingHelper.FindChildKey(binder, reference);
 
-                if (writer.JoinKey != null)
+                if (joinKey != null)
                 {
-                    this.InitializeKeyVariables(writer.JoinKey);
+                    this.InitializeKeyVariables(joinKey);
 
-                    writer.JoinKey.Array ??= BindingHelper.Variable(typeof(ElasticArray), writer.JoinKey.Metadata.Metadata.Identity);
+                    joinKey.Array ??= BindingHelper.Variable(typeof(ElasticArray), joinKey.Metadata.Metadata.Identity);
                 }
             }
         }
@@ -275,6 +273,9 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
         private bool IsValidReference(IReference reference)
         {
             IReference childReference = reference.Find(ReferenceFlags.Child);
+
+            if (childReference.HasFlag(ReferenceFlags.Self) && childReference.HasFlag(ReferenceFlags.Primary))
+                return false;
 
             return (childReference.HasFlag(ReferenceFlags.Many) || this.HasOneAttribute(childReference));
         }

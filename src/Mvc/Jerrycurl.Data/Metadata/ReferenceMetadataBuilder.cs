@@ -167,20 +167,23 @@ namespace Jerrycurl.Data.Metadata
 
         private IEnumerable<ReferenceKey> GetPossibleChildKeys(ReferenceMetadata parent)
         {
-            IEnumerable<ReferenceKey> keys = parent.Properties.Value.SelectMany(a => a.Keys.Value);
+            IEnumerable<ReferenceKey> childKeys = parent.Properties.Value.SelectMany(a => a.Keys.Value);
+            IEnumerable<ReferenceKey> itemKeys = parent.Properties.Value.Where(m => m.Item != null).SelectMany(a => a.Item.Keys.Value);
+            IEnumerable<ReferenceKey> allKeys = childKeys.Concat(itemKeys);
 
-            keys = keys.Concat(parent.Properties.Value.Where(m => m.Item != null).SelectMany(a => a.Item.Keys.Value));
+            if (parent.Relation.HasFlag(RelationMetadataFlags.Recursive))
+                allKeys = allKeys.Concat(parent.Keys.Value);
 
-            return keys;
+            return allKeys;
         }
 
         private IEnumerable<Reference> CreateChildReferences(ReferenceMetadata metadata)
         {
             foreach (Reference reference in this.GetPossibleParents(metadata).SelectMany(m => m.ParentReferences.Value))
             {
-                if (reference.Metadata.Equals(metadata) && reference.HasFlag(ReferenceFlags.Self))
+                /*if (reference.Metadata.Equals(metadata) && reference.HasFlag(ReferenceFlags.Self))
                     yield return reference.Other;
-                else if (reference.Other.Metadata.Equals(metadata))
+                else */if (reference.Other.Metadata.Equals(metadata))
                     yield return reference.Other;
             }
         }
@@ -245,27 +248,54 @@ namespace Jerrycurl.Data.Metadata
             }
 
 
+            //foreach (Reference reference in references.ToList())
+            //{
+            //    Reference other = references.Except(new[] { reference }).FirstOrDefault(r => r.Other.Key.Equals(reference.Key));
+
+            //    if (other != null && this.IsPreferredParentForSelfJoin(reference, other))
+            //    {
+            //        if (reference.Other.Metadata.Relation.HasFlag(RelationMetadataFlags.Recursive))
+            //        {
+            //            reference.Flags |= ReferenceFlags.Self;
+            //            reference.Other.Flags |= ReferenceFlags.Self;
+            //            reference.Other.Key = other.Key;
+            //        }
+
+            //        references.Remove(other);
+            //    }
+            //}
+
             foreach (Reference reference in references.ToList())
             {
-                Reference other = references.Except(new[] { reference }).FirstOrDefault(r => r.Other.Key.Equals(reference.Key));
+                Reference reverse = references.FirstOrDefault(r => r.Key.Equals(reference.Other.Key) && r.Other.Key.Equals(reference.Key));
 
-                if (other != null && this.IsPreferredParentForSelfJoin(reference, other))
+                if (reverse != null)
                 {
-                    if (reference.Other.Metadata.Relation.HasFlag(RelationMetadataFlags.Recursive))
-                    {
-                        reference.Flags |= ReferenceFlags.Self;
-                        reference.Other.Flags |= ReferenceFlags.Self;
-                        reference.Other.Key = other.Key;
-                    }
+                    reference.Flags |= ReferenceFlags.Self;
+                    reference.Other.Flags |= ReferenceFlags.Self;
+                    //reference.Other.Key = reverse.Key;
 
-                    references.Remove(other);
+                    //if (this.IsPreferredSelfJoin(reference, reverse))
+                    //    references.Remove(reverse);
                 }
+
+                //if (reverse != null && this.IsPreferredParentForSelfJoin(reference, reverse))
+                //{
+                //    if (reference.Other.Metadata.Relation.HasFlag(RelationMetadataFlags.Recursive))
+                //    {
+                //        reference.Flags |= ReferenceFlags.Self;
+                //        reference.Other.Flags |= ReferenceFlags.Self;
+                //        reference.Other.Key = reverse.Key;
+                //    }
+
+                //    references.Remove(reverse);
+                //}
             }
 
             return references;
         }
 
-        private bool IsPreferredParentForSelfJoin(IReference reference, IReference other)
+        private bool IsPreferredSelfJoin(IReference reference, IReference other)
         {
             if (reference.Other.HasFlag(ReferenceFlags.Many) && other.HasFlag(ReferenceFlags.Foreign))
                 return true;

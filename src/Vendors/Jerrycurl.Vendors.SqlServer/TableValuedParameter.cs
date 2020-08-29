@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
 using Jerrycurl.Data.Metadata;
 using Jerrycurl.Data.Sessions;
 using Jerrycurl.Relations;
@@ -38,11 +40,7 @@ namespace Jerrycurl.Vendors.SqlServer
 
             Action<SqlParameter, IRelation> binder = TvpCache.Binders.GetOrAdd(this.Relation.Identity, key =>
             {
-                ITableMetadata[] columnMetadata = key.Heading.Select(m => m.GetMetadata<ITableMetadata>()).Where(m => m.HasFlag(TableMetadataFlags.Column)).ToArray();
-                IBindingMetadata[] bindingMetadata = columnMetadata.Select(m => m.Identity.GetMetadata<IBindingMetadata>()).ToArray();
-
-                if (bindingMetadata.Length == 0)
-                    throw new InvalidOperationException("No columns found.");
+                GetHeadingMetadata(key.Heading, out IBindingMetadata[] bindingMetadata, out ITableMetadata[] columnMetadata);
 
                 ITableMetadata tableMetadata = columnMetadata[0].HasFlag(TableMetadataFlags.Table) ? columnMetadata[0] : columnMetadata[0].MemberOf;
 
@@ -56,6 +54,23 @@ namespace Jerrycurl.Vendors.SqlServer
             binder(sqlParam, this.Relation);
         }
 
+        private static void GetHeadingMetadata(IReadOnlyList<MetadataIdentity> heading, out IBindingMetadata[] bindingMetadata, out ITableMetadata[] columnMetadata)
+        {
+            bindingMetadata = new IBindingMetadata[heading.Count];
+            columnMetadata = new ITableMetadata[heading.Count];
+
+            for (int i = 0; i < heading.Count; i++)
+            {
+                IBindingMetadata bindingEntry = heading[i].GetMetadata<IBindingMetadata>();
+                ITableMetadata tableEntry = heading[i].GetMetadata<ITableMetadata>();
+
+                bindingMetadata[i] = bindingEntry ?? throw new InvalidOperationException($"IBindingMetadata not found for property '{heading[i].Name}'.");
+                columnMetadata[i] = tableEntry ?? throw new InvalidOperationException($"ITableMetadata not found for property '{heading[i].Name}'.");
+            }
+
+            if (bindingMetadata.Length == 0)
+                throw new InvalidOperationException("No columns found.");
+        }
 
         private static void BindParameter(SqlParameter sqlParam, string tvpName, string[] columnNames, BindingParameterConverter[] converters, IRelation relation)
         {
@@ -63,13 +78,15 @@ namespace Jerrycurl.Vendors.SqlServer
 
             IEnumerable<SqlDataRecord> iterator()
             {
-                SqlDataRecord record = GetDataRecord(columnNames, refTuple);
+                SqlDataRecord buffer = CreateSqlBuffer(columnNames, refTuple);
 
-                foreach (ITuple tuple in relation)
+                yield return buffer;
+
+                foreach (ITuple tuple in relation.Skip(1))
                 {
-                    SetRecordValues(record, tuple, converters);
+                    SetSqlBufferValues(buffer, tuple, converters);
 
-                    yield return record;
+                    yield return buffer;
                 }
             }
 
@@ -82,21 +99,40 @@ namespace Jerrycurl.Vendors.SqlServer
             sqlParam.TypeName = tvpName;
         }
 
-        private static SqlDataRecord GetDataRecord(string[] columnNames, ITuple tuple)
+        private static SqlDataRecord CreateSqlBuffer(string[] columnNames, ITuple tuple)
         {
-            SqlMetaData[] columns = columnNames.Zip(tuple, (n, f) => SqlMetaData.InferFromValue(f.Value, n)).ToArray();
+            object[] values = new object[tuple.Degree];
+            SqlMetaData[] metadata = new SqlMetaData[tuple.Degree];
 
-            return new SqlDataRecord(columns);
+            for (int i = 0; i < tuple.Degree; i++)
+            {
+                Parameter param = new Parameter("P", tuple[i]);
+                SqlParameter sqlParam = new SqlParameter();
+
+                param.Build(sqlParam);
+
+                metadata[i] = GetSqlMetadata(columnNames[i], sqlParam);
+                values[i] = sqlParam.Value;
+            }
+
+            SqlDataRecord dataRecord = new SqlDataRecord(metadata);
+
+            for (int i = 0; i < dataRecord.FieldCount; i++)
+                dataRecord.SetValue(i, values[i]);
+
+            return dataRecord;
         }
 
-        private static void SetRecordValues(SqlDataRecord record, ITuple tuple, BindingParameterConverter[] converters)
+        private static void SetSqlBufferValues(SqlDataRecord buffer, ITuple tuple, BindingParameterConverter[] converters)
         {
-            for (int i = 0; i < record.FieldCount; i++)
+            for (int i = 0; i < buffer.FieldCount; i++)
             {
                 object value = converters[i]?.Invoke(tuple[i].Value) ?? tuple[i].Value;
 
-                record.SetValue(i, value);
+                buffer.SetValue(i, value);
             }
         }
+
+        private static SqlMetaData GetSqlMetadata(string name, SqlParameter valueParam) => new SqlMetaData(name, valueParam.SqlDbType);
     }
 }

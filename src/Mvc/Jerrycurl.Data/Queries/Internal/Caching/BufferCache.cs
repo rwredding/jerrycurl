@@ -37,21 +37,27 @@ namespace Jerrycurl.Data.Queries.Internal.Caching
         public int GetListIndex(MetadataIdentity metadata) => this.GetParentIndex(new BufferCacheKey(metadata));
         public int GetParentIndex(IReference reference)
         {
-            IReference parentReference = reference.Find(ReferenceFlags.Parent);
-            BufferCacheKey joinKey = new BufferCacheKey(parentReference.Other.Metadata.Identity, parentReference.Key);
+            IReference childReference = reference.Find(ReferenceFlags.Child);
+            IReferenceMetadata metadata = childReference.List ?? childReference.Metadata;
+            IReferenceKey parentKey = reference.HasFlag(ReferenceFlags.Self) ? childReference.Key : childReference.Other.Key;
 
-            return this.GetParentIndex(joinKey);
+            BufferCacheKey cacheKey = new BufferCacheKey(metadata.Identity, parentKey);
+
+            return this.GetParentIndex(cacheKey);
         }
 
         public int GetChildIndex(IReference reference)
         {
             IReference childReference = reference.Find(ReferenceFlags.Child);
+            IReferenceMetadata metadata = childReference.List ?? childReference.Metadata;
+            IReferenceKey parentKey = reference.HasFlag(ReferenceFlags.Self) ? childReference.Key : childReference.Other.Key;
+
             int parentIndex = this.GetParentIndex(reference);
 
             lock (this.state)
             {
                 Dictionary<BufferCacheKey, int> innerMap = this.childMap.GetOrAdd(parentIndex);
-                BufferCacheKey joinKey = new BufferCacheKey(childReference.Metadata.Identity, childReference.Other.Key, childReference.Key);
+                BufferCacheKey joinKey = new BufferCacheKey(metadata.Identity, parentKey, childReference.Key);
 
                 return innerMap.GetOrAdd(joinKey, innerMap.Count);
             }

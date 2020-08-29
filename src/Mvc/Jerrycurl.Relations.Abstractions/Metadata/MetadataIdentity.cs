@@ -5,7 +5,7 @@ using HashCode = Jerrycurl.Diagnostics.HashCode;
 
 namespace Jerrycurl.Relations.Metadata
 {
-    [DebuggerDisplay("{Schema.ToString(),nq}({Name})")]
+    [DebuggerDisplay("{Schema.ToString(),nq}({Name,nq})")]
     public sealed class MetadataIdentity : IEquatable<MetadataIdentity>
     {
         public string Name { get; }
@@ -30,6 +30,9 @@ namespace Jerrycurl.Relations.Metadata
 
         public bool Equals(MetadataIdentity other)
         {
+            if (other == null)
+                return false;
+
             Equality eq = new Equality();
 
             eq.Add(this.Name, other.Name, this.Notation.Comparer);

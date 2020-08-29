@@ -3,7 +3,10 @@
 		<TargetFrameworks>$(NetStandardMultiTargetMoniker)</TargetFrameworks>
 		<IsPackable>true</IsPackable>
 	</PropertyGroup>
-
+	<ItemGroup>
+	  <Compile Remove="Internal\V11\RelationDataReader.cs" />
+	</ItemGroup>
+  
 	<ItemGroup>
 		<ProjectReference Include="..\Jerrycurl.Relations.Abstractions\Jerrycurl.Relations.Abstractions.csproj" />
 	</ItemGroup>

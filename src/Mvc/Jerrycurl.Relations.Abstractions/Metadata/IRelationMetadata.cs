@@ -6,12 +6,13 @@ namespace Jerrycurl.Relations.Metadata
 {
     public interface IRelationMetadata : IMetadata, IEquatable<IRelationMetadata>
     {
-        IEnumerable<IRelationMetadata> Properties { get; }
+        IReadOnlyList<IRelationMetadata> Properties { get; }
         IRelationMetadata Parent { get; }
         IRelationMetadata MemberOf { get; }
         IRelationMetadata Item { get; }
         RelationMetadataFlags Flags { get; }
         IReadOnlyList<Attribute> Annotations { get; }
+        IRelationMetadata Recursor { get; }
         int Depth { get; set; }
 
         MethodInfo WriteIndex { get; }
