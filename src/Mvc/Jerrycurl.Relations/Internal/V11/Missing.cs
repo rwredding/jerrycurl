@@ -13,10 +13,8 @@ namespace Jerrycurl.Relations.Internal.V11
         public object Value { get; set; }
         public IField2 Model { get; }
         public FieldType2 Type { get; } = FieldType2.Missing;
-        public object CurrentValue { get; set; }
-        public IRelationMetadata Metadata { get; }
 
-        public Missing(string name, IRelationMetadata metadata, IField2 model)
+        public Missing(string name, MetadataIdentity metadata, IField2 model)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
@@ -24,12 +22,11 @@ namespace Jerrycurl.Relations.Internal.V11
             if (metadata == null)
                 throw new ArgumentNullException(nameof(metadata));
 
-            this.Metadata = metadata ?? throw new ArgumentNullException(nameof(metadata));
-            this.Identity = new FieldIdentity(metadata.Identity, name);
+            this.Identity = new FieldIdentity(metadata, name);
             this.Model = model ?? throw new ArgumentNullException(nameof(model));
         }
 
-        public void Bind() => throw new NotSupportedException("Cannot bind to missing field.");
+        public void Bind() => throw new InvalidOperationException();
 
         public bool Equals(IField2 other) => Equality.Combine(this, other, m => m.Model, m => m.Identity);
         public override bool Equals(object obj) => (obj is IField2 field && this.Equals(field));
