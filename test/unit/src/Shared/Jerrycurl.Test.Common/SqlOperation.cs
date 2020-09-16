@@ -3,7 +3,7 @@ using Jerrycurl.Data.Sessions;
 
 namespace Jerrycurl.Test
 {
-    public class SqlOperation : IOperation
+    public class SqlOperation : IBatch
     {
         private readonly string commandText;
 

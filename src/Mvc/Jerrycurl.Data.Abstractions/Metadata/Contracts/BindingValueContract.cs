@@ -2,7 +2,7 @@
 {
     public class BindingValueContract : IBindingValueContract
     {
-        public BindingColumnReader Read { get; set; }
+        public BindingValueReader Read { get; set; }
         public BindingValueConverter Convert { get; set; }
     }
 }

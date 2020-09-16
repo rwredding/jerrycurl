@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
 
 namespace Jerrycurl.Data.Sessions
 {
-    public interface ISyncSession : IDisposable
+    public interface IBatch
     {
-        IEnumerable<IDataReader> Execute(IBatch batch);
+        void Build(IDbCommand adoCommand);
     }
 }

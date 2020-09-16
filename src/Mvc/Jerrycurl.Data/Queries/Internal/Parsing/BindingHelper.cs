@@ -24,7 +24,7 @@ namespace Jerrycurl.Data.Queries.Internal.Parsing
                 {
                     return new ColumnBinder(node)
                     {
-                        Column = value.ColumnInfo,
+                        Column = value.Column,
                         CanBeDbNull = true,
                     };
                 }

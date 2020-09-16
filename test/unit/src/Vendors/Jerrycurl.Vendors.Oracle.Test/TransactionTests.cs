@@ -33,7 +33,7 @@ namespace Jerrycurl.Vendors.Oracle.Test
         {
             this.helper.CreateTable();
 
-            CommandData command = this.helper.GetInsert();
+            Command command = this.helper.GetInsert();
             CommandEngine engine = this.helper.GetCommandEngine();
 
             try
@@ -49,7 +49,7 @@ namespace Jerrycurl.Vendors.Oracle.Test
         {
             this.helper.CreateTable();
 
-            CommandData command = this.helper.GetInsert();
+            Command command = this.helper.GetInsert();
             CommandEngine engine = this.helper.GetCommandEngine();
 
             try
@@ -66,7 +66,7 @@ namespace Jerrycurl.Vendors.Oracle.Test
         {
             this.helper.CreateTable();
 
-            CommandData[] commands = this.GetMultiInsertCommands();
+            Command[] commands = this.GetMultiInsertCommands();
             CommandEngine engine = this.helper.GetCommandEngine();
 
             try
@@ -82,7 +82,7 @@ namespace Jerrycurl.Vendors.Oracle.Test
         {
             this.helper.CreateTable();
 
-            CommandData[] commands = this.GetMultiInsertCommands();
+            Command[] commands = this.GetMultiInsertCommands();
             CommandEngine engine = this.helper.GetCommandEngine();
 
             try
@@ -98,7 +98,7 @@ namespace Jerrycurl.Vendors.Oracle.Test
         {
             this.helper.CreateTable();
 
-            CommandData[] commands = this.GetMultiInsertCommands();
+            Command[] commands = this.GetMultiInsertCommands();
             CommandEngine engine = this.helper.GetCommandEngine(new TransactionFilter());
 
             try
@@ -114,7 +114,7 @@ namespace Jerrycurl.Vendors.Oracle.Test
         {
             this.helper.CreateTable();
 
-            CommandData[] commands = this.GetMultiInsertCommands();
+            Command[] commands = this.GetMultiInsertCommands();
             CommandEngine engine = this.helper.GetCommandEngine(new TransactionFilter());
 
             try
@@ -130,7 +130,7 @@ namespace Jerrycurl.Vendors.Oracle.Test
         {
             this.helper.CreateTable();
 
-            CommandData[] commands = this.GetMultiInsertCommands();
+            Command[] commands = this.GetMultiInsertCommands();
             CommandEngine engine = this.helper.GetCommandEngine(new TransactionScopeFilter());
 
             try
@@ -146,7 +146,7 @@ namespace Jerrycurl.Vendors.Oracle.Test
         {
             this.helper.CreateTable();
 
-            CommandData[] commands = this.GetMultiInsertCommands();
+            Command[] commands = this.GetMultiInsertCommands();
             CommandEngine engine = this.helper.GetCommandEngine(new TransactionScopeFilter());
 
             try
@@ -158,18 +158,18 @@ namespace Jerrycurl.Vendors.Oracle.Test
             this.helper.VerifyTransaction();
         }
 
-        private CommandData[] GetMultiInsertCommands()
+        private Command[] GetMultiInsertCommands()
         {
-            return new CommandData[]
+            return new Command[]
             {
-                new CommandData()
+                new Command()
                 {
                     CommandText = @"BEGIN
                                         INSERT INTO ""tran_values"" VALUES(1);
                                         INSERT INTO ""tran_values"" VALUES(2);
                                     END;",
                 },
-                new CommandData()
+                new Command()
                 {
                     CommandText = @"BEGIN
                                         INSERT INTO ""tran_values"" VALUES(NULL);

@@ -12,7 +12,7 @@ namespace Jerrycurl.Data.Queries.Internal.Binding
 
         }
 
-        public ColumnInfo Column { get; set; }
+        public ColumnMetadata Column { get; set; }
         public ParameterExpression Helper { get; set; }
     }
 }

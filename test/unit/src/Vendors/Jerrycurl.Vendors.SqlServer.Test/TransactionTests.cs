@@ -24,7 +24,7 @@ namespace Jerrycurl.Vendors.SqlServer.Test
         {
             this.helper.CreateTable();
 
-            CommandData command = this.helper.GetInsert();
+            Command command = this.helper.GetInsert();
             CommandEngine engine = this.helper.GetCommandEngine();
 
             try
@@ -40,7 +40,7 @@ namespace Jerrycurl.Vendors.SqlServer.Test
         {
             this.helper.CreateTable();
 
-            CommandData command = this.helper.GetInsert();
+            Command command = this.helper.GetInsert();
             CommandEngine engine = this.helper.GetCommandEngine(new TransactionFilter());
 
             try
@@ -56,7 +56,7 @@ namespace Jerrycurl.Vendors.SqlServer.Test
         {
             this.helper.CreateTable();
 
-            CommandData command = this.helper.GetInsert();
+            Command command = this.helper.GetInsert();
             CommandEngine engine = this.helper.GetCommandEngine();
 
             try
@@ -72,7 +72,7 @@ namespace Jerrycurl.Vendors.SqlServer.Test
         {
             this.helper.CreateTable();
 
-            CommandData command = this.helper.GetInsert();
+            Command command = this.helper.GetInsert();
             CommandEngine engine = this.helper.GetCommandEngine(new TransactionFilter());
 
             try
@@ -88,7 +88,7 @@ namespace Jerrycurl.Vendors.SqlServer.Test
         {
             this.helper.CreateTable();
 
-            CommandData command = this.helper.GetInsert();
+            Command command = this.helper.GetInsert();
             CommandEngine engine = this.helper.GetCommandEngine(new TransactionScopeFilter());
 
             try
@@ -104,7 +104,7 @@ namespace Jerrycurl.Vendors.SqlServer.Test
         {
             this.helper.CreateTable();
 
-            CommandData command = this.helper.GetInsert();
+            Command command = this.helper.GetInsert();
             CommandEngine engine = this.helper.GetCommandEngine(new TransactionScopeFilter());
 
             try

@@ -23,7 +23,7 @@ namespace Jerrycurl.Vendors.Sqlite.Test
         {
             this.helper.CreateTable();
 
-            CommandData command = this.helper.GetInsert();
+            Command command = this.helper.GetInsert();
             CommandEngine engine = this.helper.GetCommandEngine();
 
             
@@ -40,7 +40,7 @@ namespace Jerrycurl.Vendors.Sqlite.Test
         {
             this.helper.CreateTable();
 
-            CommandData command = this.helper.GetInsert();
+            Command command = this.helper.GetInsert();
             CommandEngine engine = this.helper.GetCommandEngine(new TransactionFilter());
 
             try
@@ -56,7 +56,7 @@ namespace Jerrycurl.Vendors.Sqlite.Test
         {
             this.helper.CreateTable();
 
-            CommandData command = this.helper.GetInsert();
+            Command command = this.helper.GetInsert();
             CommandEngine engine = this.helper.GetCommandEngine();
 
             try
@@ -72,7 +72,7 @@ namespace Jerrycurl.Vendors.Sqlite.Test
         {
             this.helper.CreateTable();
 
-            CommandData command = this.helper.GetInsert();
+            Command command = this.helper.GetInsert();
             CommandEngine engine = this.helper.GetCommandEngine(new TransactionFilter());
 
             try

@@ -33,11 +33,11 @@ namespace Jerrycurl.Test
             });
         }
 
-        public CommandData GetInsert() => new CommandData() { CommandText = this.insertSql };
+        public Command GetInsert() => new Command() { CommandText = this.insertSql };
 
         public void CreateTable()
         {
-            CommandData command = new CommandData() { CommandText = this.createSql };
+            Command command = new Command() { CommandText = this.createSql };
             CommandEngine handler = this.GetCommandEngine();
 
             handler.Execute(command);
@@ -54,7 +54,7 @@ namespace Jerrycurl.Test
                 Schemas = DatabaseHelper.Default.Schemas,
             };
 
-            QueryData query = new QueryData() { QueryText = this.selectSql };
+            Query query = new Query() { QueryText = this.selectSql };
             QueryEngine handler = new QueryEngine(options);
 
             return handler.List<int>(query);

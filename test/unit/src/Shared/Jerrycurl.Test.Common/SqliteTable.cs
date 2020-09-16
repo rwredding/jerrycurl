@@ -30,9 +30,9 @@ namespace Jerrycurl.Test
             base.InsertItem(index, item);
         }
 
-        public CommandData ToCommand(IEnumerable<IParameter> parameters = null, IEnumerable<ICommandBinding> bindings = null)
+        public Command ToCommand(IEnumerable<IParameter> parameters = null, IEnumerable<ICommandBinding> bindings = null)
         {
-            return new CommandData()
+            return new Command()
             {
                 CommandText = this.ToSql(),
                 Parameters = parameters?.ToArray() ?? Array.Empty<IParameter>(),
@@ -40,9 +40,9 @@ namespace Jerrycurl.Test
             };
         }
 
-        public QueryData ToQuery(IEnumerable<IParameter> parameters = null)
+        public Query ToQuery(IEnumerable<IParameter> parameters = null)
         {
-            return new QueryData()
+            return new Query()
             {
                 QueryText = this.ToSql(),
                 Parameters = parameters?.ToArray() ?? Array.Empty<IParameter>(),

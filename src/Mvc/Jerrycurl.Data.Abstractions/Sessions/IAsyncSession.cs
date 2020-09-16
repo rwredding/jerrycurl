@@ -7,6 +7,6 @@ namespace Jerrycurl.Data.Sessions
 {
     public partial interface IAsyncSession : IAsyncDisposable
     {
-        IAsyncEnumerable<DbDataReader> ExecuteAsync(IOperation operation, CancellationToken cancellationToken);
+        IAsyncEnumerable<DbDataReader> ExecuteAsync(IBatch batch, CancellationToken cancellationToken);
     }
 }

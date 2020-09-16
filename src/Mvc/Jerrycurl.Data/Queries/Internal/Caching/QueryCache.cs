@@ -67,11 +67,11 @@ namespace Jerrycurl.Data.Queries.Internal.Caching
 
         private static ColumnCacheKey GetCacheKey(ISchema schema, IDataRecord dataRecord)
         {
-            IEnumerable<ColumnName> columns = Enumerable.Range(0, getFieldCount()).Select(i => GetColumnName(dataRecord, i));
+            IEnumerable<ColumnName> columns = Enumerable.Range(0, GetFieldCount()).Select(i => GetColumnName(dataRecord, i));
 
             return new ColumnCacheKey(schema, columns);
 
-            int getFieldCount()
+            int GetFieldCount()
             {
                 try { return dataRecord.FieldCount; }
                 catch { return 0; }
@@ -79,7 +79,7 @@ namespace Jerrycurl.Data.Queries.Internal.Caching
         }
 
         public static ColumnName GetColumnName(IDataRecord dataRecord, int i)
-            => new ColumnName(new ColumnInfo(dataRecord.GetName(i), dataRecord.GetFieldType(i), dataRecord.GetDataTypeName(i), i));
+            => new ColumnName(new ColumnMetadata(dataRecord.GetName(i), dataRecord.GetFieldType(i), dataRecord.GetDataTypeName(i), i));
 
         private static BufferWriter GetWriter(ColumnCacheKey cacheKey, QueryType queryType)
         {

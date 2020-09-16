@@ -6,6 +6,5 @@ namespace Jerrycurl.Data.Queries.Internal
     {
         public AggregateBuffer Aggregate { get; }
         public ElasticArray Slots { get; }
-        public IOperation Read(QueryData queryData);
     }
 }

@@ -104,8 +104,8 @@ namespace Jerrycurl.Data.Test
                 CommandEngine engine1 = new CommandEngine(options1);
                 CommandEngine engine2 = new CommandEngine(options2);
 
-                engine1.Execute(new CommandData() { CommandText = "SELECT 0;" });
-                await engine2.ExecuteAsync(new CommandData() { CommandText = "SELECT 0;" });
+                engine1.Execute(new Command() { CommandText = "SELECT 0;" });
+                await engine2.ExecuteAsync(new Command() { CommandText = "SELECT 0;" });
 
                 connection1.State.ShouldBe(ConnectionState.Closed);
                 connection2.State.ShouldBe(ConnectionState.Closed);
@@ -140,8 +140,8 @@ namespace Jerrycurl.Data.Test
                 QueryEngine handler1 = new QueryEngine(options1);
                 QueryEngine handler2 = new QueryEngine(options2);
 
-                handler1.List<int>(new QueryData() { QueryText = "SELECT 0 AS [Item];" });
-                await handler2.ListAsync<int>(new QueryData() { QueryText = "SELECT 0 AS [Item];" });
+                handler1.List<int>(new Query() { QueryText = "SELECT 0 AS [Item];" });
+                await handler2.ListAsync<int>(new Query() { QueryText = "SELECT 0 AS [Item];" });
 
                 connection1.State.ShouldBe(ConnectionState.Closed);
                 connection2.State.ShouldBe(ConnectionState.Closed);

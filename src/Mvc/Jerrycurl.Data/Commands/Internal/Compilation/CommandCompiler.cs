@@ -18,7 +18,7 @@ namespace Jerrycurl.Data.Commands.Internal.Compilation
         private delegate void BufferInternalWriter(IDataReader dataReader, FieldBuffer[] buffers, ElasticArray helpers, Type schemaType);
         private delegate void BufferInternalConverter(IField field, object value, ElasticArray helpers, Type schemaType);
 
-        public BufferConverter Compile(MetadataIdentity metadata, ColumnInfo columnInfo)
+        public BufferConverter Compile(MetadataIdentity metadata, ColumnMetadata columnInfo)
         {
             IBindingMetadata binding = metadata.GetMetadata<IBindingMetadata>();
 
@@ -69,7 +69,7 @@ namespace Jerrycurl.Data.Commands.Internal.Compilation
             {
                 IBindingMetadata metadata = columnName.Metadata.GetMetadata<IBindingMetadata>();
 
-                Expression value = this.GetValueExpression(metadata, columnName.Info);
+                Expression value = this.GetValueExpression(metadata, columnName.Column);
                 Expression writer = this.GetWriterExpression(index++, value);
 
                 body.Add(writer);
@@ -85,7 +85,7 @@ namespace Jerrycurl.Data.Commands.Internal.Compilation
             return (dr, ps) => writerFunc(dr, ps, helpers, null);
         }
 
-        private Expression GetValueExpression(IBindingMetadata metadata, ColumnInfo columnInfo)
+        private Expression GetValueExpression(IBindingMetadata metadata, ColumnMetadata columnInfo)
         {
             MethodInfo readMethod = this.GetValueReaderMethod(metadata, columnInfo);
             MethodInfo nullMethod = typeof(IDataRecord).GetMethod(nameof(IDataRecord.IsDBNull), new[] { typeof(int) });
@@ -115,7 +115,7 @@ namespace Jerrycurl.Data.Commands.Internal.Compilation
             return Expression.Call(pipeIndex, writeMethod, value);
         }
 
-        private MethodInfo GetValueReaderMethod(IBindingMetadata metadata, ColumnInfo columnInfo)
+        private MethodInfo GetValueReaderMethod(IBindingMetadata metadata, ColumnMetadata columnInfo)
         {
             BindingColumnInfo bindingInfo = new BindingColumnInfo()
             {

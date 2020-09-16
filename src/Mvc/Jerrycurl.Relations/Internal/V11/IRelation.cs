@@ -10,6 +10,6 @@ namespace Jerrycurl.Relations.Internal.V11
         IRelationReader GetReader();
         IDataReader GetDataReader();
 
-        IEnumerable<IField2[]> Body { get; }
+        IEnumerable<ITuple> Body { get; }
     }
 }

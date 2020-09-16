@@ -22,45 +22,75 @@ namespace Jerrycurl.Data.Commands
             this.Options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
-        public void Execute(CommandData command) => this.Execute(new[] { command });
-        public void Execute(IEnumerable<CommandData> commands)
+        public void Execute(Command command) => this.Execute(new[] { command });
+        public void Execute(IEnumerable<Command> commands)
         {
             CommandBuffer buffer = new CommandBuffer();
 
             using ISyncSession session = this.Options.GetSyncSession();
 
-            foreach (IOperation operation in this.GetOperations(buffer, commands))
+            foreach (IBatch batch in this.GetBufferedCommands(commands, buffer))
             {
-                foreach (IDataReader reader in session.Execute(operation))
+                foreach (IDataReader reader in session.Execute(batch))
                 {
                     if (reader.Read())
-                        buffer.Write(reader);
+                        buffer.Update(reader);
                 }
             }
 
             buffer.Commit();
         }
 
-        public Task ExecuteAsync(CommandData command, CancellationToken cancellationToken = default) => this.ExecuteAsync(new[] { command }, cancellationToken);
-        public async Task ExecuteAsync(IEnumerable<CommandData> commands, CancellationToken cancellationToken = default)
+        public Task ExecuteAsync(Command command, CancellationToken cancellationToken = default) => this.ExecuteAsync(new[] { command }, cancellationToken);
+        public async Task ExecuteAsync(IEnumerable<Command> commands, CancellationToken cancellationToken = default)
         {
-            CommandBuffer buffer = new CommandBuffer();
-
             await using IAsyncSession session = this.Options.GetAsyncSession();
 
-            foreach (IOperation operation in this.GetOperations(buffer, commands))
+            CommandBuffer buffer = new CommandBuffer();
+
+            foreach (IBatch batch in this.GetBufferedCommands(commands, buffer))
             {
-                await foreach (DbDataReader dataReader in session.ExecuteAsync(operation, cancellationToken).ConfigureAwait(false))
+                await foreach (DbDataReader dataReader in session.ExecuteAsync(batch, cancellationToken).ConfigureAwait(false))
                 {
                     if (await dataReader.ReadAsync().ConfigureAwait(false))
-                        buffer.Write(dataReader);
+                        buffer.Update(dataReader);
                 }
             }
 
             buffer.Commit();
         }
 
-        private IEnumerable<IOperation> GetOperations(CommandBuffer buffer, IEnumerable<CommandData> commands)
-            => commands.NotNull().Where(d => !string.IsNullOrWhiteSpace(d.CommandText)).Select(buffer.Read);
+        private IEnumerable<IBatch> GetBufferedCommands(IEnumerable<Command> commands, CommandBuffer buffer)
+        {
+            IEnumerable<Command> filteredCommands = commands.NotNull().Where(d => !string.IsNullOrWhiteSpace(d.CommandText));
+
+            return filteredCommands.Select(c => new BufferedCommand(buffer, c));
+        }
+
+        private class BufferedCommand : IBatch
+        {
+            public CommandBuffer Buffer { get; }
+            public Command InnerCommand { get; }
+
+            public BufferedCommand(CommandBuffer buffer, Command innerCommand)
+            {
+                this.Buffer = buffer;
+                this.InnerCommand = innerCommand;
+            }
+
+            public void Build(IDbCommand adoCommand)
+            {
+                foreach (IParameter parameter in this.InnerCommand.Parameters ?? Array.Empty<IParameter>())
+                    this.Buffer.Add(parameter);
+
+                foreach (ICommandBinding binding in this.InnerCommand.Bindings ?? Array.Empty<ICommandBinding>())
+                    this.Buffer.Add(binding);
+
+                adoCommand.CommandText = this.InnerCommand.CommandText;
+
+                foreach (IDbDataParameter parameter in this.Buffer.GetParameters(adoCommand))
+                    adoCommand.Parameters.Add(parameter);
+            }
+        }
     }
 }

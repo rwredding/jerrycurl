@@ -35,18 +35,18 @@ namespace Jerrycurl.Data.Sessions
                 throw new InvalidOperationException("Connection is managed automatically and should be initially closed.");
         }
 
-        public IEnumerable<IDataReader> Execute(IOperation operation)
+        public IEnumerable<IDataReader> Execute(IBatch batch)
         {
             IDbConnection connection = this.GetOpenConnection();
             IDbCommand dbCommand = null;
 
-            void applyException(Exception ex) => this.ApplyFilters(h => h.OnException, dbCommand: dbCommand, exception: ex, source: operation.Source, swallowExceptions: true);
+            void applyException(Exception ex) => this.ApplyFilters(h => h.OnException, dbCommand: dbCommand, exception: ex, batch: batch, swallowExceptions: true);
 
             try
             {
                 dbCommand = connection.CreateCommand();
 
-                operation.Build(dbCommand);
+                batch.Build(dbCommand);
             }
             catch (Exception ex)
             {
@@ -57,7 +57,7 @@ namespace Jerrycurl.Data.Sessions
                 throw;
             }
 
-            this.ApplyFilters(h => h.OnCommandCreated, dbCommand: dbCommand, source: operation.Source);
+            this.ApplyFilters(h => h.OnCommandCreated, dbCommand: dbCommand, batch: batch);
 
             IDataReader reader = null;
 
@@ -96,7 +96,7 @@ namespace Jerrycurl.Data.Sessions
                         }
                     }
 
-                    this.ApplyFilters(h => h.OnCommandExecuted, dbCommand, source: operation.Source);
+                    this.ApplyFilters(h => h.OnCommandExecuted, dbCommand, batch: batch);
                 }
                 finally
                 {
@@ -125,11 +125,11 @@ namespace Jerrycurl.Data.Sessions
             return this.connection;
         }
 
-        private void ApplyFilters(Func<IFilterHandler, Action<FilterContext>> action, IDbCommand dbCommand = null, Exception exception = null, object source = null, bool swallowExceptions = false)
+        private void ApplyFilters(Func<IFilterHandler, Action<FilterContext>> action, IDbCommand dbCommand = null, Exception exception = null, IBatch batch = null, bool swallowExceptions = false)
         {
             if (this.filters.Length > 0)
             {
-                FilterContext context = new FilterContext(this.connection, dbCommand, exception, source);
+                FilterContext context = new FilterContext(this.connection, dbCommand, exception, batch);
 
                 this.ApplyFilters(action, context, swallowExceptions);
             }
@@ -147,7 +147,7 @@ namespace Jerrycurl.Data.Sessions
                 {
                     if (!swallowExceptions)
                     {
-                        FilterContext exceptionContext = new FilterContext(context.Connection, context.Command, ex, context.SourceObject);
+                        FilterContext exceptionContext = new FilterContext(context.Connection, context.Command, ex, context.Batch);
 
                         this.ApplyFilters(h => h.OnException, exceptionContext, swallowExceptions: true);
 

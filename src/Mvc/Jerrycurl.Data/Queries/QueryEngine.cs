@@ -23,8 +23,8 @@ namespace Jerrycurl.Data.Queries
 
         #region " Aggregate "
 
-        public T Aggregate<T>(QueryData query) => this.Aggregate<T>(new[] { query });
-        public T Aggregate<T>(IEnumerable<QueryData> queries)
+        public T Aggregate<T>(Query query) => this.Aggregate<T>(new[] { query });
+        public T Aggregate<T>(IEnumerable<Query> queries)
         {
             if (queries == null)
                 throw new ArgumentNullException(nameof(queries));
@@ -32,22 +32,22 @@ namespace Jerrycurl.Data.Queries
             if (this.Options.Schemas == null)
                 throw new InvalidOperationException("No schema store found.");
 
-            QueryBuffer<T> buffer = new QueryBuffer<T>(this.Options.Schemas, QueryType.Aggregate);
+            AggregateBuffer<T> buffer = new AggregateBuffer<T>(this.Options.Schemas);
 
             using ISyncSession connection = this.Options.GetSyncSession();
 
-            foreach (Query operation in this.GetOperations(buffer, queries))
+            foreach (IBatch batch in this.FilterBatches(queries))
             {
-                foreach (IDataReader dataReader in connection.Execute(operation))
-                    buffer.Write(dataReader);
+                foreach (IDataReader dataReader in connection.Execute(batch))
+                    buffer.Insert(dataReader);
             }
 
-            return buffer.ToAggregate();
+            return buffer.Commit();
         }
 
-        public Task<T> AggregateAsync<T>(QueryData query, CancellationToken cancellationToken = default) => this.AggregateAsync<T>(new[] { query }, cancellationToken);
+        public Task<T> AggregateAsync<T>(Query query, CancellationToken cancellationToken = default) => this.AggregateAsync<T>(new[] { query }, cancellationToken);
 
-        public async Task<T> AggregateAsync<T>(IEnumerable<QueryData> queries, CancellationToken cancellationToken = default)
+        public async Task<T> AggregateAsync<T>(IEnumerable<Query> queries, CancellationToken cancellationToken = default)
         {
             if (queries == null)
                 throw new ArgumentNullException(nameof(queries));
@@ -55,25 +55,25 @@ namespace Jerrycurl.Data.Queries
             if (this.Options.Schemas == null)
                 throw new InvalidOperationException("No schema builder found.");
 
-            QueryBuffer<T> buffer = new QueryBuffer<T>(this.Options.Schemas, QueryType.Aggregate);
+            AggregateBuffer<T> buffer = new AggregateBuffer<T>(this.Options.Schemas);
 
             await using IAsyncSession connection = this.Options.GetAsyncSession();
 
-            foreach (Query operation in this.GetOperations(buffer, queries))
+            foreach (IBatch batch in this.FilterBatches(queries))
             {
-                await foreach (DbDataReader dataReader in connection.ExecuteAsync(operation, cancellationToken).ConfigureAwait(false))
-                    await buffer.WriteAsync(dataReader, cancellationToken).ConfigureAwait(false);
+                await foreach (DbDataReader dataReader in connection.ExecuteAsync(batch, cancellationToken).ConfigureAwait(false))
+                    await buffer.InsertAsync(dataReader, cancellationToken).ConfigureAwait(false);
             }
 
-            return buffer.ToAggregate();
+            return buffer.Commit();
         }
 
         #endregion
 
         #region " List "
 
-        public IList<TItem> List<TItem>(QueryData query) => this.List<TItem>(new[] { query });
-        public IList<TItem> List<TItem>(IEnumerable<QueryData> queries)
+        public IList<TItem> List<TItem>(Query query) => this.List<TItem>(new[] { query });
+        public IList<TItem> List<TItem>(IEnumerable<Query> queries)
         {
             if (queries == null)
                 throw new ArgumentNullException(nameof(queries));
@@ -81,22 +81,22 @@ namespace Jerrycurl.Data.Queries
             if (this.Options.Schemas == null)
                 throw new InvalidOperationException("No schema store found.");
 
-            QueryBuffer<TItem> buffer = new QueryBuffer<TItem>(this.Options.Schemas, QueryType.List);
+            ListBuffer<TItem> buffer = new ListBuffer<TItem>(this.Options.Schemas);
 
             using ISyncSession connection = this.Options.GetSyncSession();
 
-            foreach (Query operation in this.GetOperations(buffer, queries))
+            foreach (IBatch batch in this.FilterBatches(queries))
             { 
-                foreach (IDataReader dataReader in connection.Execute(operation))
-                    buffer.Write(dataReader);
+                foreach (IDataReader dataReader in connection.Execute(batch))
+                    buffer.Insert(dataReader);
             }
 
-            return buffer.ToList();
+            return buffer.Commit();
         }
 
-        public Task<IList<TItem>> ListAsync<TItem>(QueryData query, CancellationToken cancellationToken = default) => this.ListAsync<TItem>(new[] { query }, cancellationToken);
+        public Task<IList<TItem>> ListAsync<TItem>(Query query, CancellationToken cancellationToken = default) => this.ListAsync<TItem>(new[] { query }, cancellationToken);
 
-        public async Task<IList<TItem>> ListAsync<TItem>(IEnumerable<QueryData> queries, CancellationToken cancellationToken = default)
+        public async Task<IList<TItem>> ListAsync<TItem>(IEnumerable<Query> queries, CancellationToken cancellationToken = default)
         {
             if (queries == null)
                 throw new ArgumentNullException(nameof(queries));
@@ -104,25 +104,25 @@ namespace Jerrycurl.Data.Queries
             if (this.Options.Schemas == null)
                 throw new InvalidOperationException("No schema builder found.");
 
-            QueryBuffer<TItem> buffer = new QueryBuffer<TItem>(this.Options.Schemas, QueryType.List);
+            ListBuffer<TItem> buffer = new ListBuffer<TItem>(this.Options.Schemas);
 
             await using IAsyncSession connection = this.Options.GetAsyncSession();
 
-            foreach (Query operation in this.GetOperations(buffer, queries))
+            foreach (IBatch batch in this.FilterBatches(queries))
             {
-                await foreach (DbDataReader dataReader in connection.ExecuteAsync(operation, cancellationToken).ConfigureAwait(false))
-                    await buffer.WriteAsync(dataReader, cancellationToken).ConfigureAwait(false);
+                await foreach (DbDataReader dataReader in connection.ExecuteAsync(batch, cancellationToken).ConfigureAwait(false))
+                    await buffer.InsertAsync(dataReader, cancellationToken).ConfigureAwait(false);
             }
 
-            return buffer.ToList();
+            return buffer.Commit();
         }
 
         #endregion
 
         #region " Enumerate "
 
-        public IAsyncEnumerable<QueryReader> EnumerateAsync(QueryData query, CancellationToken cancellationToken = default) => this.EnumerateAsync(query, cancellationToken);
-        public async IAsyncEnumerable<QueryReader> EnumerateAsync(IEnumerable<QueryData> queries, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<QueryReader> EnumerateAsync(Query query, CancellationToken cancellationToken = default) => this.EnumerateAsync(query, cancellationToken);
+        public async IAsyncEnumerable<QueryReader> EnumerateAsync(IEnumerable<Query> queries, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
             if (queries == null)
                 throw new ArgumentNullException(nameof(queries));
@@ -132,15 +132,15 @@ namespace Jerrycurl.Data.Queries
 
             await using IAsyncSession connection = this.Options.GetAsyncSession();
 
-            foreach (Query operation in this.GetOperations(queries))
+            foreach (IBatch batch in this.FilterBatches(queries))
             {
-                await foreach (DbDataReader dataReader in connection.ExecuteAsync(operation, cancellationToken).ConfigureAwait(false))
+                await foreach (DbDataReader dataReader in connection.ExecuteAsync(batch, cancellationToken).ConfigureAwait(false))
                     yield return new QueryReader(this.Options.Schemas, dataReader);
             }
         }
 
-        public IAsyncEnumerable<TItem> EnumerateAsync<TItem>(QueryData query, CancellationToken cancellationToken = default) => this.EnumerateAsync<TItem>(new[] { query }, cancellationToken);
-        public async IAsyncEnumerable<TItem> EnumerateAsync<TItem>(IEnumerable<QueryData> queries, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<TItem> EnumerateAsync<TItem>(Query query, CancellationToken cancellationToken = default) => this.EnumerateAsync<TItem>(new[] { query }, cancellationToken);
+        public async IAsyncEnumerable<TItem> EnumerateAsync<TItem>(IEnumerable<Query> queries, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
             await foreach (QueryReader queryReader in this.EnumerateAsync(queries, cancellationToken).ConfigureAwait(false))
             {
@@ -149,11 +149,11 @@ namespace Jerrycurl.Data.Queries
             }
         }
 
-        public IEnumerable<TItem> Enumerate<TItem>(QueryData query) => this.Enumerate<TItem>(new[] { query });
-        public IEnumerable<TItem> Enumerate<TItem>(IEnumerable<QueryData> queries) => this.Enumerate(queries).SelectMany(r => r.Read<TItem>());
+        public IEnumerable<TItem> Enumerate<TItem>(Query query) => this.Enumerate<TItem>(new[] { query });
+        public IEnumerable<TItem> Enumerate<TItem>(IEnumerable<Query> queries) => this.Enumerate(queries).SelectMany(r => r.Read<TItem>());
 
-        public IEnumerable<QueryReader> Enumerate(QueryData query) => this.Enumerate(new[] { query });
-        public IEnumerable<QueryReader> Enumerate(IEnumerable<QueryData> queries)
+        public IEnumerable<QueryReader> Enumerate(Query query) => this.Enumerate(new[] { query });
+        public IEnumerable<QueryReader> Enumerate(IEnumerable<Query> queries)
         {
             if (queries == null)
                 throw new ArgumentNullException(nameof(queries));
@@ -163,19 +163,16 @@ namespace Jerrycurl.Data.Queries
 
             using ISyncSession connection = this.Options.GetSyncSession();
 
-            foreach (IOperation operation in this.GetOperations(queries))
+            foreach (IBatch batch in this.FilterBatches(queries))
             {
-                foreach (IDataReader reader in connection.Execute(operation))
+                foreach (IDataReader reader in connection.Execute(batch))
                     yield return new QueryReader(this.Options.Schemas, reader);
             }
         }
 
         #endregion
 
-        private IEnumerable<IOperation> GetOperations(IQueryBuffer buffer, IEnumerable<QueryData> queries)
-            => queries.NotNull().Where(d => !string.IsNullOrWhiteSpace(d.QueryText)).Select(buffer.Read);
-
-        private IEnumerable<IOperation> GetOperations(IEnumerable<QueryData> queries)
-            => queries.NotNull().Where(d => !string.IsNullOrWhiteSpace(d.QueryText)).Select(d => new Query(d));
+        private IEnumerable<IBatch> FilterBatches(IEnumerable<Query> queries)
+            => queries.NotNull().Where(d => !string.IsNullOrWhiteSpace(d.QueryText));
     }
 }

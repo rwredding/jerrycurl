@@ -22,7 +22,7 @@ namespace Jerrycurl.Vendors.Oracle.Test
                 Schemas = DatabaseHelper.Default.Schemas,
             };
 
-            QueryData query = new QueryData()
+            Query query = new Query()
             {
                 QueryText = "BEGIN OPEN :P0 FOR SELECT 1 AS Item FROM dual; OPEN :P1 FOR SELECT 2 AS Item FROM dual; END;",
                 Parameters = new IParameter[] { new Refcursor("P0"), new Refcursor("P1") },
@@ -57,7 +57,7 @@ namespace Jerrycurl.Vendors.Oracle.Test
         }
         public async Task Test_SingleSelect_WithoutRefcursor()
         {
-            QueryData query = new QueryData()
+            Query query = new Query()
             {
                 QueryText = "SELECT 1 AS Item",
             };

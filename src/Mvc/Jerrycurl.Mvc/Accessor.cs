@@ -36,8 +36,8 @@ namespace Jerrycurl.Mvc
             SqlOptions options = this.GetQueryOptions(result.Domain);
             configure?.Invoke(options);
 
-            ISqlSerializer<QueryData> serializer = result.Buffer as ISqlSerializer<QueryData>;
-            IEnumerable<QueryData> queries = serializer?.Serialize(options);
+            ISqlSerializer<Query> serializer = result.Buffer as ISqlSerializer<Query>;
+            IEnumerable<Query> queries = serializer?.Serialize(options);
 
             QueryOptions queryOptions = new QueryOptions()
             {
@@ -70,8 +70,8 @@ namespace Jerrycurl.Mvc
             SqlOptions options = this.GetQueryOptions(result.Domain);
             configure?.Invoke(options);
 
-            ISqlSerializer<QueryData> serializer = result.Buffer as ISqlSerializer<QueryData>;
-            IEnumerable<QueryData> queries = serializer?.Serialize(options);
+            ISqlSerializer<Query> serializer = result.Buffer as ISqlSerializer<Query>;
+            IEnumerable<Query> queries = serializer?.Serialize(options);
 
             QueryOptions queryOptions = new QueryOptions()
             {
@@ -104,8 +104,8 @@ namespace Jerrycurl.Mvc
             SqlOptions options = this.GetQueryOptions(result.Domain);
             configure?.Invoke(options);
 
-            ISqlSerializer<QueryData> serializer = result.Buffer as ISqlSerializer<QueryData>;
-            IEnumerable<QueryData> queries = serializer?.Serialize(options);
+            ISqlSerializer<Query> serializer = result.Buffer as ISqlSerializer<Query>;
+            IEnumerable<Query> queries = serializer?.Serialize(options);
 
             QueryOptions queryOptions = new QueryOptions()
             {
@@ -137,8 +137,8 @@ namespace Jerrycurl.Mvc
             SqlOptions options = this.GetQueryOptions(result.Domain);
             configure?.Invoke(options);
 
-            ISqlSerializer<QueryData> serializer = result.Buffer as ISqlSerializer<QueryData>;
-            IEnumerable<QueryData> queries = serializer?.Serialize(options);
+            ISqlSerializer<Query> serializer = result.Buffer as ISqlSerializer<Query>;
+            IEnumerable<Query> queries = serializer?.Serialize(options);
 
             QueryOptions queryOptions = new QueryOptions()
             {
@@ -182,8 +182,8 @@ namespace Jerrycurl.Mvc
             SqlOptions options = this.GetQueryOptions(result.Domain);
             configure?.Invoke(options);
 
-            ISqlSerializer<QueryData> serializer = result.Buffer as ISqlSerializer<QueryData>;
-            IEnumerable<QueryData> queries = serializer?.Serialize(options);
+            ISqlSerializer<Query> serializer = result.Buffer as ISqlSerializer<Query>;
+            IEnumerable<Query> queries = serializer?.Serialize(options);
 
             QueryOptions queryOptions = new QueryOptions()
             {
@@ -229,8 +229,8 @@ namespace Jerrycurl.Mvc
             SqlOptions options = this.GetQueryOptions(result.Domain);
             configure?.Invoke(options);
 
-            ISqlSerializer<QueryData> serializer = result.Buffer as ISqlSerializer<QueryData>;
-            IEnumerable<QueryData> queries = serializer?.Serialize(options);
+            ISqlSerializer<Query> serializer = result.Buffer as ISqlSerializer<Query>;
+            IEnumerable<Query> queries = serializer?.Serialize(options);
 
             QueryOptions queryOptions = new QueryOptions()
             {
@@ -270,8 +270,8 @@ namespace Jerrycurl.Mvc
             SqlOptions options = this.GetCommandOptions(result.Domain);
             configure?.Invoke(options);
 
-            ISqlSerializer<CommandData> serializer = result.Buffer as ISqlSerializer<CommandData>;
-            IEnumerable<CommandData> commands = serializer.Serialize(options);
+            ISqlSerializer<Command> serializer = result.Buffer as ISqlSerializer<Command>;
+            IEnumerable<Command> commands = serializer.Serialize(options);
 
             CommandOptions commandOptions = new CommandOptions()
             {
@@ -313,8 +313,8 @@ namespace Jerrycurl.Mvc
             SqlOptions options = this.GetCommandOptions(result.Domain);
             configure?.Invoke(options);
 
-            ISqlSerializer<CommandData> serializer = result.Buffer as ISqlSerializer<CommandData>;
-            IEnumerable<CommandData> commands = serializer.Serialize(options);
+            ISqlSerializer<Command> serializer = result.Buffer as ISqlSerializer<Command>;
+            IEnumerable<Command> commands = serializer.Serialize(options);
 
             CommandOptions commandOptions = new CommandOptions()
             {
@@ -371,8 +371,8 @@ namespace Jerrycurl.Mvc
             SqlOptions options = this.GetQueryOptions(result.Domain);
             configure?.Invoke(options);
 
-            ISqlSerializer<QueryData> serializer = result.Buffer as ISqlSerializer<QueryData>;
-            IEnumerable<QueryData> queries = serializer?.Serialize(options);
+            ISqlSerializer<Query> serializer = result.Buffer as ISqlSerializer<Query>;
+            IEnumerable<Query> queries = serializer?.Serialize(options);
 
             QueryOptions queryOptions = new QueryOptions()
             {
@@ -406,8 +406,8 @@ namespace Jerrycurl.Mvc
             SqlOptions options = this.GetQueryOptions(result.Domain);
             configure?.Invoke(options);
 
-            ISqlSerializer<QueryData> serializer = result.Buffer as ISqlSerializer<QueryData>;
-            IEnumerable<QueryData> queries = serializer?.Serialize(options);
+            ISqlSerializer<Query> serializer = result.Buffer as ISqlSerializer<Query>;
+            IEnumerable<Query> queries = serializer?.Serialize(options);
 
             QueryOptions queryOptions = new QueryOptions()
             {

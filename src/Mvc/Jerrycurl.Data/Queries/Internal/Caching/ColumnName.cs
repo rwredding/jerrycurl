@@ -7,16 +7,16 @@ namespace Jerrycurl.Data.Queries.Internal.Caching
 {
     internal class ColumnName : IEquatable<ColumnName>, IValueName
     {
-        public string Name => this.ColumnInfo.Name;
-        public ColumnInfo ColumnInfo { get; }
+        public string Name => this.Column.Name;
+        public ColumnMetadata Column { get; }
 
-        public ColumnName(ColumnInfo columnInfo)
+        public ColumnName(ColumnMetadata column)
         {
-            this.ColumnInfo = columnInfo ?? throw new ArgumentNullException(nameof(columnInfo));
+            this.Column = column ?? throw new ArgumentNullException(nameof(column));
         }
 
-        public bool Equals(ColumnName other) => Equality.Combine(this, other, m => m.ColumnInfo.Name, m => m.ColumnInfo.Type, m => m.ColumnInfo.TypeName, m => m.ColumnInfo.Index);
-        public override bool Equals(object obj) => (obj is ColumnInfo other && this.Equals(other));
-        public override int GetHashCode() => HashCode.Combine(this.ColumnInfo.Name, this.ColumnInfo.Type, this.ColumnInfo.TypeName, this.ColumnInfo.Index);
+        public bool Equals(ColumnName other) => Equality.Combine(this, other, m => m.Column.Name, m => m.Column.Type, m => m.Column.TypeName, m => m.Column.Index);
+        public override bool Equals(object obj) => (obj is ColumnMetadata other && this.Equals(other));
+        public override int GetHashCode() => HashCode.Combine(this.Column.Name, this.Column.Type, this.Column.TypeName, this.Column.Index);
     }
 }

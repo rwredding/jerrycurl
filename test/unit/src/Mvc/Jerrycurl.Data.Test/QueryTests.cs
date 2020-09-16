@@ -52,7 +52,7 @@ namespace Jerrycurl.Data.Test
 
         public async Task Test_Binding_OfResultSetWithoutColumns()
         {
-            QueryData query = new QueryData()
+            Query query = new Query()
             {
                 QueryText = @"CREATE TABLE IF NOT EXISTS Temp001 ( Id integer );
                               DROP TABLE Temp001;",
@@ -90,7 +90,7 @@ namespace Jerrycurl.Data.Test
 
         public async Task Test_Binding_OfValuesFromNullableParameters()
         {
-            QueryData query = new QueryData()
+            Query query = new Query()
             {
                 QueryText = @"SELECT @P0 AS `Item` UNION
                               SELECT @P1 AS `Item` UNION
@@ -464,7 +464,7 @@ namespace Jerrycurl.Data.Test
 
         public async Task Test_Binding_OfAggregateWithEmptySets()
         {
-            QueryData query = new QueryData()
+            Query query = new Query()
             {
                 QueryText = @"SELECT 1 AS `Item.NotUsedOne.Value` FROM sqlite_master WHERE 0 = 1;
                               SELECT 1 AS `Item.NotUsedMany.Item.Value` FROM sqlite_master WHERE 0 = 1",
@@ -658,7 +658,7 @@ namespace Jerrycurl.Data.Test
 
         public void Test_Binding_OfEmptyParameters()
         {
-            QueryData query = new QueryData()
+            Query query = new Query()
             {
                 QueryText = "SELECT CASE WHEN @P1 IS NULL THEN 12 ELSE 0 END AS Item",
                 Parameters = new[]

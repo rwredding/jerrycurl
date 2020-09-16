@@ -27,14 +27,7 @@ namespace Jerrycurl.Data.Commands
         private readonly Dictionary<string, FieldBuffer> columnHeader = new Dictionary<string, FieldBuffer>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, FieldBuffer> paramHeader = new Dictionary<string, FieldBuffer>(StringComparer.OrdinalIgnoreCase);
 
-        public IOperation Read(CommandData commandData)
-        {
-            this.ClearState();
-
-            return new Command(commandData, this);
-        }
-
-        public void Write(IDataReader dataReader)
+        public void Update(IDataReader dataReader)
         {
             List<ColumnName> names = new List<ColumnName>();
             List<FieldBuffer> buffers = new List<FieldBuffer>();
@@ -46,7 +39,7 @@ namespace Jerrycurl.Data.Commands
                 if (this.columnHeader.TryGetValue(columnName, out FieldBuffer buffer))
                 {
                     MetadataIdentity metadata = buffer.Target.Identity.Metadata;
-                    ColumnInfo columnInfo = GetColumnInfo(i);
+                    ColumnMetadata columnInfo = GetColumnInfo(i);
 
                     names.Add(new ColumnName(metadata, columnInfo));
                     buffers.Add(buffer);
@@ -59,12 +52,12 @@ namespace Jerrycurl.Data.Commands
 
             writer(dataReader, buffers.ToArray());
 
-            ColumnInfo GetColumnInfo(int i) => new ColumnInfo(dataReader.GetName(i), dataReader.GetFieldType(i), dataReader.GetDataTypeName(i), i);
+            this.Flush();
+
+            ColumnMetadata GetColumnInfo(int i) => new ColumnMetadata(dataReader.GetName(i), dataReader.GetFieldType(i), dataReader.GetDataTypeName(i), i);
         }
 
-
-
-        internal IEnumerable<IDbDataParameter> GetParameters(IDbCommand adoCommand)
+        public IEnumerable<IDbDataParameter> GetParameters(IDbCommand adoCommand)
         {
             foreach (FieldBuffer buffer in this.paramHeader.Values)
             {
@@ -116,7 +109,7 @@ namespace Jerrycurl.Data.Commands
         internal IEnumerable<IFieldSource> GetSources(IField target) => this.GetBuffer(target)?.GetSources() ?? Array.Empty<IFieldSource>();
         internal IEnumerable<IFieldSource> GetChanges(IField target) => this.GetBuffer(target)?.GetChanges() ?? Array.Empty<IFieldSource>();
 
-        private void ClearState()
+        public void Flush()
         {
             this.paramHeader.Clear();
             this.columnHeader.Clear();

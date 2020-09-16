@@ -26,9 +26,9 @@ namespace Jerrycurl.Data.Commands.Internal.Caching
             });
         }
 
-        public static BufferConverter GetConverter(MetadataIdentity metadata, ColumnInfo columnInfo)
+        public static BufferConverter GetConverter(MetadataIdentity metadata, ColumnMetadata columnMetadata)
         {
-            return new CommandCompiler().Compile(metadata, columnInfo);
+            return new CommandCompiler().Compile(metadata, columnMetadata);
         }
     }
 }

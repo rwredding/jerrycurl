@@ -5,13 +5,13 @@ using Jerrycurl.Data.Queries;
 
 namespace Jerrycurl.Mvc
 {
-    public class ProcBuffer : SqlBuffer, ISqlSerializer<CommandData>, ISqlSerializer<QueryData>
+    public class ProcBuffer : SqlBuffer, ISqlSerializer<Command>, ISqlSerializer<Query>
     {
-        IEnumerable<CommandData> ISqlSerializer<CommandData>.Serialize(ISqlOptions options)
+        IEnumerable<Command> ISqlSerializer<Command>.Serialize(ISqlOptions options)
         {
             foreach (ISqlContent content in this.Read(options))
             {
-                yield return new CommandData()
+                yield return new Command()
                 {
                     CommandText = content.Text,
                     Parameters = content.Parameters.ToList(),
@@ -21,11 +21,11 @@ namespace Jerrycurl.Mvc
 
         }
 
-        IEnumerable<QueryData> ISqlSerializer<QueryData>.Serialize(ISqlOptions options)
+        IEnumerable<Query> ISqlSerializer<Query>.Serialize(ISqlOptions options)
         {
             foreach (ISqlContent content in this.Read(options))
             {
-                yield return new QueryData()
+                yield return new Query()
                 {
                     QueryText = content.Text,
                     Parameters = content.Parameters.ToList(),

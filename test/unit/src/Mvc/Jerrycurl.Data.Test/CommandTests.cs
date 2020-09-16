@@ -18,7 +18,7 @@ namespace Jerrycurl.Data.Test
 
             IField field = DatabaseHelper.Default.Relation(personIds, "Item").Scalar();
 
-            CommandData command = new CommandData()
+            Command command = new Command()
             {
                 CommandText = "SELECT 1 AS b1",
                 Bindings = new ICommandBinding[]
@@ -44,9 +44,9 @@ namespace Jerrycurl.Data.Test
 
             IField[] fields = DatabaseHelper.Default.Relation(personIds, "Item").Column().ToArray();
 
-            CommandData[] commands = new CommandData[]
+            Command[] commands = new Command[]
             {
-                new CommandData()
+                new Command()
                 {
                     CommandText = "SELECT 1 AS B1",
                     Bindings = new ICommandBinding[]
@@ -58,7 +58,7 @@ namespace Jerrycurl.Data.Test
                         new Parameter("P1", fields[0]),
                     }
                 },
-                new CommandData()
+                new Command()
                 {
                     CommandText = "SELECT @P1 * 2 AS B2",
                     Bindings = new ICommandBinding[]
@@ -90,7 +90,7 @@ namespace Jerrycurl.Data.Test
 
             IField field = DatabaseHelper.Default.Relation(model, "OneToOne.Value").Scalar();
 
-            CommandData command = new CommandData()
+            Command command = new Command()
             {
                 CommandText = @"SELECT 12 AS B1",
                 Bindings = new ICommandBinding[]
@@ -111,7 +111,7 @@ namespace Jerrycurl.Data.Test
             ITuple tuple1 = DatabaseHelper.Default.Relation(model1, "Value", "Value2").Row();
             ITuple tuple2 = DatabaseHelper.Default.Relation(model2, "Value", "Value2").Row();
 
-            CommandData command1 = new CommandData()
+            Command command1 = new Command()
             {
                 CommandText = @"SELECT 2 AS B1, 'apple' AS B2;",
                 Bindings = new ICommandBinding[]
@@ -120,7 +120,7 @@ namespace Jerrycurl.Data.Test
                     new ColumnBinding("B2", tuple1[1]),
                 }
             };
-            CommandData command2 = new CommandData()
+            Command command2 = new Command()
             {
                 CommandText = @"SELECT 2 AS B1, 'apple' AS B2;",
                 Bindings = new ICommandBinding[]
@@ -153,7 +153,7 @@ namespace Jerrycurl.Data.Test
             IField[] fields1 = DatabaseHelper.Default.Relation(model1, "Item").Column().ToArray();
             IField[] fields2 = DatabaseHelper.Default.Relation(model2, "Item").Column().ToArray();
 
-            CommandData command1 = new CommandData()
+            Command command1 = new Command()
             {
                 CommandText = @"SELECT 1 AS B1;
                                 SELECT 2 AS B2;",
@@ -163,7 +163,7 @@ namespace Jerrycurl.Data.Test
                     new ColumnBinding("B2", fields1[1]),
                 }
             };
-            CommandData command2 = new CommandData()
+            Command command2 = new Command()
             {
                 CommandText = @"SELECT 1 AS B1;
                                 SELECT 2 AS B2;",

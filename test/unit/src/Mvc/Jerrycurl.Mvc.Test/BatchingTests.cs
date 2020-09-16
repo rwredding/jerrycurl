@@ -18,11 +18,11 @@ namespace Jerrycurl.Mvc.Test
 
             IProcResult result = factory(null);
 
-            ISqlSerializer<CommandData> serializer = result.Buffer as ISqlSerializer<CommandData>;
+            ISqlSerializer<Command> serializer = result.Buffer as ISqlSerializer<Command>;
 
-            IList<CommandData> batchedBySql = serializer.Serialize(new SqlOptions() { MaxSql = 1 }).ToList();
-            IList<CommandData> batchedByParams = serializer.Serialize(new SqlOptions() { MaxParameters = 2 }).ToList();
-            IList<CommandData> notBatched = serializer.Serialize(new SqlOptions()).ToList();
+            IList<Command> batchedBySql = serializer.Serialize(new SqlOptions() { MaxSql = 1 }).ToList();
+            IList<Command> batchedByParams = serializer.Serialize(new SqlOptions() { MaxParameters = 2 }).ToList();
+            IList<Command> notBatched = serializer.Serialize(new SqlOptions()).ToList();
 
             batchedBySql.ShouldNotBeNull();
             batchedByParams.ShouldNotBeNull();
