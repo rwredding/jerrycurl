@@ -6,13 +6,13 @@ using Jerrycurl.Relations;
 
 namespace Jerrycurl.Data.Sessions
 {
-    public class ParameterCollection : Collection<IParameter>
+    public class ParameterStore : Collection<IParameter>
     {
         private readonly Dictionary<IField, IParameter> innerMap = new Dictionary<IField, IParameter>();
 
         public char? Prefix { get; }
 
-        public ParameterCollection(char? prefix = null)
+        public ParameterStore(char? prefix = null)
         {
             this.Prefix = prefix;
         }

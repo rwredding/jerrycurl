@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using Jerrycurl.Relations.Internal.V11.Caching;
@@ -12,18 +13,40 @@ namespace Jerrycurl.Relations.Internal.V11
 {
     public class RelationReader : IRelationReader
     {
-        public IRelation3 Relation { get; }
-        public int Degree { get; }
+        public IRelation3 Relation => this.enumerator.Current;
+        public int Degree { get; private set; }
         internal RelationBuffer Buffer { get; private set; }
 
         private int currentIndex;
         private Func<bool> readFactory;
+        private IEnumerator<IRelation3> enumerator;
+
+        public RelationReader(IEnumerable<IRelation3> relations)
+        {
+            this.enumerator = relations.GetEnumerator();
+            this.NextResult();
+        }
 
         public RelationReader(IRelation3 relation)
+            : this(new[] { relation })
         {
-            this.Relation = relation ?? throw new ArgumentNullException(nameof(relation));
-            this.Degree = relation.Header.Attributes.Count;
-            this.readFactory = this.ReadFirst;
+            
+        }
+
+        public bool NextResult()
+        {
+            if (this.enumerator.MoveNext())
+            {
+                this.currentIndex = 0;
+                this.readFactory = this.ReadFirst;
+                this.Degree = this.enumerator.Current.Header.Attributes.Count;
+
+                return true;
+            }
+
+            this.readFactory = this.ReadEnd;
+
+            return false;
         }
 
         public void CopyTo(IField2[] target, int sourceIndex, int targetIndex, int length)
@@ -46,6 +69,8 @@ namespace Jerrycurl.Relations.Internal.V11
 
         public void Dispose()
         {
+            this.enumerator.Dispose();
+
             if (this.Buffer == null)
                 return;
 
@@ -62,6 +87,7 @@ namespace Jerrycurl.Relations.Internal.V11
             }
         }
 
+        private bool ReadEnd() => false;
         private bool ReadFirst()
         {
             this.Buffer = RelationCache.CreateBuffer2(this.Relation);

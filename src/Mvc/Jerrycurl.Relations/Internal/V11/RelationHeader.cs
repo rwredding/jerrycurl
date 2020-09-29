@@ -8,7 +8,7 @@ using HashCode = Jerrycurl.Diagnostics.HashCode;
 
 namespace Jerrycurl.Relations.Internal.V11
 {
-    public sealed class RelationHeader
+    public class RelationHeader
     {
         public ISchema Schema { get; }
         public IReadOnlyList<RelationAttribute> Attributes { get; }

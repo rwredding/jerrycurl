@@ -1,5 +1,6 @@
 ﻿using Jerrycurl.Mvc.Test.Conventions.Accessors;
 using Jerrycurl.Mvc.Test.Conventions.Models;
+using Jerrycurl.Relations.Metadata;
 using Shouldly;
 using System.Collections.Generic;
 using System.Linq;

@@ -4,14 +4,14 @@ using System.Text;
 
 namespace Jerrycurl.Relations.Internal.V11
 {
-    public interface IRelationReader : IDisposable
+    public interface IRelationReader : ITuple2, IDisposable
     {
         IRelation3 Relation { get; }
         bool Read();
-        int Degree { get; }
-        IField2 this[int index] { get; }
+        bool NextResult();
 
         void CopyTo(IField2[] target, int sourceIndex, int targetIndex, int length);
         void CopyTo(IField2[] target, int length);
+
     }
 }

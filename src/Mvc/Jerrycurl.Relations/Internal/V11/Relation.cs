@@ -26,7 +26,7 @@ namespace Jerrycurl.Relations.Internal.V11
         public IRelationReader GetReader() => new RelationReader(this);
         public IDataReader GetDataReader() => null; // new RelationDataReader(this.GetReader(), null);
 
-        public IEnumerable<IField2[]> Body
+        public IEnumerable<ITuple> Body
         {
             get
             {
@@ -38,7 +38,7 @@ namespace Jerrycurl.Relations.Internal.V11
 
                     reader.CopyTo(buffer, buffer.Length);
 
-                    yield return buffer;
+                    yield return new Tuple(null, buffer.Length);
                 }
             }
         }
