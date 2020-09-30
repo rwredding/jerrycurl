@@ -19,11 +19,20 @@ namespace Jerrycurl.Relations.Internal.V11.Language
         public static RelationHeader Select(this ISchema schema, params string[] header)
             => schema.Select((IEnumerable<string>)header);
 
-        public static IEnumerable<ITuple> From(this RelationHeader header, object model)
-            => header.Build(model).Body;
+        public static IField2 From<TModel>(this ISchemaStore store, TModel model)
+            => new Model2(store.GetSchema(typeof(TModel)), model);
 
-        public static IRelation3 Build(this RelationHeader header, object model)
-            => new Relation3(new Model2(header.Schema, model), header);
+        public static IRelation3 Select(this IField2 source, IEnumerable<string> header)
+            => new Relation3(source, source.Identity.Schema.Select(header));
+
+        public static IRelation3 Select(this IField2 source, params string[] header)
+            => new Relation3(source, source.Identity.Schema.Select(header));
+
+        public static IRelation3 From(this RelationHeader header, object model)
+            => header.From(new Model2(header.Schema, model));
+
+        public static IRelation3 From(this RelationHeader header, IField2 source)
+            => new Relation3(source, header);
 
         public static RelationHeader<TModel> For<TModel>(this ISchemaStore store)
             => new RelationHeader<TModel>(store.GetSchema(typeof(TModel)));

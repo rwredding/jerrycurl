@@ -17,9 +17,15 @@ namespace Jerrycurl.Relations.Internal.V11
         public int Degree { get; private set; }
         internal RelationBuffer Buffer { get; private set; }
 
+        int ITuple2.Degree => this.Degree;
+        int IReadOnlyCollection<IField>.Count => this.Degree;
+
+        IField IReadOnlyList<IField>.this[int index] => null;
+
+        private readonly IEnumerator<IRelation3> enumerator;
         private int currentIndex;
         private Func<bool> readFactory;
-        private IEnumerator<IRelation3> enumerator;
+        
 
         public RelationReader(IEnumerable<IRelation3> relations)
         {
@@ -137,6 +143,16 @@ namespace Jerrycurl.Relations.Internal.V11
                 throw new InvalidOperationException();
                 //throw RelationException.FromRelation(this.Relation, $"Cannot move enumerator for '{identity}': {ex.Message}", ex);
             }
+        }
+
+        public IEnumerator<IField> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
         }
     }
 }
