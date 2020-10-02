@@ -27,7 +27,7 @@ namespace Jerrycurl.Relations.Internal.V11
             this.Metadata = schema.GetMetadata<IRelationMetadata>() ?? throw new InvalidOperationException("Metadata not found.");
         }
 
-        public void Bind() => throw new NotSupportedException("Models are not not bindable due to having no container.");
+        public void Update() => throw new NotSupportedException("Models are not not bindable due to having no container.");
 
         public bool Equals(IField2 other) => Equality.Combine(this, other, m => m.Identity, m => m.Value);
         public override bool Equals(object obj) => (obj is IField2 other && this.Equals(other));

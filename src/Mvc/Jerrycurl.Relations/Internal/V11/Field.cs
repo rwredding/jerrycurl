@@ -48,7 +48,7 @@ namespace Jerrycurl.Relations.Internal.V11
             }
         }
 
-        public void Bind()
+        public void Update()
         {
             if (!this.hasChanged)
                 return;
@@ -76,6 +76,16 @@ namespace Jerrycurl.Relations.Internal.V11
             }
         }
 
+        public void Update<T>(Func<T, T> valueFactory)
+        {
+            this.CurrentValue = valueFactory((T)this.CurrentValue);
+            this.Update();
+        }
+        public void Update<T>(T value)
+        {
+            this.CurrentValue = value;
+            this.Update();
+        }
         public bool Equals(IField2 other) => Equality.Combine(this, other, m => m.Model, m => m.Identity);
         public override bool Equals(object obj) => (obj is IField2 other && this.Equals(other));
         public override int GetHashCode() => HashCode.Combine(this.Model, this.Identity);

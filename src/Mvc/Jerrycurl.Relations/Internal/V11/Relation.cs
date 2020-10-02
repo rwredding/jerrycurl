@@ -54,7 +54,7 @@ namespace Jerrycurl.Relations.Internal.V11
             get => this.Source.CurrentValue;
             set => this.Source.CurrentValue = value;
         }
-        void IField2.Bind() => this.Source.Bind();
+        void IField2.Update() => this.Source.Update();
         #endregion
 
 

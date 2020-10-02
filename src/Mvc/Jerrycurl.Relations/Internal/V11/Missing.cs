@@ -29,7 +29,7 @@ namespace Jerrycurl.Relations.Internal.V11
             this.Model = model ?? throw new ArgumentNullException(nameof(model));
         }
 
-        public void Bind() => throw new InvalidOperationException();
+        public void Update() => throw new InvalidOperationException();
 
         public bool Equals(IField2 other) => Equality.Combine(this, other, m => m.Model, m => m.Identity);
         public override bool Equals(object obj) => (obj is IField2 field && this.Equals(field));

@@ -14,6 +14,8 @@ namespace Jerrycurl.Relations.Internal.V11
         FieldType2 Type { get; }
         IRelationMetadata Metadata { get; }
 
-        void Bind();
+        void Update();
+        void Update<T>(Func<T, T> valueFactory);
+        void Update<T>(T value);
     }
 }
