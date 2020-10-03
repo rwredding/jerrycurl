@@ -104,10 +104,10 @@ namespace Jerrycurl.Mvc.Projections
         public IProjection Map(Func<IProjectionAttribute, IProjectionAttribute> m) => this.With(attributes: this.Attributes.Select(a => m(a)));
 
         public IProjection Append(IEnumerable<IParameter> parameters) => this.Map(a => a.Append(parameters));
-        public IProjection Append(IEnumerable<ICommandBinding> bindings) => this.Map(a => a.Append(bindings));
+        public IProjection Append(IEnumerable<IUpdateBinding> bindings) => this.Map(a => a.Append(bindings));
         public IProjection Append(string text) => this.Map(a => a.Append(text));
         public IProjection Append(params IParameter[] parameter) => this.Map(a => a.Append(parameter));
-        public IProjection Append(params ICommandBinding[] bindings) => this.Map(a => a.Append(bindings));
+        public IProjection Append(params IUpdateBinding[] bindings) => this.Map(a => a.Append(bindings));
 
         public void WriteTo(ISqlBuffer buffer)
         {

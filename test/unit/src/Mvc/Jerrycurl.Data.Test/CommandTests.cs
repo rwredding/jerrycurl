@@ -21,7 +21,7 @@ namespace Jerrycurl.Data.Test
             Command command = new Command()
             {
                 CommandText = "SELECT 1 AS b1",
-                Bindings = new ICommandBinding[]
+                Bindings = new IUpdateBinding[]
                 {
                     new ColumnBinding("B1", field),
                 },
@@ -49,7 +49,7 @@ namespace Jerrycurl.Data.Test
                 new Command()
                 {
                     CommandText = "SELECT 1 AS B1",
-                    Bindings = new ICommandBinding[]
+                    Bindings = new IUpdateBinding[]
                     {
                         new ColumnBinding("B1", fields[0]),
                     },
@@ -61,7 +61,7 @@ namespace Jerrycurl.Data.Test
                 new Command()
                 {
                     CommandText = "SELECT @P1 * 2 AS B2",
-                    Bindings = new ICommandBinding[]
+                    Bindings = new IUpdateBinding[]
                     {
                         new ColumnBinding("B2", fields[1]),
                     },
@@ -93,7 +93,7 @@ namespace Jerrycurl.Data.Test
             Command command = new Command()
             {
                 CommandText = @"SELECT 12 AS B1",
-                Bindings = new ICommandBinding[]
+                Bindings = new IUpdateBinding[]
                 {
                     new ColumnBinding("B1", field),
                 }
@@ -114,7 +114,7 @@ namespace Jerrycurl.Data.Test
             Command command1 = new Command()
             {
                 CommandText = @"SELECT 2 AS B1, 'apple' AS B2;",
-                Bindings = new ICommandBinding[]
+                Bindings = new IUpdateBinding[]
                 {
                     new ColumnBinding("B1", tuple1[0]),
                     new ColumnBinding("B2", tuple1[1]),
@@ -123,7 +123,7 @@ namespace Jerrycurl.Data.Test
             Command command2 = new Command()
             {
                 CommandText = @"SELECT 2 AS B1, 'apple' AS B2;",
-                Bindings = new ICommandBinding[]
+                Bindings = new IUpdateBinding[]
                 {
                     new ColumnBinding("B1", tuple2[0]),
                     new ColumnBinding("B2", tuple2[1]),
@@ -157,7 +157,7 @@ namespace Jerrycurl.Data.Test
             {
                 CommandText = @"SELECT 1 AS B1;
                                 SELECT 2 AS B2;",
-                Bindings = new ICommandBinding[]
+                Bindings = new IUpdateBinding[]
                 {
                     new ColumnBinding("B1", fields1[0]),
                     new ColumnBinding("B2", fields1[1]),
@@ -167,7 +167,7 @@ namespace Jerrycurl.Data.Test
             {
                 CommandText = @"SELECT 1 AS B1;
                                 SELECT 2 AS B2;",
-                Bindings = new ICommandBinding[]
+                Bindings = new IUpdateBinding[]
                 {
                     new ColumnBinding("B1", fields2[0]),
                     new ColumnBinding("B2", fields2[1]),

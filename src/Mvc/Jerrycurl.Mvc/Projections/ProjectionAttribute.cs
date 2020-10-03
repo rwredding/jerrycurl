@@ -53,10 +53,10 @@ namespace Jerrycurl.Mvc.Projections
         public override string ToString() => this.Metadata.Identity.ToString();
 
         public IProjectionAttribute Append(IEnumerable<IParameter> parameters) => this.With(content: this.Content.Append(parameters));
-        public IProjectionAttribute Append(IEnumerable<ICommandBinding> bindings) => this.With(content: this.Content.Append(bindings));
+        public IProjectionAttribute Append(IEnumerable<IUpdateBinding> bindings) => this.With(content: this.Content.Append(bindings));
         public IProjectionAttribute Append(string text) => this.With(content: this.Content.Append(text));
         public IProjectionAttribute Append(params IParameter[] parameter) => this.With(content: this.Content.Append(parameter));
-        public IProjectionAttribute Append(params ICommandBinding[] bindings) => this.With(content: this.Content.Append(bindings));
+        public IProjectionAttribute Append(params IUpdateBinding[] bindings) => this.With(content: this.Content.Append(bindings));
 
         public IProjectionAttribute With(IProjectionMetadata metadata = null, ISqlContent content = null, Func<IField> field = null)
         {

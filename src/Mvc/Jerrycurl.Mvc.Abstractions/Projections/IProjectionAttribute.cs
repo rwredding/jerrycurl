@@ -16,10 +16,10 @@ namespace Jerrycurl.Mvc.Projections
         Func<IField> Field { get; }
 
         IProjectionAttribute Append(IEnumerable<IParameter> parameters);
-        IProjectionAttribute Append(IEnumerable<ICommandBinding> bindings);
+        IProjectionAttribute Append(IEnumerable<IUpdateBinding> bindings);
         IProjectionAttribute Append(string text);
         IProjectionAttribute Append(params IParameter[] parameter);
-        IProjectionAttribute Append(params ICommandBinding[] bindings);
+        IProjectionAttribute Append(params IUpdateBinding[] bindings);
 
         IProjectionAttribute With(IProjectionMetadata metadata = null,
                                   ISqlContent content = null,

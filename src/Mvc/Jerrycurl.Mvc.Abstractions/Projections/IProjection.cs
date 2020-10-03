@@ -21,10 +21,10 @@ namespace Jerrycurl.Mvc.Projections
         IEnumerable<IProjectionAttribute> Attributes { get; }
 
         IProjection Append(IEnumerable<IParameter> parameters);
-        IProjection Append(IEnumerable<ICommandBinding> bindings);
+        IProjection Append(IEnumerable<IUpdateBinding> bindings);
         IProjection Append(string text);
         IProjection Append(params IParameter[] parameter);
-        IProjection Append(params ICommandBinding[] bindings);
+        IProjection Append(params IUpdateBinding[] bindings);
 
         IProjection Map(Func<IProjectionAttribute, IProjectionAttribute> map);
 

@@ -8,7 +8,7 @@ namespace Jerrycurl.Mvc
 {
     public class SqlContent : ISqlContent
     {
-        public IEnumerable<ICommandBinding> Bindings { get; internal set; } = Array.Empty<ICommandBinding>();
+        public IEnumerable<IUpdateBinding> Bindings { get; internal set; } = Array.Empty<IUpdateBinding>();
         public IEnumerable<IParameter> Parameters { get; internal set; } = Array.Empty<IParameter>();
         public string Text { get; internal set; } = "";
 
@@ -45,7 +45,7 @@ namespace Jerrycurl.Mvc
             };
         }
 
-        public SqlContent Append(IEnumerable<ICommandBinding> bindings)
+        public SqlContent Append(IEnumerable<IUpdateBinding> bindings)
         {
             if (bindings == null)
                 throw new ArgumentNullException(nameof(bindings));
@@ -59,7 +59,7 @@ namespace Jerrycurl.Mvc
         }
 
         public SqlContent Append(params IParameter[] parameters) => this.Append((IEnumerable<IParameter>)parameters);
-        public SqlContent Append(params ICommandBinding[] bindings) => this.Append((IEnumerable<ICommandBinding>)bindings);
+        public SqlContent Append(params IUpdateBinding[] bindings) => this.Append((IEnumerable<IUpdateBinding>)bindings);
 
         public override string ToString() => this.Text;
 
@@ -71,9 +71,9 @@ namespace Jerrycurl.Mvc
         }
 
         ISqlContent ISqlContent.Append(IEnumerable<IParameter> parameters) => this.Append(parameters);
-        ISqlContent ISqlContent.Append(IEnumerable<ICommandBinding> bindings) => this.Append(bindings);
+        ISqlContent ISqlContent.Append(IEnumerable<IUpdateBinding> bindings) => this.Append(bindings);
         ISqlContent ISqlContent.Append(string text) => this.Append(text);
         ISqlContent ISqlContent.Append(params IParameter[] parameter) => this.Append(parameter);
-        ISqlContent ISqlContent.Append(params ICommandBinding[] bindings) => this.Append(bindings);
+        ISqlContent ISqlContent.Append(params IUpdateBinding[] bindings) => this.Append(bindings);
     }
 }

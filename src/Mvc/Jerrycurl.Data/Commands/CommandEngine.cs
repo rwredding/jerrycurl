@@ -83,7 +83,7 @@ namespace Jerrycurl.Data.Commands
                 foreach (IParameter parameter in this.InnerCommand.Parameters ?? Array.Empty<IParameter>())
                     this.Buffer.Add(parameter);
 
-                foreach (ICommandBinding binding in this.InnerCommand.Bindings ?? Array.Empty<ICommandBinding>())
+                foreach (IUpdateBinding binding in this.InnerCommand.Bindings ?? Array.Empty<IUpdateBinding>())
                     this.Buffer.Add(binding);
 
                 adoCommand.CommandText = this.InnerCommand.CommandText;

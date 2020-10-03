@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Jerrycurl.Data.Commands;
 using Jerrycurl.Relations;
+using Jerrycurl.Relations.V11.Internal;
 
 namespace Jerrycurl.Data.Sessions
 {

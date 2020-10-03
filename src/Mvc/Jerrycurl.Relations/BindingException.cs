@@ -1,5 +1,5 @@
 ﻿using Jerrycurl.Reflection;
-using Jerrycurl.Relations.Internal.V11;
+using Jerrycurl.Relations.V11.Internal;
 using System;
 using System.Runtime.Serialization;
 

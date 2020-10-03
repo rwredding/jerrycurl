@@ -10,7 +10,7 @@ namespace Jerrycurl.Mvc
     public class SqlBuffer : ISqlBuffer
     {
         private readonly List<IParameter> parameters = new List<IParameter>();
-        private readonly List<ICommandBinding> bindings = new List<ICommandBinding>();
+        private readonly List<IUpdateBinding> bindings = new List<IUpdateBinding>();
         private readonly StringBuilder text = new StringBuilder();
         private readonly List<SqlOffset> offsets = new List<SqlOffset>();
 
@@ -22,7 +22,7 @@ namespace Jerrycurl.Mvc
             this.parameters.AddRange(parameters);
         }
 
-        public void Append(IEnumerable<ICommandBinding> bindings)
+        public void Append(IEnumerable<IUpdateBinding> bindings)
         {
             if (bindings == null)
                 throw new ArgumentNullException(nameof(bindings));
@@ -35,7 +35,7 @@ namespace Jerrycurl.Mvc
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
 
-            this.bindings.AddRange(content.Bindings ?? Array.Empty<ICommandBinding>());
+            this.bindings.AddRange(content.Bindings ?? Array.Empty<IUpdateBinding>());
             this.parameters.AddRange(content.Parameters ?? Array.Empty<IParameter>());
             this.text.Append(content.Text);
         }

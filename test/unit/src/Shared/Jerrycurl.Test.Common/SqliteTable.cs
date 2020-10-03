@@ -30,13 +30,13 @@ namespace Jerrycurl.Test
             base.InsertItem(index, item);
         }
 
-        public Command ToCommand(IEnumerable<IParameter> parameters = null, IEnumerable<ICommandBinding> bindings = null)
+        public Command ToCommand(IEnumerable<IParameter> parameters = null, IEnumerable<IUpdateBinding> bindings = null)
         {
             return new Command()
             {
                 CommandText = this.ToSql(),
                 Parameters = parameters?.ToArray() ?? Array.Empty<IParameter>(),
-                Bindings = bindings?.ToArray() ?? Array.Empty<ICommandBinding>(),
+                Bindings = bindings?.ToArray() ?? Array.Empty<IUpdateBinding>(),
             };
         }
 

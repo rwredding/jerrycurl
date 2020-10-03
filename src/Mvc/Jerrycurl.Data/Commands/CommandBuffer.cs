@@ -140,7 +140,7 @@ namespace Jerrycurl.Data.Commands
             this.paramHeader.TryAdd(parameter.Name, buffer);
         }
 
-        public void Add(ICommandBinding binding)
+        public void Add(IUpdateBinding binding)
         {
             switch (binding)
             {

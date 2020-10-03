@@ -7,7 +7,7 @@ namespace Jerrycurl.Mvc
     public interface ISqlBuffer
     {
         void Append(IEnumerable<IParameter> parameters);
-        void Append(IEnumerable<ICommandBinding> bindings);
+        void Append(IEnumerable<IUpdateBinding> bindings);
         void Append(string text);
         void Append(ISqlContent content);
 

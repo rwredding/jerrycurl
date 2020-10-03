@@ -37,9 +37,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolRunner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ToolException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Diagnostics\StringExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Text\StringBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Text\StringExtensions.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Text\" />
   </ItemGroup>
 </Project>

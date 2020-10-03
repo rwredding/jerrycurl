@@ -3,7 +3,7 @@ using Jerrycurl.Relations;
 
 namespace Jerrycurl.Data.Commands
 {
-    public class ColumnBinding : ICommandBinding
+    public class ColumnBinding : IUpdateBinding
     {
         public string ColumnName { get; }
         public IField Target { get; }

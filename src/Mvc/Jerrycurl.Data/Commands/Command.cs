@@ -9,7 +9,7 @@ namespace Jerrycurl.Data.Commands
     {
         public string CommandText { get; set; }
 
-        public ICollection<ICommandBinding> Bindings { get; set; } = new List<ICommandBinding>();
+        public ICollection<IUpdateBinding> Bindings { get; set; } = new List<IUpdateBinding>();
         public ICollection<IParameter> Parameters { get; set; } = new List<IParameter>();
 
         public void Build(IDbCommand adoCommand)

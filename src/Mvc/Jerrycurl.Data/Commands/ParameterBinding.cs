@@ -4,7 +4,7 @@ using Jerrycurl.Relations;
 
 namespace Jerrycurl.Data.Commands
 {
-    public class ParameterBinding : ICommandBinding
+    public class ParameterBinding : IUpdateBinding
     {
         public string ParameterName { get; }
         public IField Target { get; }
