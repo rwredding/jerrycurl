@@ -13,26 +13,24 @@ namespace Jerrycurl.Relations.V11
 {
     public class RelationReader : IRelationReader
     {
-        public IRelation3 Relation => this.enumerator.Current;
+        public IRelation2 Relation => this.enumerator.Current;
         public int Degree { get; private set; }
         internal RelationBuffer Buffer { get; private set; }
 
         int ITuple2.Degree => this.Degree;
         int IReadOnlyCollection<IField2>.Count => this.Degree;
 
-        IField2 IReadOnlyList<IField2>.this[int index] => null;
-
-        private readonly IEnumerator<IRelation3> enumerator;
+        private readonly IEnumerator<IRelation2> enumerator;
         private int currentIndex;
         private Func<bool> readFactory;
         
-        public RelationReader(IEnumerable<IRelation3> relations)
+        public RelationReader(IEnumerable<IRelation2> relations)
         {
             this.enumerator = relations.GetEnumerator();
             this.NextResult();
         }
 
-        public RelationReader(IRelation3 relation)
+        public RelationReader(IRelation2 relation)
             : this(new[] { relation })
         {
             
@@ -149,5 +147,7 @@ namespace Jerrycurl.Relations.V11
 
         IEnumerator IEnumerable.GetEnumerator()
             => this.GetEnumerator();
+
+        public override string ToString() => Tuple2.Format(this);
     }
 }

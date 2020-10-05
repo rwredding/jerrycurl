@@ -12,7 +12,7 @@ namespace Jerrycurl.Data.V11.Language
 {
     public static class RelationExtensions
     {
-        public static Query ToQuery(this IRelation3 relation, string queryText)
+        public static Query ToQuery(this IRelation2 relation, string queryText)
         {
             return new Query()
             {
@@ -21,7 +21,7 @@ namespace Jerrycurl.Data.V11.Language
             };
         }
 
-        public static Command ToCommand(this IRelation3 relation, Func<IList<IParameter>, string> textFactory)
+        public static Command ToCommand(this IRelation2 relation, Func<IList<IParameter>, string> textFactory)
         {
             ParameterStore2 store = new ParameterStore2();
 
@@ -42,7 +42,7 @@ namespace Jerrycurl.Data.V11.Language
             return command;
         }
 
-        public static IList<IParameter> ToParameters(this IRelation3 relation)
+        public static IList<IParameter> ToParameters(this IRelation2 relation)
             => new ParameterStore2().Add(relation);
     }
 }

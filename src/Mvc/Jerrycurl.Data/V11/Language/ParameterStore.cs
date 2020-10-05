@@ -40,7 +40,7 @@ namespace Jerrycurl.Data.V11.Language
         public IList<IParameter> Add(ITuple2 tuple)
             => tuple?.Select(this.Add).ToList() ?? throw new ArgumentNullException(nameof(tuple));
 
-        public IList<IParameter> Add(IRelation3 relation)
+        public IList<IParameter> Add(IRelation2 relation)
         {
             if (relation == null)
                 throw new ArgumentNullException(nameof(relation));

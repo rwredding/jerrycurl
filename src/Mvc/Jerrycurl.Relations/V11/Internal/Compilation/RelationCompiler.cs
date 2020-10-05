@@ -21,13 +21,13 @@ namespace Jerrycurl.Relations.V11.Internal.Compilation
 {
     internal class RelationCompiler
     {
-        private delegate void BufferInternalWriter(IField2[] fields, IRelationQueue[] queues, IField2 source, IField2 model, DotNotation2 notation, Delegate[] binders, MetadataIdentity[] metadata);
+        private delegate void BufferInternalWriter(IField2[] fields, IRelationQueue[] queues, IField2 source, IField2 model, DotNotation2 notation, Delegate[] binders, IRelationMetadata[] metadata);
 
         public BufferWriter Compile(BufferTree tree)
         {
             DotNotation2 notation = tree.Notation;
             Delegate[] binders = this.GetBindersArgument(tree);
-            MetadataIdentity[] metadata = this.GetMetadataArgument(tree);
+            IRelationMetadata[] metadata = this.GetMetadataArgument(tree);
 
             BufferInternalWriter initializer = this.Compile(tree.Source, tree.Queues);
             List<BufferInternalWriter> writers = tree.Queues.Select(this.Compile).ToList();
@@ -39,7 +39,7 @@ namespace Jerrycurl.Relations.V11.Internal.Compilation
             };
         }
 
-        private Action<RelationBuffer> Recompile(BufferInternalWriter writer, DotNotation2 notation, Delegate[] binders, MetadataIdentity[] metadata)
+        private Action<RelationBuffer> Recompile(BufferInternalWriter writer, DotNotation2 notation, Delegate[] binders, IRelationMetadata[] metadata)
             => buf => writer(buf.Fields, buf.Queues, buf.Source, buf.Model, notation, binders, metadata);
 
         private BufferInternalWriter Compile(SourceReader reader, IEnumerable<QueueReader> queueReaders)
@@ -238,7 +238,12 @@ namespace Jerrycurl.Relations.V11.Internal.Compilation
             => Expression.Property(Expression.Property(Arguments.Source, "Identity"), "Name");
 
         private Expression GetSourceValueExpression(SourceReader reader)
-            => Expression.Convert(Expression.Property(Arguments.Source, "Value"), reader.Metadata.Type);
+        {
+            Expression data = Expression.Property(Arguments.Source, "data");
+            Expression value = Expression.Property(data, "Value");
+
+            return Expression.Convert(value, reader.Metadata.Type);
+        }
 
         private Expression GetMetadataExpression(FieldWriter writer)
             => Expression.ArrayAccess(Arguments.Metadata, Expression.Constant(writer.BufferIndex));
@@ -267,21 +272,29 @@ namespace Jerrycurl.Relations.V11.Internal.Compilation
             }
         }
 
+        //public Field2(string name, IRelationMetadata metadata, FieldData<TValue, TParent> data, IField2 model, FieldType2 type)
+        //public FieldData(object list, int index, TParent parent, TValue value, Delegate binder)
         private Expression GetNewFieldExpression(FieldWriter writer, Expression parentValue, Expression value, bool isNull)
         {
             if (parentValue == null)
                 return Arguments.Source;
 
-            Type newType = typeof(Field2<,>).MakeGenericType(value.Type, parentValue.Type);
-            ConstructorInfo ctor = newType.GetConstructors()[0];
+            Type fieldType = typeof(Field2<,>).MakeGenericType(value.Type, parentValue.Type);
+            Type dataType = typeof(FieldData<,>).MakeGenericType(value.Type, parentValue.Type);
 
+            ConstructorInfo newFieldInfo = fieldType.GetConstructors()[0];
+            ConstructorInfo newDataInfo = dataType.GetConstructors()[0];
+
+            Expression relation = Expression.Constant(null);
+            Expression index = this.GetQueuePropertyExpression(writer.Queue, "Index");
+            Expression binder = this.GetBinderExpression(writer);
+            
             Expression name = this.GetFieldNameExpression(writer);
             Expression metadata = this.GetMetadataExpression(writer);
-            Expression binder = this.GetBinderExpression(writer);
-            Expression index = this.GetQueuePropertyExpression(writer.Queue, "Index");
+            Expression data = Expression.New(newDataInfo, relation, index, parentValue, value, binder);
             Expression type = Expression.Constant(isNull ? FieldType2.Null : FieldType2.Value);
 
-            return Expression.New(ctor, name, metadata, parentValue, index, value, binder, Arguments.Model, type);
+            return Expression.New(newFieldInfo, name, metadata, data, Arguments.Model, type);
         }
 
         private Expression GetNewMissingExpression(FieldWriter writer)
@@ -310,12 +323,12 @@ namespace Jerrycurl.Relations.V11.Internal.Compilation
 
         #region " Arguments "
 
-        private MetadataIdentity[] GetMetadataArgument(BufferTree tree)
+        private IRelationMetadata[] GetMetadataArgument(BufferTree tree)
         {
-            MetadataIdentity[] metadata = new MetadataIdentity[tree.Fields.Count];
+            IRelationMetadata[] metadata = new IRelationMetadata[tree.Fields.Count];
 
             foreach (FieldWriter writer in tree.Fields)
-                metadata[writer.BufferIndex] = writer.Metadata.Identity;
+                metadata[writer.BufferIndex] = writer.Metadata;
 
             return metadata;
         }
@@ -366,7 +379,7 @@ namespace Jerrycurl.Relations.V11.Internal.Compilation
             public static ParameterExpression Fields { get; } = Expression.Parameter(typeof(IField2[]), "fields");
             public static ParameterExpression Model { get; } = Expression.Parameter(typeof(IField2), "model");
             public static ParameterExpression Source { get; } = Expression.Parameter(typeof(IField2), "source");
-            public static ParameterExpression Metadata { get; } = Expression.Parameter(typeof(MetadataIdentity[]), "metadata");
+            public static ParameterExpression Metadata { get; } = Expression.Parameter(typeof(IRelationMetadata[]), "metadata");
             public static ParameterExpression Notation { get; } = Expression.Parameter(typeof(DotNotation2), "notation");
             public static ParameterExpression Binders { get; } = Expression.Parameter(typeof(Delegate[]), "binders");
             public static ParameterExpression Queues { get; } = Expression.Parameter(typeof(IRelationQueue[]), "queues");

@@ -28,7 +28,7 @@ namespace Jerrycurl.Data.Queries
         public async IAsyncEnumerable<TItem> ReadAsync<TItem>([EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
             if (this.asyncReader == null)
-                throw new QueryException("Async not available. To use async operations, please supply a DbDataReader instance.");
+                throw new QueryException("Async not available. To use async operations, instantiate with a DbDataReader instance.");
 
             EnumerateReader<TItem> reader = QueryCache<TItem>.GetEnumerateReader(this.Schemas, this.asyncReader);
 

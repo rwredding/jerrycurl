@@ -11,13 +11,13 @@ using HashCode = Jerrycurl.Diagnostics.HashCode;
 
 namespace Jerrycurl.Relations.V11
 {
-    public class Relation3 : IRelation3
+    public class Relation2 : IRelation2
     {
         public RelationHeader Header { get; }
         public IField2 Model => this.Source.Model;
         public IField2 Source { get; }
 
-        public Relation3(IField2 source, RelationHeader header)
+        public Relation2(IField2 source, RelationHeader header)
         {
             this.Source = source ?? throw new ArgumentNullException(nameof(source));
             this.Header = header ?? throw new ArgumentNullException(nameof(header));
@@ -26,7 +26,7 @@ namespace Jerrycurl.Relations.V11
         public IRelationReader GetReader() => new RelationReader(this);
         public IDataReader GetDataReader() => null; // new RelationDataReader(this.GetReader(), null);
 
-        public IEnumerable<ITuple> Body
+        public IEnumerable<ITuple2> Body
         {
             get
             {
@@ -38,24 +38,10 @@ namespace Jerrycurl.Relations.V11
 
                     reader.CopyTo(buffer, buffer.Length);
 
-                    yield return new Tuple(null, buffer.Length);
+                    yield return new Tuple2(buffer);
                 }
             }
         }
-
-
-        #region " IField implementation "
-        FieldType2 IField2.Type => this.Source.Type;
-        FieldIdentity IField2.Identity => this.Source.Identity;
-        IRelationMetadata IField2.Metadata => this.Source.Metadata;
-        object IField2.Value => this.Source.Value;
-        object IField2.CurrentValue
-        {
-            get => this.Source.CurrentValue;
-            set => this.Source.CurrentValue = value;
-        }
-        void IField2.Update() => this.Source.Update();
-        #endregion
 
 
         #region " Equality "

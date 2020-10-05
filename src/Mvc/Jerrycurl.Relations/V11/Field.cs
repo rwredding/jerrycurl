@@ -12,16 +12,15 @@ namespace Jerrycurl.Relations.V11
     internal class Field2<TValue, TParent> : IField2
     {
         public FieldIdentity Identity { get; }
-        public object Value { get; private set; }
         public IField2 Model { get; }
         public FieldType2 Type { get; }
         public IRelationMetadata Metadata { get; }
+        public FieldData<TValue, TParent> Data { get; }
+        public bool HasChanged { get; private set; }
 
-        private readonly Action<TValue> binder;
-        private bool hasChanged = false;
-        private object currentValue;
+        private object value;
 
-        public Field2(string name, IRelationMetadata metadata, TParent parent, int index, TValue value, Delegate binder, IField2 model, FieldType2 type)
+        public Field2(string name, IRelationMetadata metadata, FieldData<TValue, TParent> data, IField2 model, FieldType2 type)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
@@ -31,26 +30,24 @@ namespace Jerrycurl.Relations.V11
 
             this.Identity = new FieldIdentity(metadata.Identity, name);
             this.Model = model ?? throw new ArgumentNullException(nameof(model));
-            this.Value = this.currentValue = value;
             this.Type = type;
             this.Metadata = metadata;
-
-            if (binder is FieldBinder<TParent, TValue> typedBinder)
-                this.binder = v => typedBinder(parent, index, v);
+            this.value = data.Value;
         }
-        public object CurrentValue
+
+        public object Snapshot
         {
-            get => this.currentValue;
+            get => this.value;
             set
             {
-                this.currentValue = value;
-                this.hasChanged = true;
+                this.value = value;
+                this.HasChanged = true;
             }
         }
 
-        public void Update()
+        public void Commit()
         {
-            if (!this.hasChanged)
+            if (!this.HasChanged)
                 return;
 
             //if (this.writer == null)
@@ -58,9 +55,10 @@ namespace Jerrycurl.Relations.V11
 
             try
             {
-                this.binder((TValue)this.currentValue);
-                this.Value = this.currentValue;
-                this.hasChanged = false;
+                TValue typedValue = (TValue)this.Snapshot;
+
+                this.Data.Update((TValue)this.Snapshot);
+                this.HasChanged = false;
             }
             catch (NotIndexableException)
             {
@@ -76,10 +74,18 @@ namespace Jerrycurl.Relations.V11
             }
         }
 
+        public void Rollback()
+        {
+            this.value = this.Data.Value;
+            this.HasChanged = false;
+        }
+
+        IFieldData IField2.Data => this.Data;
+
         public bool Equals(IField2 other) => Equality.Combine(this, other, m => m.Model, m => m.Identity);
         public override bool Equals(object obj) => (obj is IField2 other && this.Equals(other));
         public override int GetHashCode() => HashCode.Combine(this.Model, this.Identity);
 
-        public override string ToString() => this.Value != null ? this.Value.ToString() : "<null>";
+        public override string ToString() => this.Snapshot != null ? this.Snapshot.ToString() : "<null>";
     }
 }

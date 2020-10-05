@@ -45,7 +45,7 @@ namespace Jerrycurl.Data.Sessions
         }
 
 
-        public async IAsyncEnumerable<DbDataReader> ExecuteAsync(IBatch batch, [EnumeratorCancellation]CancellationToken cancellationToken)
+        public async IAsyncEnumerable<DbDataReader> ExecuteAsync(IBatch batch, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
             DbConnection connection = await this.GetOpenConnectionAsync(cancellationToken).ConfigureAwait(false);
             DbCommand dbCommand = null;

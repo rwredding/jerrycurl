@@ -10,11 +10,19 @@ namespace Jerrycurl.Relations.V11
     internal class Missing2<TValue> : IField2
     {
         public FieldIdentity Identity { get; }
-        public object Value { get; }
         public IField2 Model { get; }
         public FieldType2 Type { get; } = FieldType2.Missing;
-        public object CurrentValue { get; set; }
         public IRelationMetadata Metadata { get; }
+        public bool HasChanged => false;
+        public IFieldData Data => null;
+        public object Snapshot
+        {
+            get => default(TValue);
+            set
+            {
+                throw new InvalidOperationException();
+            }
+        }
 
         public Missing2(string name, IRelationMetadata metadata, IField2 model)
         {
@@ -29,7 +37,8 @@ namespace Jerrycurl.Relations.V11
             this.Model = model ?? throw new ArgumentNullException(nameof(model));
         }
 
-        public void Update() => throw new InvalidOperationException();
+        public void Commit() => throw new InvalidOperationException();
+        public void Rollback() => throw new InvalidOperationException();
 
         public bool Equals(IField2 other) => Equality.Combine(this, other, m => m.Model, m => m.Identity);
         public override bool Equals(object obj) => (obj is IField2 field && this.Equals(field));

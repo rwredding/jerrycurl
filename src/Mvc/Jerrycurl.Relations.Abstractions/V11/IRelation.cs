@@ -3,13 +3,13 @@ using System.Data;
 
 namespace Jerrycurl.Relations.V11
 {
-    public interface IRelation3 : IField2
+    public interface IRelation2
     {
         RelationHeader Header { get; }
         IField2 Source { get; }
         IRelationReader GetReader();
         IDataReader GetDataReader();
 
-        IEnumerable<ITuple> Body { get; }
+        IEnumerable<ITuple2> Body { get; }
     }
 }

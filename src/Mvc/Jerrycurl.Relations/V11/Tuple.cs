@@ -1,9 +1,11 @@
 ﻿using Jerrycurl.Diagnostics;
+using Jerrycurl.Relations.V11.Language;
 using Jerrycurl.Text;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using HashCode = Jerrycurl.Diagnostics.HashCode;
 
@@ -50,15 +52,17 @@ namespace Jerrycurl.Relations.V11
 
         public override int GetHashCode() => HashCode.CombineAll(this.buffer);
 
-        public override string ToString()
+        internal static string Format(IEnumerable<IField2> fields)
         {
             StringBuilder s = new StringBuilder();
 
             s.Append('(');
-            s.AppendJoin(", ", this);
+            s.AppendJoin(", ", fields);
             s.Append(')');
 
             return s.ToString();
         }
+
+        public override string ToString() => Format(this);
     }
 }

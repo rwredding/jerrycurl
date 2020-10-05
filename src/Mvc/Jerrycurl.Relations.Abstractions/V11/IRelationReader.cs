@@ -6,7 +6,7 @@ namespace Jerrycurl.Relations.V11
 {
     public interface IRelationReader : ITuple2, IDisposable
     {
-        IRelation3 Relation { get; }
+        IRelation2 Relation { get; }
         bool Read();
         bool NextResult();
 

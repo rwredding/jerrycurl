@@ -35,7 +35,7 @@ namespace Jerrycurl.Data.Queries
             writer.WriteAll(this, dataReader);
         }
 
-        public async Task InsertAsync(DbDataReader dataReader, CancellationToken cancellationToken)
+        public async Task InsertAsync(DbDataReader dataReader, CancellationToken cancellationToken = default)
         {
             BufferWriter writer = QueryCache<TItem>.GetListWriter(this.Schema, dataReader);
 

@@ -29,6 +29,9 @@ namespace Jerrycurl.Relations.V11.Language
             this.Source = source;
         }
 
+        public RelationHeader<TSource> Select()
+            => this.Select(m => m);
+
         public RelationHeader<TSource> Select<TTarget>(Expression<Func<TSource, TTarget>> expression)
         {
             MetadataIdentity newIdentity = this.Source.Metadata.Identity.Push(this.Schema.Notation.Lambda(expression));
@@ -36,6 +39,9 @@ namespace Jerrycurl.Relations.V11.Language
 
             return new RelationHeader<TSource>(this.Source, this.Add(metadata));
         }
+
+        public RelationHeader<TSource> SelectAll()
+            => this.SelectAll(m => m);
 
         public RelationHeader<TSource> SelectAll<TTarget>(Expression<Func<TSource, TTarget>> expression)
             => this.Select(expression, m => true);
@@ -52,7 +58,7 @@ namespace Jerrycurl.Relations.V11.Language
         {
             MetadataIdentity newIdentity = this.Source.Metadata.Identity.Push(this.Schema.Notation.Lambda(expression));
             IRelationMetadata metadata = newIdentity.GetMetadata<IRelationMetadata>();
-            RelationAttribute newSource = new RelationAttribute(metadata);
+            RelationAttribute newSource = new RelationAttribute(metadata.Item);
 
             return new RelationHeader<TTarget>(newSource, Array.Empty<RelationAttribute>());
         }

@@ -12,6 +12,12 @@ namespace Jerrycurl.Relations.Metadata
 
         public IMetadataNotation Notation { get; }
 
+        public SchemaStore()
+            : this(new DotNotation())
+        {
+
+        }
+
         public SchemaStore(IMetadataNotation notation)
         {
             this.Notation = notation ?? throw new ArgumentNullException(nameof(notation));

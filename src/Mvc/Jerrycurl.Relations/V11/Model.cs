@@ -10,10 +10,11 @@ namespace Jerrycurl.Relations.V11
     public class Model2 : IField2
     {
         public FieldIdentity Identity { get; }
-        public object Value { get; }
+        public object Snapshot { get; set; }
         public FieldType2 Type { get; } = FieldType2.Model;
-        public object CurrentValue { get; set; }
         public IRelationMetadata Metadata { get; }
+        public bool HasChanged => false;
+        public IFieldData Data { get; }
 
         IField2 IField2.Model => this;
 
@@ -23,26 +24,19 @@ namespace Jerrycurl.Relations.V11
                 throw new ArgumentNullException(nameof(schema));
 
             this.Identity = new FieldIdentity(new MetadataIdentity(schema, schema.Notation.Model()), schema.Notation.Model());
-            this.Value = this.CurrentValue = value;
+            this.Snapshot = value;
             this.Metadata = schema.GetMetadata<IRelationMetadata>() ?? throw new InvalidOperationException("Metadata not found.");
+            this.Data = new ModelData(value);
         }
 
-        public void Update() => throw new NotSupportedException("Models are not not bindable due to having no container.");
+        public void Commit() => throw new NotSupportedException("Models are not not bindable due to having no container.");
+        public void Rollback() => throw new NotSupportedException("Models are not not bindable due to having no container.");
 
-        public bool Equals(IField2 other) => Equality.Combine(this, other, m => m.Identity, m => m.Value);
+        public bool Equals(IField2 other) => Equality.Combine(this, other, m => m.Identity, m => m.Snapshot);
         public override bool Equals(object obj) => (obj is IField2 other && this.Equals(other));
         public override int GetHashCode() => this.Identity.GetHashCode();
 
-        public override string ToString() => this.Value != null ? this.Value.ToString() : "<null>";
+        public override string ToString() => this.Snapshot != null ? this.Snapshot.ToString() : "<null>";
 
-        public void Update<T>(Func<T, T> valueFactory)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Update<T>(T value)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

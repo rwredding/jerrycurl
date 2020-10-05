@@ -27,7 +27,7 @@ namespace Jerrycurl.Relations.V11
         public int FieldCount => this.InnerReader.Degree;
 
         public object this[string name] => this[this.GetOrdinal(name)];
-        public object this[int i] => this.InnerReader[i].Value;
+        public object this[int i] => this.InnerReader[i].Snapshot;
 
         public void Close() { }
         public bool NextResult() => false;

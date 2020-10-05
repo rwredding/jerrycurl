@@ -8,12 +8,14 @@ namespace Jerrycurl.Relations.V11
     public interface IField2 : IEquatable<IField2>
     {
         FieldIdentity Identity { get; }
-        object Value { get; }
-        object CurrentValue { get; set; }
+        object Snapshot { get; set; }
         IField2 Model { get; }
         FieldType2 Type { get; }
         IRelationMetadata Metadata { get; }
+        IFieldData Data { get; }
+        bool HasChanged { get; }
 
-        void Update();
+        void Commit();
+        void Rollback();
     }
 }
